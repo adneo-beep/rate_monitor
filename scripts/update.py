@@ -178,14 +178,16 @@ async def scrape_nh(browser):
 
 
 async def main():
-    # 이전 rates.json 읽기 (변화량 계산용)
+    # 이전 rates.json 읽기 (히스토리 누적용)
     prev_banks = {}
+    bank_history = []
     if os.path.exists(OUTPUT_FILE):
         try:
             with open(OUTPUT_FILE, encoding='utf-8') as f:
                 prev = json.load(f)
             for b in prev.get('banks', []):
                 prev_banks[b['id']] = b
+            bank_history = prev.get('bankHistory', [])
         except Exception:
             pass
 
@@ -227,10 +229,25 @@ async def main():
     banks.sort(key=lambda b: BANK_ORDER.index(b['id']) if b['id'] in BANK_ORDER else 99)
 
     now = datetime.now()
+
+    # 오늘 날짜 히스토리 항목 생성
+    today_key = f"{now.month}/{now.day}"
+    today_entry = {'date': today_key}
+    for b in banks:
+        if b['minRate'] is not None:
+            today_entry[b['id']] = b['minRate']
+
+    # 오늘 날짜가 이미 있으면 갱신, 없으면 추가
+    if bank_history and bank_history[-1]['date'] == today_key:
+        bank_history[-1] = today_entry
+    else:
+        bank_history.append(today_entry)
+
     result = {
         'updatedAt': now.strftime('%Y.%m.%d %H:%M 기준'),
         'banks': banks,
         'insurances': INSURANCE_STATIC,
+        'bankHistory': bank_history,
     }
 
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)

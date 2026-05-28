@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MOCK_BANK_RATES, BANK_CHART_DATA, INSURANCE_CHART_DATA } from '../data/mockData'
+import { MOCK_BANK_RATES } from '../data/mockData'
 import RateRow from '../components/RateRow'
 import RateChart from '../components/RateChart'
 import PageHeader from '../components/PageHeader'
@@ -10,12 +10,6 @@ const BANK_SERIES = [
   { key: 'hana',   name: '하나',    color: '#10b981' },
   { key: 'woori',  name: '우리',    color: '#8b5cf6' },
   { key: 'nh',     name: '농협',    color: '#f97316' },
-]
-const INSURANCE_SERIES = [
-  { key: 'samsungLife', name: '삼성생명', color: '#6366f1' },
-  { key: 'hanwha',      name: '한화생명', color: '#f43f5e' },
-  { key: 'kyobo',       name: '교보생명', color: '#0ea5e9' },
-  { key: 'samsungFire', name: '삼성화재', color: '#14b8a6' },
 ]
 
 function SectionPanel({ title, subtitle, children }) {
@@ -106,10 +100,8 @@ export default function BankRatesView({ onBack }) {
 
         {/* Time series chart */}
         <RateChart
-          bankData={BANK_CHART_DATA}
-          insuranceData={INSURANCE_CHART_DATA}
+          bankData={data.bankHistory ?? []}
           bankSeries={BANK_SERIES}
-          insuranceSeries={INSURANCE_SERIES}
         />
 
         <p className="text-xs text-slate-400 text-center pb-2">
