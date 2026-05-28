@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { MOCK_FSS_RATES, FSS_MONTHLY_BANK_DATA, FSS_MONTHLY_INSURANCE_DATA } from '../data/mockData'
-import RateRow from '../components/RateRow'
 import SkeletonRows from '../components/SkeletonRows'
 import RateChart from '../components/RateChart'
 import PageHeader from '../components/PageHeader'
@@ -23,6 +22,8 @@ const INSURANCE_CONFIG = [
   { id: 'samsung-fire', name: '삼성화재', match: '삼성화재',  colorHex: '#e11d48' },
 ]
 
+const RATE_TYPE_ORDER = ['고정금리', '변동금리']
+
 function parseRates(baseList, optionList, config) {
   return config.map((cfg) => {
     const products = baseList.filter((p) => p.kor_co_nm.includes(cfg.match))
@@ -31,15 +32,27 @@ function parseRates(baseList, optionList, config) {
     let opts = optionList.filter((o) => codes.has(o.fin_prdt_cd) && o.mrtg_type_nm?.includes('아파트'))
     if (opts.length === 0) opts = optionList.filter((o) => codes.has(o.fin_prdt_cd))
 
-    if (opts.length === 0) return { ...cfg, product: '주택담보대출', minRate: null, maxRate: null }
+    if (opts.length === 0) return { ...cfg, product: '주택담보대출', rateTypes: [] }
 
-    const mins = opts.map((o) => o.lend_rate_min).filter((r) => r != null && r > 0)
-    const maxs = opts.map((o) => o.lend_rate_max).filter((r) => r != null && r > 0)
-    const minRate = mins.length ? Math.min(...mins) : null
-    const maxRate = maxs.length ? Math.max(...maxs) : null
+    const byType = {}
+    for (const o of opts) {
+      const type = o.lend_rate_type_nm
+      if (!type) continue
+      if (!byType[type]) byType[type] = { mins: [], maxs: [] }
+      if (o.lend_rate_min != null && o.lend_rate_min > 0) byType[type].mins.push(o.lend_rate_min)
+      if (o.lend_rate_max != null && o.lend_rate_max > 0) byType[type].maxs.push(o.lend_rate_max)
+    }
+
+    const rateTypes = RATE_TYPE_ORDER
+      .filter((t) => byType[t])
+      .map((t) => ({
+        type: t,
+        minRate: byType[t].mins.length ? Math.min(...byType[t].mins) : null,
+        maxRate: byType[t].maxs.length ? Math.max(...byType[t].maxs) : null,
+      }))
+
     const product = products[0]?.fin_prdt_nm ?? '주택담보대출'
-
-    return { id: cfg.id, name: cfg.name, colorHex: cfg.colorHex, product, minRate, maxRate }
+    return { id: cfg.id, name: cfg.name, colorHex: cfg.colorHex, product, rateTypes }
   })
 }
 
@@ -56,6 +69,38 @@ const INSURANCE_SERIES = [
   { key: 'kyobo',       name: '교보생명', color: '#0ea5e9' },
   { key: 'samsungFire', name: '삼성화재', color: '#14b8a6' },
 ]
+
+function FSSRateCard({ name, colorHex, product, rateTypes }) {
+  return (
+    <div className="flex items-start py-4 px-5 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors gap-3">
+      <div className="w-1.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: colorHex, height: rateTypes.length > 1 ? '44px' : '28px' }} />
+      <div className="flex-1 min-w-0">
+        <div className="font-semibold text-slate-800 text-sm leading-tight">{name}</div>
+        <div className="text-xs text-slate-400 truncate mt-0.5 mb-2">{product}</div>
+        {rateTypes.length === 0 ? (
+          <div className="text-xs text-slate-400">데이터 없음</div>
+        ) : (
+          <div className="space-y-1.5">
+            {rateTypes.map(({ type, minRate, maxRate }) => (
+              <div key={type} className="flex items-center gap-3">
+                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {type}
+                </span>
+                <div className="flex items-center gap-2 text-xs tabular-nums">
+                  <span className="text-slate-400">최저</span>
+                  <span className="font-bold text-emerald-600">{minRate != null ? `${minRate.toFixed(2)}%` : '—'}</span>
+                  <span className="text-slate-300">|</span>
+                  <span className="text-slate-400">최고</span>
+                  <span className="font-bold text-rose-500">{maxRate != null ? `${maxRate.toFixed(2)}%` : '—'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 function SectionPanel({ title, subtitle, children }) {
   return (
@@ -147,15 +192,18 @@ export default function FSSView({ onBack }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <SectionPanel title="🏦 은행권" subtitle="국민 · 신한 · 하나 · 우리 · 농협">
-            {loading ? <SkeletonRows count={5} /> : data?.banks.map((b) => <RateRow key={b.id} {...b} />)}
+            {loading
+              ? <SkeletonRows count={5} />
+              : data?.banks.map((b) => <FSSRateCard key={b.id} {...b} />)}
           </SectionPanel>
 
           <SectionPanel title="🛡️ 보험사" subtitle="삼성생명 · 한화생명 · 교보생명 · 삼성화재">
-            {loading ? <SkeletonRows count={4} /> : data?.insurances.map((ins) => <RateRow key={ins.id} {...ins} />)}
+            {loading
+              ? <SkeletonRows count={4} />
+              : data?.insurances.map((ins) => <FSSRateCard key={ins.id} {...ins} />)}
           </SectionPanel>
         </div>
 
-        {/* Monthly chart */}
         <RateChart
           bankData={FSS_MONTHLY_BANK_DATA}
           insuranceData={FSS_MONTHLY_INSURANCE_DATA}
@@ -164,18 +212,7 @@ export default function FSSView({ onBack }) {
           xKey="month"
         />
 
-        {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 justify-center text-xs text-slate-500 pb-2">
-          <div className="flex items-center gap-1.5">
-            <span className="text-rose-500 font-semibold">▲</span> 전월 대비 상승
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-blue-500 font-semibold">▼</span> 전월 대비 하락
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-slate-400">—</span> 변동 없음
-          </div>
-          <span className="text-slate-300">|</span>
           <span>금융감독원 금융상품 통합비교공시 기준 · 매월 업데이트</span>
         </div>
       </div>

@@ -1,16 +1,69 @@
 import { useState } from 'react'
 
-export default function RateChart({ bankData = [], bankSeries, insuranceData, insuranceSeries, xKey = 'date' }) {
+function RateTable({ data, series, xKey, keyPrefix }) {
+  if (data.length === 0) {
+    return (
+      <div className="px-5 py-10 text-center text-sm text-slate-400">
+        데이터가 아직 없습니다. 매일 10시 업데이트 후 누적됩니다.
+      </div>
+    )
+  }
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="bg-slate-50 border-b border-slate-200">
+            <th className="px-4 py-2.5 text-left text-slate-400 font-medium w-16 sticky left-0 bg-slate-50">
+              {xKey === 'month' ? '월' : '날짜'}
+            </th>
+            {series.map((s) => (
+              <th key={s.key} className="px-3 py-2.5 text-center text-slate-600 font-semibold">
+                <div className="flex items-center justify-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+                  {s.name}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {[...data].reverse().map((row, i) => (
+            <tr
+              key={row[xKey]}
+              className={`border-b border-slate-50 last:border-0 ${i === 0 ? 'bg-emerald-50/40' : 'hover:bg-slate-50/60'} transition-colors`}
+            >
+              <td className="px-4 py-2 text-slate-500 font-medium sticky left-0 bg-inherit tabular-nums">
+                {row[xKey]}
+              </td>
+              {series.map((s) => {
+                const dataKey = keyPrefix ? `${s.key}_${keyPrefix}` : s.key
+                return (
+                  <td key={s.key} className="px-3 py-2 text-center tabular-nums font-semibold text-slate-700">
+                    {row[dataKey] != null ? `${Number(row[dataKey]).toFixed(2)}%` : '—'}
+                  </td>
+                )
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+export default function RateChart({ bankData = [], bankSeries, insuranceData, insuranceSeries, xKey = 'date', showMax = false }) {
   const hasInsurance = insuranceData && insuranceData.length > 0
   const [tab, setTab] = useState('bank')
 
   const data = tab === 'bank' ? bankData : (insuranceData ?? [])
   const series = tab === 'bank' ? bankSeries : (insuranceSeries ?? [])
 
+  const hasMinMax = showMax && bankData.length > 0 && bankData[0][`${bankSeries[0].key}_min`] !== undefined
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3">
-        <h2 className="font-bold text-slate-800">최저금리 추이</h2>
+        <h2 className="font-bold text-slate-800">금리 추이</h2>
         {hasInsurance && (
           <div className="flex bg-slate-200 rounded-lg p-0.5 text-xs font-medium">
             <button
@@ -29,47 +82,15 @@ export default function RateChart({ bankData = [], bankSeries, insuranceData, in
         )}
       </div>
 
-      {data.length === 0 ? (
-        <div className="px-5 py-10 text-center text-sm text-slate-400">
-          데이터가 아직 없습니다. 매일 10시 업데이트 후 누적됩니다.
+      {hasMinMax ? (
+        <div>
+          <div className="px-5 pt-4 pb-1 text-xs font-semibold text-emerald-700 bg-emerald-50/50 border-b border-slate-100">최저금리 추이</div>
+          <RateTable data={data} series={series} xKey={xKey} keyPrefix="min" />
+          <div className="px-5 pt-4 pb-1 text-xs font-semibold text-rose-600 bg-rose-50/50 border-b border-slate-100 border-t border-slate-200 mt-2">최고금리 추이</div>
+          <RateTable data={data} series={series} xKey={xKey} keyPrefix="max" />
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-4 py-2.5 text-left text-slate-400 font-medium w-16 sticky left-0 bg-slate-50">
-                  {xKey === 'month' ? '월' : '날짜'}
-                </th>
-                {series.map((s) => (
-                  <th key={s.key} className="px-3 py-2.5 text-center text-slate-600 font-semibold">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-                      {s.name}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[...data].reverse().map((row, i) => (
-                <tr
-                  key={row[xKey]}
-                  className={`border-b border-slate-50 last:border-0 ${i === 0 ? 'bg-emerald-50/40' : 'hover:bg-slate-50/60'} transition-colors`}
-                >
-                  <td className="px-4 py-2 text-slate-500 font-medium sticky left-0 bg-inherit tabular-nums">
-                    {row[xKey]}
-                  </td>
-                  {series.map((s) => (
-                    <td key={s.key} className="px-3 py-2 text-center tabular-nums font-semibold text-slate-700">
-                      {row[s.key] != null ? `${Number(row[s.key]).toFixed(2)}%` : '—'}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <RateTable data={data} series={series} xKey={xKey} keyPrefix={null} />
       )}
     </div>
   )

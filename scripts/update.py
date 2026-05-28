@@ -215,6 +215,8 @@ async def main():
         prev = prev_banks.get(meta['id'], {})
         prev_min = prev.get('minRate')
         prev_max = prev.get('maxRate')
+        min_change = round(min_r - prev_min, 3) if min_r is not None and prev_min is not None else 0
+        max_change = round(max_r - prev_max, 3) if max_r is not None and prev_max is not None else 0
         banks.append({
             'id': meta['id'],
             'name': meta['name'],
@@ -222,8 +224,8 @@ async def main():
             'product': raw.get('product', '주택담보대출'),
             'minRate': min_r,
             'maxRate': max_r,
-            'minChange': round(min_r - prev_min, 3) if min_r is not None and prev_min is not None else 0,
-            'maxChange': round(max_r - prev_max, 3) if max_r is not None and prev_max is not None else 0,
+            'minChange': min_change,
+            'maxChange': max_change,
         })
 
     banks.sort(key=lambda b: BANK_ORDER.index(b['id']) if b['id'] in BANK_ORDER else 99)
@@ -234,8 +236,9 @@ async def main():
     today_key = f"{now.month}/{now.day}"
     today_entry = {'date': today_key}
     for b in banks:
-        if b['minRate'] is not None:
-            today_entry[b['id']] = b['minRate']
+        bid = b['id']
+        today_entry[f'{bid}_min'] = b['minRate']
+        today_entry[f'{bid}_max'] = b['maxRate']
 
     # 오늘 날짜가 이미 있으면 갱신, 없으면 추가
     if bank_history and bank_history[-1]['date'] == today_key:

@@ -24,17 +24,6 @@ function SectionPanel({ title, subtitle, children }) {
   )
 }
 
-function SummaryBadge({ label, value, color }) {
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center gap-3 shadow-sm">
-      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-      <div>
-        <div className="text-xs text-slate-400">{label}</div>
-        <div className="font-bold text-slate-800 text-sm tabular-nums">{value}</div>
-      </div>
-    </div>
-  )
-}
 
 export default function BankRatesView({ onBack }) {
   const [data, setData] = useState(null)
@@ -59,12 +48,6 @@ export default function BankRatesView({ onBack }) {
     )
   }
 
-  const allItems = [...data.banks, ...data.insurances].filter((d) => d.minRate !== null)
-  const minAll = Math.min(...allItems.map((d) => d.minRate))
-  const maxAll = Math.max(...allItems.map((d) => d.maxRate ?? d.minRate))
-  const lowestItem = allItems.find((d) => d.minRate === minAll)
-  const highestItem = allItems.find((d) => (d.maxRate ?? d.minRate) === maxAll)
-
   return (
     <div className="min-h-screen bg-slate-50 animate-fade-in">
       <PageHeader
@@ -75,19 +58,11 @@ export default function BankRatesView({ onBack }) {
       />
 
       <div className="max-w-screen-xl mx-auto px-5 py-6 space-y-5">
-        {/* Summary strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <SummaryBadge label="전체 최저금리" value={`${minAll.toFixed(2)}%`} color="#10b981" />
-          <SummaryBadge label="기관" value={lowestItem?.name ?? '-'} color={lowestItem?.colorHex ?? '#94a3b8'} />
-          <SummaryBadge label="전체 최고금리" value={`${maxAll.toFixed(2)}%`} color="#f43f5e" />
-          <SummaryBadge label="기관" value={highestItem?.name ?? '-'} color={highestItem?.colorHex ?? '#94a3b8'} />
-        </div>
-
         {/* Split panels */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <SectionPanel title="🏦 은행권" subtitle="국민 · 신한 · 하나 · 우리 · 농협">
+          <SectionPanel title="🏦 은행권" subtitle="금융채(5년)변동 기준">
             {data.banks.map((b) => (
-              <RateRow key={b.id} {...b} />
+              <RateRow key={b.id} {...b} minChange={b.minChange} />
             ))}
           </SectionPanel>
 
@@ -102,6 +77,7 @@ export default function BankRatesView({ onBack }) {
         <RateChart
           bankData={data.bankHistory ?? []}
           bankSeries={BANK_SERIES}
+          showMax
         />
 
         <p className="text-xs text-slate-400 text-center pb-2">
