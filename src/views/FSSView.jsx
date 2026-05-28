@@ -1,0 +1,184 @@
+import { useState, useEffect } from 'react'
+import { MOCK_FSS_RATES, FSS_MONTHLY_BANK_DATA, FSS_MONTHLY_INSURANCE_DATA } from '../data/mockData'
+import RateRow from '../components/RateRow'
+import SkeletonRows from '../components/SkeletonRows'
+import RateChart from '../components/RateChart'
+import PageHeader from '../components/PageHeader'
+
+const FSS_API_KEY = '736b1d88e7160ca02d43154c35ca6bc6'
+const FSS_API_BASE = '/api/fss/mortgageLoanProductsSearch.json'
+
+const BANK_CONFIG = [
+  { id: 'kb',      name: 'KB국민은행',  match: '국민은행',  colorHex: '#f59e0b' },
+  { id: 'shinhan', name: '신한은행',    match: '신한은행',  colorHex: '#f97316' },
+  { id: 'hana',    name: '하나은행',    match: '하나은행',  colorHex: '#14b8a6' },
+  { id: 'woori',   name: '우리은행',    match: '우리은행',  colorHex: '#3b82f6' },
+  { id: 'nh',      name: 'NH농협은행',  match: '농협은행',  colorHex: '#22c55e' },
+]
+
+const INSURANCE_CONFIG = [
+  { id: 'samsung-life', name: '삼성생명', match: '삼성생명',  colorHex: '#6366f1' },
+  { id: 'hanwha',       name: '한화생명', match: '한화생명',  colorHex: '#ef4444' },
+  { id: 'kyobo',        name: '교보생명', match: '교보생명',  colorHex: '#10b981' },
+  { id: 'samsung-fire', name: '삼성화재', match: '삼성화재',  colorHex: '#e11d48' },
+]
+
+function parseRates(baseList, optionList, config) {
+  return config.map((cfg) => {
+    const products = baseList.filter((p) => p.kor_co_nm.includes(cfg.match))
+    const codes = new Set(products.map((p) => p.fin_prdt_cd))
+
+    let opts = optionList.filter((o) => codes.has(o.fin_prdt_cd) && o.mrtg_type_nm?.includes('아파트'))
+    if (opts.length === 0) opts = optionList.filter((o) => codes.has(o.fin_prdt_cd))
+
+    if (opts.length === 0) return { ...cfg, product: '주택담보대출', minRate: null, maxRate: null }
+
+    const mins = opts.map((o) => o.lend_rate_min).filter((r) => r != null && r > 0)
+    const maxs = opts.map((o) => o.lend_rate_max).filter((r) => r != null && r > 0)
+    const minRate = mins.length ? Math.min(...mins) : null
+    const maxRate = maxs.length ? Math.max(...maxs) : null
+    const product = products[0]?.fin_prdt_nm ?? '주택담보대출'
+
+    return { id: cfg.id, name: cfg.name, colorHex: cfg.colorHex, product, minRate, maxRate }
+  })
+}
+
+const BANK_SERIES = [
+  { key: 'kb',     name: 'KB국민',  color: '#f59e0b' },
+  { key: 'shinhan',name: '신한',    color: '#3b82f6' },
+  { key: 'hana',   name: '하나',    color: '#10b981' },
+  { key: 'woori',  name: '우리',    color: '#8b5cf6' },
+  { key: 'nh',     name: '농협',    color: '#f97316' },
+]
+const INSURANCE_SERIES = [
+  { key: 'samsungLife', name: '삼성생명', color: '#6366f1' },
+  { key: 'hanwha',      name: '한화생명', color: '#f43f5e' },
+  { key: 'kyobo',       name: '교보생명', color: '#0ea5e9' },
+  { key: 'samsungFire', name: '삼성화재', color: '#14b8a6' },
+]
+
+function SectionPanel({ title, subtitle, children }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-baseline justify-between gap-2">
+        <h2 className="font-bold text-slate-800">{title}</h2>
+        <span className="text-xs text-slate-400 shrink-0">{subtitle}</span>
+      </div>
+      <div>{children}</div>
+    </div>
+  )
+}
+
+function StatusBanner({ type, message }) {
+  if (!message) return null
+  const styles = {
+    warn: 'bg-amber-50 border-amber-200 text-amber-700',
+    error: 'bg-rose-50 border-rose-200 text-rose-700',
+  }
+  const icon = { warn: '⚠️', error: '❌' }
+  return (
+    <div className={`flex items-center gap-2 border rounded-xl px-4 py-2.5 text-sm ${styles[type]}`}>
+      <span>{icon[type]}</span>
+      <span>{message}</span>
+    </div>
+  )
+}
+
+export default function FSSView({ onBack }) {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [statusMsg, setStatusMsg] = useState(null)
+  const [statusType, setStatusType] = useState('warn')
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true)
+        const params = (grp) =>
+          `${FSS_API_BASE}?auth=${FSS_API_KEY}&topFinGrpNo=${grp}&pageNo=1`
+
+        const [banksRes, insRes] = await Promise.all([
+          fetch(params('020000'), { signal: AbortSignal.timeout(10000) }),
+          fetch(params('050000'), { signal: AbortSignal.timeout(10000) }),
+        ])
+        if (!banksRes.ok) throw new Error(`Banks HTTP ${banksRes.status}`)
+        if (!insRes.ok) throw new Error(`Insurance HTTP ${insRes.status}`)
+
+        const [banksJson, insJson] = await Promise.all([banksRes.json(), insRes.json()])
+
+        const banks = parseRates(
+          banksJson.result?.baseList ?? [],
+          banksJson.result?.optionList ?? [],
+          BANK_CONFIG,
+        )
+        const insurances = parseRates(
+          insJson.result?.baseList ?? [],
+          insJson.result?.optionList ?? [],
+          INSURANCE_CONFIG,
+        )
+
+        const now = new Date()
+        const updatedAt = `${now.getFullYear()}년 ${now.getMonth() + 1}월 기준`
+        setData({ updatedAt, banks, insurances })
+        setStatusMsg(null)
+      } catch (err) {
+        console.warn('FSS API 연결 실패:', err.message)
+        setData(MOCK_FSS_RATES)
+        setStatusMsg('API 미연결 상태입니다 — Mock 데이터를 표시하고 있습니다.')
+        setStatusType('warn')
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-slate-50 animate-fade-in">
+      <PageHeader
+        title="금융감독원 공시 기준"
+        subtitle={`월 단위 업데이트${data ? ` · ${data.updatedAt}` : ''}`}
+        onBack={onBack}
+        accent="emerald"
+      />
+
+      <div className="max-w-screen-xl mx-auto px-5 py-6 space-y-5">
+        <StatusBanner type={statusType} message={statusMsg} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <SectionPanel title="🏦 은행권" subtitle="국민 · 신한 · 하나 · 우리 · 농협">
+            {loading ? <SkeletonRows count={5} /> : data?.banks.map((b) => <RateRow key={b.id} {...b} />)}
+          </SectionPanel>
+
+          <SectionPanel title="🛡️ 보험사" subtitle="삼성생명 · 한화생명 · 교보생명 · 삼성화재">
+            {loading ? <SkeletonRows count={4} /> : data?.insurances.map((ins) => <RateRow key={ins.id} {...ins} />)}
+          </SectionPanel>
+        </div>
+
+        {/* Monthly chart */}
+        <RateChart
+          bankData={FSS_MONTHLY_BANK_DATA}
+          insuranceData={FSS_MONTHLY_INSURANCE_DATA}
+          bankSeries={BANK_SERIES}
+          insuranceSeries={INSURANCE_SERIES}
+          xKey="month"
+        />
+
+        {/* Legend */}
+        <div className="flex flex-wrap items-center gap-4 justify-center text-xs text-slate-500 pb-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-rose-500 font-semibold">▲</span> 전월 대비 상승
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-blue-500 font-semibold">▼</span> 전월 대비 하락
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-slate-400">—</span> 변동 없음
+          </div>
+          <span className="text-slate-300">|</span>
+          <span>금융감독원 금융상품 통합비교공시 기준 · 매월 업데이트</span>
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/fss/:path*",
+      "destination": "https://finlife.fss.or.kr/finlifeapi/:path*"
+    }
+  ]
+}
