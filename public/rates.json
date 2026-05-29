@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.05.28 10:00 기준",
+  "updatedAt": "2026.05.29 10:11 기준",
   "banks": [
     {
       "id": "kb",
@@ -8,37 +8,37 @@
       "product": "KB주택담보대출 금융채5년",
       "minRate": 5.07,
       "maxRate": 6.47,
-      "minChange": 0,
-      "maxChange": 0
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "shinhan",
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.63,
-      "maxRate": 6.04,
-      "minChange": 0,
-      "maxChange": 0
+      "minRate": 4.65,
+      "maxRate": 6.05,
+      "minChange": 0.02,
+      "maxChange": 0.01
     },
     {
       "id": "hana",
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "product": "하나 혼합금리 모기지론 5년물 금융채",
-      "minRate": 5.636,
-      "maxRate": 6.936,
-      "minChange": 0,
-      "maxChange": 0
+      "minRate": 5.678,
+      "maxRate": 6.978,
+      "minChange": 0.042,
+      "maxChange": 0.042
     },
     {
       "id": "woori",
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 4.25,
+      "minRate": 4.26,
       "maxRate": null,
-      "minChange": 0,
+      "minChange": 0.01,
       "maxChange": 0
     },
     {
@@ -46,10 +46,10 @@
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 4.51,
-      "maxRate": 7.11,
-      "minChange": 0,
-      "maxChange": 0
+      "minRate": 4.5,
+      "maxRate": 7.1,
+      "minChange": -0.01,
+      "maxChange": -0.01
     }
   ],
   "insurances": [
@@ -99,6 +99,19 @@
       "woori_max": null,
       "nh_min": 4.51,
       "nh_max": 7.11
+    },
+    {
+      "date": "5/29",
+      "kb_min": 5.07,
+      "kb_max": 6.47,
+      "shinhan_min": 4.65,
+      "shinhan_max": 6.05,
+      "hana_min": 5.678,
+      "hana_max": 6.978,
+      "woori_min": 4.26,
+      "woori_max": null,
+      "nh_min": 4.5,
+      "nh_max": 7.1
     }
   ]
 }
