@@ -19,8 +19,6 @@ jobs:
           playwright install chromium --with-deps
       - name: Run scraper
         run: python scripts/update.py
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       - name: Commit updated rates
         uses: EndBug/add-and-commit@v9
         with:

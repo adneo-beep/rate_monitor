@@ -6,8 +6,16 @@
       "name": "KB국민은행",
       "colorHex": "#f59e0b",
       "rates": [
-        { "type": "1년",  "sell": 4.52, "lease": 4.68 },
-        { "type": "5년",  "sell": 5.01, "lease": 5.07 }
+        {
+          "type": "1년",
+          "sell": 4.52,
+          "lease": 4.68
+        },
+        {
+          "type": "5년",
+          "sell": 5.02,
+          "lease": 5.08
+        }
       ]
     },
     {
@@ -15,8 +23,21 @@
       "name": "신한은행",
       "colorHex": "#f97316",
       "rates": [
-        { "type": "6개월", "sell": 4.37, "lease": 4.45 },
-        { "type": "5년",   "sell": 5.14, "lease": 5.38 }
+        {
+          "type": "5년",
+          "sell": 5.16,
+          "lease": null
+        },
+        {
+          "type": "6개월",
+          "sell": 4.38,
+          "lease": 4.46
+        },
+        {
+          "type": "5년혼합",
+          "sell": null,
+          "lease": 5.4
+        }
       ]
     },
     {
@@ -24,9 +45,21 @@
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "rates": [
-        { "type": "6개월",   "sell": 4.32, "lease": 4.27 },
-        { "type": "5년주기", "sell": 5.35, "lease": 5.30 },
-        { "type": "5년혼합", "sell": 5.06, "lease": 5.01 }
+        {
+          "type": "6개월",
+          "sell": 4.34,
+          "lease": 4.29
+        },
+        {
+          "type": "5년혼합",
+          "sell": 5.1,
+          "lease": 5.05
+        },
+        {
+          "type": "5년주기",
+          "sell": 5.39,
+          "lease": 5.34
+        }
       ]
     },
     {
@@ -34,8 +67,16 @@
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "rates": [
-        { "type": "6개월",   "sell": 4.05, "lease": 4.12 },
-        { "type": "5년변동", "sell": 4.86, "lease": 4.94 }
+        {
+          "type": "6개월",
+          "sell": 4.05,
+          "lease": 4.12
+        },
+        {
+          "type": "5년변동",
+          "sell": 4.87,
+          "lease": 4.95
+        }
       ]
     },
     {
@@ -43,12 +84,54 @@
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "rates": [
-        { "type": "6개월",   "sell": 4.32, "lease": 4.40 },
-        { "type": "5년변동", "sell": 5.50, "lease": 5.58 }
+        {
+          "type": "6개월",
+          "sell": 4.32,
+          "lease": 4.4
+        },
+        {
+          "type": "5년변동",
+          "sell": 5.49,
+          "lease": 5.57
+        }
       ]
     }
   ],
   "insurances": [
+    {
+      "id": "hanwha",
+      "name": "한화생명",
+      "colorHex": "#ef4444",
+      "rates": [
+        {
+          "type": "1년",
+          "sell": 5.28,
+          "lease": 5.0
+        },
+        {
+          "type": "5년",
+          "sell": 5.02,
+          "lease": 4.82
+        }
+      ]
+    },
+    {
+      "id": "samsung-fire",
+      "name": "삼성화재",
+      "colorHex": "#e11d48",
+      "rates": [
+        {
+          "type": "1년",
+          "sell": 4.38,
+          "lease": null
+        },
+        {
+          "type": "5년",
+          "sell": 5.08,
+          "lease": 5.08
+        }
+      ]
+    },
     {
       "id": "samsung-life",
       "name": "삼성생명",
@@ -56,28 +139,10 @@
       "rates": null
     },
     {
-      "id": "hanwha",
-      "name": "한화생명",
-      "colorHex": "#ef4444",
-      "rates": [
-        { "type": "1년", "sell": 5.28, "lease": 5.08 },
-        { "type": "3년", "sell": 5.28, "lease": 5.08 },
-        { "type": "5년", "sell": 5.02, "lease": 4.82 }
-      ]
-    },
-    {
       "id": "kyobo",
       "name": "교보생명",
       "colorHex": "#10b981",
       "rates": null
-    },
-    {
-      "id": "samsung-fire",
-      "name": "삼성화재",
-      "colorHex": "#e11d48",
-      "rates": [
-        { "type": "5년", "sell": 4.98, "lease": 5.08 }
-      ]
     }
   ]
 }

@@ -1,12 +1,9 @@
 """
 매일 10시 실행: 5대 은행 금리 스크레이핑 → public/rates.json 업데이트
-                findsr.kr 이미지 → Claude Vision → public/counselor.json 업데이트
 """
 import asyncio
-import base64
 import json
 import os
-import urllib.request
 from datetime import datetime
 from playwright.async_api import async_playwright
 
@@ -261,8 +258,8 @@ async def main():
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\n✅ public/rates.json 업데이트 완료: {result['updatedAt']}")
 
-    # findsr.kr 상담사 금리 업데이트
-    await update_counselor(browser_instance=None, now=now)
+    # 상담사 금리 업데이트 (lovable.app)
+    await scrape_counselor_from_lovable(browser, now)
 
     # Git commit & push
     import subprocess
@@ -277,150 +274,119 @@ async def main():
         print(f"⚠️  Git 오류: {e}")
 
 
-async def update_counselor(browser_instance, now):
-    """findsr.kr에서 오늘 금리표 이미지를 가져와 Claude Vision으로 파싱 후 counselor.json 저장"""
+async def scrape_counselor_from_lovable(browser, now):
+    """loan-rate-scoop.lovable.app에서 금리표 파싱 → counselor.json 저장"""
     COUNSELOR_FILE = os.path.join(BASE_DIR, '..', 'public', 'counselor.json')
-    ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
-    if not ANTHROPIC_API_KEY:
-        print("⚠️  ANTHROPIC_API_KEY 없음 — 상담사 금리 건너뜀")
-        return
+    LOVABLE_URL = 'https://loan-rate-scoop.lovable.app/'
 
-    print("\n상담사 금리 수집 시작 (findsr.kr)...")
+    BANK_META = {
+        '국민':   {'id': 'kb',      'name': 'KB국민은행', 'colorHex': '#f59e0b'},
+        '신한':   {'id': 'shinhan', 'name': '신한은행',   'colorHex': '#f97316'},
+        '하나':   {'id': 'hana',    'name': '하나은행',   'colorHex': '#14b8a6'},
+        '우리':   {'id': 'woori',   'name': '우리은행',   'colorHex': '#3b82f6'},
+        '농협은행': {'id': 'nh',    'name': 'NH농협은행', 'colorHex': '#22c55e'},
+    }
+    INS_META = {
+        '한화생명': {'id': 'hanwha',       'name': '한화생명', 'colorHex': '#ef4444'},
+        '삼성화재': {'id': 'samsung-fire', 'name': '삼성화재', 'colorHex': '#e11d48'},
+    }
+    # 컬럼명 정규화 (OCR 오인식 → 실제 유형명)
+    COL_NORMALIZE = {'5년년': '5년변동', '5년(혼합)': '5년혼합', '5년(주기)': '5년주기'}
+    BANK_ORDER = ['kb', 'shinhan', 'hana', 'woori', 'nh']
+
+    print("\n상담사 금리 수집 시작 (loan-rate-scoop.lovable.app)...")
     try:
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            await page.goto('https://findsr.kr/new1/product.html', timeout=30000)
-            await page.wait_for_load_state('networkidle', timeout=15000)
+        page = await browser.new_page()
+        await page.goto(LOVABLE_URL, timeout=30000)
 
-            # 오늘 날짜의 '아파트담보대출 금리표' 게시글 찾기
-            today_str = f"{now.month:02d}/{now.day:02d}"
-            post_url = await page.evaluate(f"""() => {{
-                for (const span of document.querySelectorAll('span.title')) {{
-                    const text = span.innerText.trim();
-                    if (text.includes('{today_str}') && text.includes('아파트담보대출')) {{
-                        const m = span.getAttribute('onclick').match(/href='([^']+)'/);
-                        return m ? 'https://findsr.kr' + m[1] : null;
-                    }}
-                }}
-                return null;
-            }}""")
-
-            if not post_url:
-                print(f"  [NG] {today_str} 아파트담보대출 금리표 게시글 없음")
-                await browser.close()
-                return
-
-            await page.goto(post_url, timeout=30000)
-            await page.wait_for_load_state('networkidle', timeout=15000)
-
-            # 금리표 이미지 URL 추출 (로고 제외, 가장 큰 이미지)
-            img_url = await page.evaluate("""() => {
-                const imgs = [...document.querySelectorAll('img')]
-                    .filter(i => i.width > 200 && i.height > 200);
-                return imgs[0]?.src || null;
-            }""")
-            await browser.close()
-
-        if not img_url:
-            print("  [NG] 금리표 이미지 없음")
+        # 테이블이 나타날 때까지 대기 (최대 40초)
+        try:
+            await page.wait_for_selector('table tbody tr', timeout=40000)
+        except Exception:
+            print("  [NG] 테이블 로드 타임아웃")
+            await page.close()
             return
 
-        print(f"  이미지: {img_url}")
+        # 헤더 + 전체 행 추출
+        raw = await page.evaluate("""() => {
+            const headers = [...document.querySelectorAll('table thead th')]
+                .map(h => h.innerText.trim());
+            const rows = [...document.querySelectorAll('table tbody tr')].map(r =>
+                [...r.querySelectorAll('td, th')].map(c => c.innerText.trim())
+            );
+            const dateMatch = document.body.innerText.match(/기준일\\s*([\\d-]+)/);
+            return { headers, rows, date: dateMatch ? dateMatch[1] : '' };
+        }""")
+        await page.close()
 
-        # 이미지 다운로드
-        req = urllib.request.Request(img_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            img_bytes = resp.read()
-        img_b64 = base64.standard_b64encode(img_bytes).decode()
+        headers = raw['headers']  # ['금융기관', '구분', '1년', '5년', ...]
+        rows = raw['rows']
+        date_str = raw['date']    # e.g. '2026-05-29'
 
-        # Claude Vision으로 파싱
-        import urllib.request as urlreq
-        payload = json.dumps({
-            "model": "claude-opus-4-7",
-            "max_tokens": 2048,
-            "messages": [{
-                "role": "user",
-                "content": [
-                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": img_b64}},
-                    {"type": "text", "text": (
-                        "이 이미지는 한국 주택담보대출 금리표입니다. "
-                        "은행별(KB국민은행, 신한은행, 하나은행, 우리은행, NH농협은행)로 "
-                        "금리유형(예: 6개월, 1년, 3년, 5년, 5년변동, 5년주기, 5년혼합 등)별 "
-                        "매매금리와 가계금리를 추출해 아래 JSON 형식으로만 답하세요.\n"
-                        "형식: [{\"bank\":\"KB국민은행\",\"rates\":[{\"type\":\"5년\",\"sell\":4.52,\"lease\":4.68}]}]\n"
-                        "보험사(삼성생명, 한화생명, 교보생명, 삼성화재)가 있으면 같은 형식으로 포함하세요. "
-                        "숫자는 float, 없으면 null. JSON만 출력하세요."
-                    )}
-                ]
-            }]
-        }, ensure_ascii=False).encode()
+        def parse_rate(s):
+            s = s.strip().replace('%', '')
+            try:
+                return round(float(s), 3)
+            except Exception:
+                return None
 
-        api_req = urlreq.Request(
-            'https://api.anthropic.com/v1/messages',
-            data=payload,
-            headers={
-                'x-api-key': ANTHROPIC_API_KEY,
-                'anthropic-version': '2023-06-01',
-                'content-type': 'application/json',
-            }
-        )
-        with urlreq.urlopen(api_req, timeout=60) as resp:
-            api_result = json.loads(resp.read())
+        # 헤더 인덱스 매핑 (index 0=금융기관, 1=구분, 2~=금리유형)
+        rate_cols = [COL_NORMALIZE.get(h, h) for h in headers[2:]]
 
-        raw_json = api_result['content'][0]['text'].strip()
-        # 코드블록 제거
-        if raw_json.startswith('```'):
-            raw_json = raw_json.split('```')[1]
-            if raw_json.startswith('json'):
-                raw_json = raw_json[4:]
-        parsed = json.loads(raw_json.strip())
+        # 행 파싱: 매매 행(bank, '매매', r[2]...) / 생활안정 행('생활안정', r[1]...)
+        institution_data = {}  # key: 기관명, value: {sell: [], lease: []}
+        current_bank = None
+        for row in rows:
+            if not row:
+                continue
+            if row[0] not in ('생활안정',) and len(row) > 1 and row[1] == '매매':
+                current_bank = row[0]
+                institution_data[current_bank] = {'sell': row[2:], 'lease': []}
+            elif row[0] == '생활안정' and current_bank:
+                institution_data[current_bank]['lease'] = row[1:]
 
-        BANK_META_C = {
-            'KB국민은행':  {'id': 'kb',      'colorHex': '#f59e0b'},
-            '신한은행':    {'id': 'shinhan', 'colorHex': '#f97316'},
-            '하나은행':    {'id': 'hana',    'colorHex': '#14b8a6'},
-            '우리은행':    {'id': 'woori',   'colorHex': '#3b82f6'},
-            'NH농협은행':  {'id': 'nh',      'colorHex': '#22c55e'},
-        }
-        INS_META_C = {
-            '삼성생명': {'id': 'samsung-life', 'colorHex': '#6366f1'},
-            '한화생명': {'id': 'hanwha',       'colorHex': '#ef4444'},
-            '교보생명': {'id': 'kyobo',        'colorHex': '#10b981'},
-            '삼성화재': {'id': 'samsung-fire', 'colorHex': '#e11d48'},
-        }
-        BANK_ORDER_C = ['kb', 'shinhan', 'hana', 'woori', 'nh']
+        def build_rates(sell_vals, lease_vals):
+            rates = []
+            for i, col_name in enumerate(rate_cols):
+                s = parse_rate(sell_vals[i]) if i < len(sell_vals) else None
+                l = parse_rate(lease_vals[i]) if i < len(lease_vals) else None
+                if s is not None or l is not None:
+                    rates.append({'type': col_name, 'sell': s, 'lease': l})
+            return rates or None
 
-        banks_out, ins_out = [], []
-        for item in parsed:
-            name = item.get('bank', '')
-            rates = item.get('rates', [])
-            if name in BANK_META_C:
-                m = BANK_META_C[name]
-                banks_out.append({'id': m['id'], 'name': name, 'colorHex': m['colorHex'], 'rates': rates})
-            elif name in INS_META_C:
-                m = INS_META_C[name]
-                ins_out.append({'id': m['id'], 'name': name, 'colorHex': m['colorHex'], 'rates': rates or None})
+        banks_out = []
+        for key, meta in BANK_META.items():
+            d = institution_data.get(key, {})
+            rates = build_rates(d.get('sell', []), d.get('lease', []))
+            banks_out.append({'id': meta['id'], 'name': meta['name'],
+                              'colorHex': meta['colorHex'], 'rates': rates})
+        banks_out.sort(key=lambda b: BANK_ORDER.index(b['id']) if b['id'] in BANK_ORDER else 99)
 
-        banks_out.sort(key=lambda b: BANK_ORDER_C.index(b['id']) if b['id'] in BANK_ORDER_C else 99)
+        ins_out = []
+        for key, meta in INS_META.items():
+            d = institution_data.get(key, {})
+            rates = build_rates(d.get('sell', []), d.get('lease', []))
+            ins_out.append({'id': meta['id'], 'name': meta['name'],
+                            'colorHex': meta['colorHex'], 'rates': rates})
 
-        # 기존 파일에서 누락된 보험사 채우기
-        existing_ids = {i['id'] for i in ins_out}
+        # 기존 파일에서 삼성생명·교보생명 유지 (lovable에 없음)
         if os.path.exists(COUNSELOR_FILE):
             with open(COUNSELOR_FILE, encoding='utf-8') as f:
                 prev = json.load(f)
+            existing_ids = {i['id'] for i in ins_out}
             for ins in prev.get('insurances', []):
                 if ins['id'] not in existing_ids:
                     ins_out.append(ins)
 
+        updated_at = date_str.replace('-', '.') + ' 기준' if date_str else now.strftime('%Y.%m.%d 기준')
         counselor_result = {
-            'updatedAt': now.strftime('%Y.%m.%d 기준'),
+            'updatedAt': updated_at,
             'banks': banks_out,
             'insurances': ins_out,
         }
         with open(COUNSELOR_FILE, 'w', encoding='utf-8') as f:
             json.dump(counselor_result, f, ensure_ascii=False, indent=2)
-        print(f"  ✅ counselor.json 업데이트 완료: {counselor_result['updatedAt']}")
+        print(f"  [OK] counselor.json 업데이트 완료: {updated_at}")
 
     except Exception as e:
         print(f"  [NG] 상담사 금리 업데이트 실패: {e}")
