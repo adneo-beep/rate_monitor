@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MOCK_FSS_RATES, FSS_MONTHLY_BANK_DATA, FSS_MONTHLY_INSURANCE_DATA } from '../data/mockData'
+import { MOCK_FSS_RATES } from '../data/mockData'
 import SkeletonRows from '../components/SkeletonRows'
 import RateChart from '../components/RateChart'
 import PageHeader from '../components/PageHeader'
@@ -131,6 +131,7 @@ function StatusBanner({ type, message }) {
 
 export default function FSSView({ onBack }) {
   const [data, setData] = useState(null)
+  const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [statusMsg, setStatusMsg] = useState(null)
   const [statusType, setStatusType] = useState('warn')
@@ -142,9 +143,10 @@ export default function FSSView({ onBack }) {
         const params = (grp) =>
           `${FSS_API_BASE}?auth=${FSS_API_KEY}&topFinGrpNo=${grp}&pageNo=1`
 
-        const [banksRes, insRes] = await Promise.all([
+        const [banksRes, insRes, fssRes] = await Promise.all([
           fetch(params('020000'), { signal: AbortSignal.timeout(10000) }),
           fetch(params('050000'), { signal: AbortSignal.timeout(10000) }),
+          fetch('/fss.json', { cache: 'no-store' }),
         ])
         if (!banksRes.ok) throw new Error(`Banks HTTP ${banksRes.status}`)
         if (!insRes.ok) throw new Error(`Insurance HTTP ${insRes.status}`)
@@ -165,10 +167,16 @@ export default function FSSView({ onBack }) {
         const now = new Date()
         const updatedAt = `${now.getFullYear()}년 ${now.getMonth() + 1}월 기준`
         setData({ updatedAt, banks, insurances })
+
+        if (fssRes.ok) {
+          const fssJson = await fssRes.json()
+          setHistory(fssJson.history ?? [])
+        }
         setStatusMsg(null)
       } catch (err) {
         console.warn('FSS API 연결 실패:', err.message)
         setData(MOCK_FSS_RATES)
+        setHistory([])
         setStatusMsg('API 미연결 상태입니다 — Mock 데이터를 표시하고 있습니다.')
         setStatusType('warn')
       } finally {
@@ -204,13 +212,19 @@ export default function FSSView({ onBack }) {
           </SectionPanel>
         </div>
 
-        <RateChart
-          bankData={FSS_MONTHLY_BANK_DATA}
-          insuranceData={FSS_MONTHLY_INSURANCE_DATA}
-          bankSeries={BANK_SERIES}
-          insuranceSeries={INSURANCE_SERIES}
-          xKey="month"
-        />
+        {history.length >= 2 ? (
+          <RateChart
+            bankData={history}
+            insuranceData={history}
+            bankSeries={BANK_SERIES}
+            insuranceSeries={INSURANCE_SERIES}
+            xKey="month"
+          />
+        ) : (
+          <div className="bg-white rounded-2xl border border-slate-200 px-6 py-8 text-center text-sm text-slate-400">
+            금리 추이 데이터를 수집 중입니다 · 다음 달부터 월별 추이가 표시됩니다
+          </div>
+        )}
 
         <div className="flex flex-wrap items-center gap-4 justify-center text-xs text-slate-500 pb-2">
           <span>금융감독원 금융상품 통합비교공시 기준 · 매월 업데이트</span>

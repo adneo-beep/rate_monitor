@@ -7,8 +7,11 @@ import os
 from datetime import datetime
 from playwright.async_api import async_playwright
 
+import urllib.request
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.path.join(BASE_DIR, '..', 'public', 'rates.json')
+FSS_JSON_FILE = os.path.join(BASE_DIR, '..', 'public', 'fss.json')
 
 BANK_META = {
     '우리은행':   {'id': 'woori',   'colorHex': '#3b82f6', 'name': '우리은행'},
@@ -258,6 +261,10 @@ async def main():
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\n✅ public/rates.json 업데이트 완료: {result['updatedAt']}")
 
+    # FSS 월별 데이터 업데이트
+    print("\nFSS 월별 금리 수집 시작...")
+    update_fss_history(now)
+
     # 상담사 금리 업데이트 (lovable.app)
     await scrape_counselor_from_lovable(browser, now)
 
@@ -266,7 +273,7 @@ async def main():
     repo_dir = os.path.join(BASE_DIR, '..')
     commit_msg = f"chore: update rates {result['updatedAt']} [skip ci]"
     try:
-        subprocess.run(['git', 'add', 'public/rates.json', 'public/counselor.json'], cwd=repo_dir, check=True)
+        subprocess.run(['git', 'add', 'public/rates.json', 'public/counselor.json', 'public/fss.json'], cwd=repo_dir, check=True)
         subprocess.run(['git', 'commit', '-m', commit_msg], cwd=repo_dir, check=True)
         subprocess.run(['git', 'push', 'origin', 'master'], cwd=repo_dir, check=True)
         print("✅ GitHub 푸시 완료")
@@ -390,6 +397,67 @@ async def scrape_counselor_from_lovable(browser, now):
 
     except Exception as e:
         print(f"  [NG] 상담사 금리 업데이트 실패: {e}")
+
+
+def update_fss_history(now):
+    """FSS API로 이번 달 최저금리 수집 → fss.json 월별 누적"""
+    FSS_API_KEY = '736b1d88e7160ca02d43154c35ca6bc6'
+    FSS_BASE = 'https://finlife.fss.or.kr/finlifeapi/mortgageLoanProductsSearch.json'
+
+    BANK_MATCH = {
+        '국민은행': 'kb', '신한은행': 'shinhan', '하나은행': 'hana',
+        '우리은행': 'woori', '농협은행': 'nh',
+    }
+    INS_MATCH = {
+        '삼성생명': 'samsungLife', '한화생명': 'hanwha',
+        '교보생명': 'kyobo', '삼성화재': 'samsungFire',
+    }
+
+    def fetch_fss(grp):
+        url = f'{FSS_BASE}?auth={FSS_API_KEY}&topFinGrpNo={grp}&pageNo=1'
+        with urllib.request.urlopen(url, timeout=15) as r:
+            return json.loads(r.read().decode('utf-8'))
+
+    def calc_mins(base_list, option_list, match_map):
+        result = {}
+        for keyword, uid in match_map.items():
+            codes = {p['fin_prdt_cd'] for p in base_list if keyword in p.get('kor_co_nm', '')}
+            opts = [o for o in option_list if o.get('fin_prdt_cd') in codes and '아파트' in (o.get('mrtg_type_nm') or '')]
+            if not opts:
+                opts = [o for o in option_list if o.get('fin_prdt_cd') in codes]
+            mins = [o['lend_rate_min'] for o in opts if o.get('lend_rate_min') and o['lend_rate_min'] > 0]
+            result[uid] = round(min(mins), 2) if mins else None
+        return result
+
+    try:
+        b_json = fetch_fss('020000')
+        i_json = fetch_fss('050000')
+        bank_mins = calc_mins(b_json['result']['baseList'], b_json['result']['optionList'], BANK_MATCH)
+        ins_mins  = calc_mins(i_json['result']['baseList'], i_json['result']['optionList'], INS_MATCH)
+
+        month_label = f"{str(now.year)[2:]}/{now.month:02d}"
+
+        entry = {'month': month_label}
+        for uid in ['kb', 'shinhan', 'hana', 'woori', 'nh']:
+            entry[uid] = bank_mins.get(uid)
+        for uid in ['samsungLife', 'hanwha', 'kyobo', 'samsungFire']:
+            entry[uid] = ins_mins.get(uid)
+
+        history = []
+        if os.path.exists(FSS_JSON_FILE):
+            with open(FSS_JSON_FILE, encoding='utf-8') as f:
+                history = json.load(f).get('history', [])
+
+        if history and history[-1]['month'] == month_label:
+            history[-1] = entry
+        else:
+            history.append(entry)
+
+        with open(FSS_JSON_FILE, 'w', encoding='utf-8') as f:
+            json.dump({'history': history}, f, ensure_ascii=False, indent=2)
+        print(f"  [OK] fss.json 업데이트 완료: {month_label}")
+    except Exception as e:
+        print(f"  [NG] FSS 수집 실패: {e}")
 
 
 if __name__ == '__main__':

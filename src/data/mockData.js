@@ -98,37 +98,6 @@ export const INSURANCE_CHART_DATA = [
   { date: '5/28', samsungLife: 4.54, hanwha: 4.82, kyobo: 5.39, samsungFire: 4.65 },
 ]
 
-// 금감원 월별 차트 데이터 (최근 12개월)
-export const FSS_MONTHLY_BANK_DATA = [
-  { month: '25/06', kb: 5.42, shinhan: 4.90, hana: 5.95, woori: 4.72, nh: 4.85 },
-  { month: '25/07', kb: 5.38, shinhan: 4.87, hana: 5.91, woori: 4.68, nh: 4.82 },
-  { month: '25/08', kb: 5.31, shinhan: 4.82, hana: 5.85, woori: 4.61, nh: 4.75 },
-  { month: '25/09', kb: 5.28, shinhan: 4.79, hana: 5.80, woori: 4.58, nh: 4.71 },
-  { month: '25/10', kb: 5.22, shinhan: 4.74, hana: 5.75, woori: 4.52, nh: 4.66 },
-  { month: '25/11', kb: 5.18, shinhan: 4.70, hana: 5.71, woori: 4.48, nh: 4.62 },
-  { month: '25/12', kb: 5.15, shinhan: 4.68, hana: 5.68, woori: 4.45, nh: 4.59 },
-  { month: '26/01', kb: 5.10, shinhan: 4.64, hana: 5.63, woori: 4.41, nh: 4.55 },
-  { month: '26/02', kb: 5.05, shinhan: 4.60, hana: 5.58, woori: 4.38, nh: 4.51 },
-  { month: '26/03', kb: 5.01, shinhan: 4.57, hana: 5.31, woori: 4.38, nh: 4.51 },
-  { month: '26/04', kb: 5.01, shinhan: 4.60, hana: 5.26, woori: 4.35, nh: 4.51 },
-  { month: '26/05', kb: 4.89, shinhan: 4.52, hana: 5.21, woori: 4.35, nh: 4.48 },
-]
-
-export const FSS_MONTHLY_INSURANCE_DATA = [
-  { month: '25/06', samsungLife: 3.90, hanwha: 5.10, kyobo: 5.68, samsungFire: 4.95 },
-  { month: '25/07', samsungLife: 3.85, hanwha: 5.05, kyobo: 5.63, samsungFire: 4.90 },
-  { month: '25/08', samsungLife: 3.80, hanwha: 5.00, kyobo: 5.60, samsungFire: 4.85 },
-  { month: '25/09', samsungLife: 3.75, hanwha: 4.95, kyobo: 5.55, samsungFire: 4.80 },
-  { month: '25/10', samsungLife: 3.70, hanwha: 4.90, kyobo: 5.50, samsungFire: 4.75 },
-  { month: '25/11', samsungLife: 3.65, hanwha: 4.87, kyobo: 5.46, samsungFire: 4.71 },
-  { month: '25/12', samsungLife: 3.62, hanwha: 4.85, kyobo: 5.44, samsungFire: 4.68 },
-  { month: '26/01', samsungLife: 3.58, hanwha: 4.82, kyobo: 5.41, samsungFire: 4.65 },
-  { month: '26/02', samsungLife: 3.55, hanwha: 4.80, kyobo: 5.39, samsungFire: 4.62 },
-  { month: '26/03', samsungLife: 3.52, hanwha: 4.78, kyobo: 5.37, samsungFire: 4.60 },
-  { month: '26/04', samsungLife: 3.53, hanwha: 4.82, kyobo: 5.39, samsungFire: 4.65 },
-  { month: '26/05', samsungLife: 3.45, hanwha: 4.75, kyobo: 5.32, samsungFire: 4.58 },
-]
-
 // ─── 우리동네 대출상담사 기준 ─────────────────────────────────────────────────
 export const COUNSELOR_SOURCE_URL = 'https://findsr.kr/new1/product.html'
 
