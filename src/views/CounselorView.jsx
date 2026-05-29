@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import { COUNSELOR_TABLE_DATA, COUNSELOR_SOURCE_URL } from '../data/mockData'
 import PageHeader from '../components/PageHeader'
 
-const COUNSELOR_API_URL = 'https://api.example.com/counselor-rates'
-
 function RateTypeBadge({ type }) {
   return (
     <span className="inline-block text-[10px] font-semibold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
@@ -72,21 +70,11 @@ export default function CounselorView({ onBack }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true)
-        const res = await fetch(COUNSELOR_API_URL, { signal: AbortSignal.timeout(5000) })
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const json = await res.json()
-        setData(json)
-      } catch (err) {
-        console.warn('상담사 API 연결 실패:', err.message)
-        setData(COUNSELOR_TABLE_DATA)
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
+    fetch('/counselor.json', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(setData)
+      .catch(() => setData(COUNSELOR_TABLE_DATA))
+      .finally(() => setLoading(false))
   }, [])
 
   return (

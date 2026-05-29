@@ -1,9 +1,12 @@
 """
 매일 10시 실행: 5대 은행 금리 스크레이핑 → public/rates.json 업데이트
+                findsr.kr 이미지 → Claude Vision → public/counselor.json 업데이트
 """
 import asyncio
+import base64
 import json
 import os
+import urllib.request
 from datetime import datetime
 from playwright.async_api import async_playwright
 
@@ -258,17 +261,169 @@ async def main():
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\n✅ public/rates.json 업데이트 완료: {result['updatedAt']}")
 
+    # findsr.kr 상담사 금리 업데이트
+    await update_counselor(browser_instance=None, now=now)
+
     # Git commit & push
     import subprocess
     repo_dir = os.path.join(BASE_DIR, '..')
     commit_msg = f"chore: update rates {result['updatedAt']} [skip ci]"
     try:
-        subprocess.run(['git', 'add', 'public/rates.json'], cwd=repo_dir, check=True)
+        subprocess.run(['git', 'add', 'public/rates.json', 'public/counselor.json'], cwd=repo_dir, check=True)
         subprocess.run(['git', 'commit', '-m', commit_msg], cwd=repo_dir, check=True)
         subprocess.run(['git', 'push', 'origin', 'master'], cwd=repo_dir, check=True)
         print("✅ GitHub 푸시 완료")
     except subprocess.CalledProcessError as e:
         print(f"⚠️  Git 오류: {e}")
+
+
+async def update_counselor(browser_instance, now):
+    """findsr.kr에서 오늘 금리표 이미지를 가져와 Claude Vision으로 파싱 후 counselor.json 저장"""
+    COUNSELOR_FILE = os.path.join(BASE_DIR, '..', 'public', 'counselor.json')
+    ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+    if not ANTHROPIC_API_KEY:
+        print("⚠️  ANTHROPIC_API_KEY 없음 — 상담사 금리 건너뜀")
+        return
+
+    print("\n상담사 금리 수집 시작 (findsr.kr)...")
+    try:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            await page.goto('https://findsr.kr/new1/product.html', timeout=30000)
+            await page.wait_for_load_state('networkidle', timeout=15000)
+
+            # 오늘 날짜의 '아파트담보대출 금리표' 게시글 찾기
+            today_str = f"{now.month:02d}/{now.day:02d}"
+            post_url = await page.evaluate(f"""() => {{
+                for (const span of document.querySelectorAll('span.title')) {{
+                    const text = span.innerText.trim();
+                    if (text.includes('{today_str}') && text.includes('아파트담보대출')) {{
+                        const m = span.getAttribute('onclick').match(/href='([^']+)'/);
+                        return m ? 'https://findsr.kr' + m[1] : null;
+                    }}
+                }}
+                return null;
+            }}""")
+
+            if not post_url:
+                print(f"  [NG] {today_str} 아파트담보대출 금리표 게시글 없음")
+                await browser.close()
+                return
+
+            await page.goto(post_url, timeout=30000)
+            await page.wait_for_load_state('networkidle', timeout=15000)
+
+            # 금리표 이미지 URL 추출 (로고 제외, 가장 큰 이미지)
+            img_url = await page.evaluate("""() => {
+                const imgs = [...document.querySelectorAll('img')]
+                    .filter(i => i.width > 200 && i.height > 200);
+                return imgs[0]?.src || null;
+            }""")
+            await browser.close()
+
+        if not img_url:
+            print("  [NG] 금리표 이미지 없음")
+            return
+
+        print(f"  이미지: {img_url}")
+
+        # 이미지 다운로드
+        req = urllib.request.Request(img_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            img_bytes = resp.read()
+        img_b64 = base64.standard_b64encode(img_bytes).decode()
+
+        # Claude Vision으로 파싱
+        import urllib.request as urlreq
+        payload = json.dumps({
+            "model": "claude-opus-4-7",
+            "max_tokens": 2048,
+            "messages": [{
+                "role": "user",
+                "content": [
+                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": img_b64}},
+                    {"type": "text", "text": (
+                        "이 이미지는 한국 주택담보대출 금리표입니다. "
+                        "은행별(KB국민은행, 신한은행, 하나은행, 우리은행, NH농협은행)로 "
+                        "금리유형(예: 6개월, 1년, 3년, 5년, 5년변동, 5년주기, 5년혼합 등)별 "
+                        "매매금리와 가계금리를 추출해 아래 JSON 형식으로만 답하세요.\n"
+                        "형식: [{\"bank\":\"KB국민은행\",\"rates\":[{\"type\":\"5년\",\"sell\":4.52,\"lease\":4.68}]}]\n"
+                        "보험사(삼성생명, 한화생명, 교보생명, 삼성화재)가 있으면 같은 형식으로 포함하세요. "
+                        "숫자는 float, 없으면 null. JSON만 출력하세요."
+                    )}
+                ]
+            }]
+        }, ensure_ascii=False).encode()
+
+        api_req = urlreq.Request(
+            'https://api.anthropic.com/v1/messages',
+            data=payload,
+            headers={
+                'x-api-key': ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01',
+                'content-type': 'application/json',
+            }
+        )
+        with urlreq.urlopen(api_req, timeout=60) as resp:
+            api_result = json.loads(resp.read())
+
+        raw_json = api_result['content'][0]['text'].strip()
+        # 코드블록 제거
+        if raw_json.startswith('```'):
+            raw_json = raw_json.split('```')[1]
+            if raw_json.startswith('json'):
+                raw_json = raw_json[4:]
+        parsed = json.loads(raw_json.strip())
+
+        BANK_META_C = {
+            'KB국민은행':  {'id': 'kb',      'colorHex': '#f59e0b'},
+            '신한은행':    {'id': 'shinhan', 'colorHex': '#f97316'},
+            '하나은행':    {'id': 'hana',    'colorHex': '#14b8a6'},
+            '우리은행':    {'id': 'woori',   'colorHex': '#3b82f6'},
+            'NH농협은행':  {'id': 'nh',      'colorHex': '#22c55e'},
+        }
+        INS_META_C = {
+            '삼성생명': {'id': 'samsung-life', 'colorHex': '#6366f1'},
+            '한화생명': {'id': 'hanwha',       'colorHex': '#ef4444'},
+            '교보생명': {'id': 'kyobo',        'colorHex': '#10b981'},
+            '삼성화재': {'id': 'samsung-fire', 'colorHex': '#e11d48'},
+        }
+        BANK_ORDER_C = ['kb', 'shinhan', 'hana', 'woori', 'nh']
+
+        banks_out, ins_out = [], []
+        for item in parsed:
+            name = item.get('bank', '')
+            rates = item.get('rates', [])
+            if name in BANK_META_C:
+                m = BANK_META_C[name]
+                banks_out.append({'id': m['id'], 'name': name, 'colorHex': m['colorHex'], 'rates': rates})
+            elif name in INS_META_C:
+                m = INS_META_C[name]
+                ins_out.append({'id': m['id'], 'name': name, 'colorHex': m['colorHex'], 'rates': rates or None})
+
+        banks_out.sort(key=lambda b: BANK_ORDER_C.index(b['id']) if b['id'] in BANK_ORDER_C else 99)
+
+        # 기존 파일에서 누락된 보험사 채우기
+        existing_ids = {i['id'] for i in ins_out}
+        if os.path.exists(COUNSELOR_FILE):
+            with open(COUNSELOR_FILE, encoding='utf-8') as f:
+                prev = json.load(f)
+            for ins in prev.get('insurances', []):
+                if ins['id'] not in existing_ids:
+                    ins_out.append(ins)
+
+        counselor_result = {
+            'updatedAt': now.strftime('%Y.%m.%d 기준'),
+            'banks': banks_out,
+            'insurances': ins_out,
+        }
+        with open(COUNSELOR_FILE, 'w', encoding='utf-8') as f:
+            json.dump(counselor_result, f, ensure_ascii=False, indent=2)
+        print(f"  ✅ counselor.json 업데이트 완료: {counselor_result['updatedAt']}")
+
+    except Exception as e:
+        print(f"  [NG] 상담사 금리 업데이트 실패: {e}")
 
 
 if __name__ == '__main__':
