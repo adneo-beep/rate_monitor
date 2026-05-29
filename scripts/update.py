@@ -258,6 +258,18 @@ async def main():
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\n✅ public/rates.json 업데이트 완료: {result['updatedAt']}")
 
+    # Git commit & push
+    import subprocess
+    repo_dir = os.path.join(BASE_DIR, '..')
+    commit_msg = f"chore: update rates {result['updatedAt']} [skip ci]"
+    try:
+        subprocess.run(['git', 'add', 'public/rates.json'], cwd=repo_dir, check=True)
+        subprocess.run(['git', 'commit', '-m', commit_msg], cwd=repo_dir, check=True)
+        subprocess.run(['git', 'push', 'origin', 'master'], cwd=repo_dir, check=True)
+        print("✅ GitHub 푸시 완료")
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️  Git 오류: {e}")
+
 
 if __name__ == '__main__':
     asyncio.run(main())
