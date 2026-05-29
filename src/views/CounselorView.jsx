@@ -42,10 +42,14 @@ function InstitutionCard({ institution }) {
                   <RateTypeBadge type={row.type} />
                 </td>
                 <td className="px-3 py-2.5 text-center">
-                  <span className="font-bold text-emerald-600 tabular-nums">{row.sell.toFixed(2)}%</span>
+                  {row.sell != null
+                    ? <span className="font-bold text-emerald-600 tabular-nums">{row.sell.toFixed(2)}%</span>
+                    : <span className="text-slate-300">—</span>}
                 </td>
                 <td className="px-3 py-2.5 text-center">
-                  <span className="font-bold text-blue-600 tabular-nums">{row.lease.toFixed(2)}%</span>
+                  {row.lease != null
+                    ? <span className="font-bold text-blue-600 tabular-nums">{row.lease.toFixed(2)}%</span>
+                    : <span className="text-slate-300">—</span>}
                 </td>
               </tr>
             ))}
