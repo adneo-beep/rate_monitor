@@ -190,7 +190,7 @@ export default function FSSView({ onBack }) {
     <div className="min-h-screen bg-slate-50 animate-fade-in">
       <PageHeader
         title="금융감독원 공시 기준"
-        subtitle={`일 단위 업데이트${data ? ` · ${data.updatedAt}` : ''}`}
+        subtitle={`월 단위 업데이트${data ? ` · ${data.updatedAt}` : ''}`}
         onBack={onBack}
         accent="emerald"
       />
@@ -218,16 +218,16 @@ export default function FSSView({ onBack }) {
             insuranceData={history}
             bankSeries={BANK_SERIES}
             insuranceSeries={INSURANCE_SERIES}
-            xKey="date"
+            xKey="month"
           />
         ) : (
           <div className="bg-white rounded-2xl border border-slate-200 px-6 py-8 text-center text-sm text-slate-400">
-            금리 추이 데이터를 수집 중입니다 · 내일부터 일별 추이가 표시됩니다
+            금리 추이 데이터를 수집 중입니다 · 다음 달부터 월별 추이가 표시됩니다
           </div>
         )}
 
         <div className="flex flex-wrap items-center gap-4 justify-center text-xs text-slate-500 pb-2">
-          <span>금융감독원 금융상품 통합비교공시 기준 · 매일 업데이트</span>
+          <span>금융감독원 금융상품 통합비교공시 기준 · 월별 공시 (매일 변경 감지)</span>
         </div>
       </div>
     </div>

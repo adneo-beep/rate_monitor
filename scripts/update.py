@@ -437,9 +437,9 @@ def update_fss_history(now):
         bank_mins = calc_mins(b_json['result']['baseList'], b_json['result']['optionList'], BANK_MATCH)
         ins_mins  = calc_mins(i_json['result']['baseList'], i_json['result']['optionList'], INS_MATCH)
 
-        date_label = f"{now.month}/{now.day}"
+        month_label = f"{str(now.year)[2:]}/{now.month:02d}"
 
-        entry = {'date': date_label}
+        entry = {'month': month_label}
         for uid in ['kb', 'shinhan', 'hana', 'woori', 'nh']:
             entry[uid] = bank_mins.get(uid)
         for uid in ['samsungLife', 'hanwha', 'kyobo', 'samsungFire']:
@@ -450,14 +450,14 @@ def update_fss_history(now):
             with open(FSS_JSON_FILE, encoding='utf-8') as f:
                 history = json.load(f).get('history', [])
 
-        if history and history[-1].get('date') == date_label:
-            history[-1] = entry
+        if history and history[-1].get('month') == month_label:
+            history[-1] = entry  # 이달 값 변경됐으면 덮어쓰기
         else:
-            history.append(entry)
+            history.append(entry)  # 새 달이면 추가
 
         with open(FSS_JSON_FILE, 'w', encoding='utf-8') as f:
             json.dump({'history': history}, f, ensure_ascii=False, indent=2)
-        print(f"  [OK] fss.json 업데이트 완료: {date_label}")
+        print(f"  [OK] fss.json 업데이트 완료: {month_label}")
     except Exception as e:
         print(f"  [NG] FSS 수집 실패: {e}")
 
