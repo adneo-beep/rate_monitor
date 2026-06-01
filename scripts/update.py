@@ -204,6 +204,10 @@ async def main():
             ok = r.get('status') == 'success'
             detail = r.get('message') or f"{r.get('min_rate')} ~ {r.get('max_rate')}"
             print(f"  [{'OK' if ok else 'NG'}] {r.get('bank')}: {detail}")
+
+        # 상담사 금리 업데이트 (browser 열린 상태에서 실행)
+        await scrape_counselor_from_lovable(browser, now)
+
         await browser.close()
 
     banks = []
@@ -265,20 +269,18 @@ async def main():
     print("\nFSS 월별 금리 수집 시작...")
     update_fss_history(now)
 
-    # 상담사 금리 업데이트 (lovable.app)
-    await scrape_counselor_from_lovable(browser, now)
-
-    # Git commit & push
-    import subprocess
-    repo_dir = os.path.join(BASE_DIR, '..')
-    commit_msg = f"chore: update rates {result['updatedAt']} [skip ci]"
-    try:
-        subprocess.run(['git', 'add', 'public/rates.json', 'public/counselor.json', 'public/fss.json'], cwd=repo_dir, check=True)
-        subprocess.run(['git', 'commit', '-m', commit_msg], cwd=repo_dir, check=True)
-        subprocess.run(['git', 'push', 'origin', 'master'], cwd=repo_dir, check=True)
-        print("✅ GitHub 푸시 완료")
-    except subprocess.CalledProcessError as e:
-        print(f"⚠️  Git 오류: {e}")
+    # Git commit & push (로컬 실행 시에만, GitHub Actions는 EndBug/add-and-commit이 처리)
+    if not os.environ.get('CI'):
+        import subprocess
+        repo_dir = os.path.join(BASE_DIR, '..')
+        commit_msg = f"chore: update rates {result['updatedAt']} [skip ci]"
+        try:
+            subprocess.run(['git', 'add', 'public/rates.json', 'public/counselor.json', 'public/fss.json'], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'commit', '-m', commit_msg], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'push', 'origin', 'master'], cwd=repo_dir, check=True)
+            print("[OK] GitHub 푸시 완료")
+        except subprocess.CalledProcessError as e:
+            print(f"[NG] Git 오류: {e}")
 
 
 async def scrape_counselor_from_lovable(browser, now):
