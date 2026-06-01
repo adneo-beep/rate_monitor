@@ -13,7 +13,7 @@ const CARDS = [
   {
     id: 'fss',
     title: '금융감독원\n공시 기준',
-    badge: '월별 업데이트',
+    badge: '일별 업데이트',
     badgeBg: 'bg-emerald-100 text-emerald-700',
     desc: '금융감독원이 공시하는 주택담보대출 금리를 비교하세요.',
     topBar: 'from-emerald-500 to-teal-600',

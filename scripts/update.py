@@ -194,6 +194,8 @@ async def main():
         except Exception:
             pass
 
+    now = datetime.now()
+
     print("금리 수집 시작...")
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -237,8 +239,6 @@ async def main():
 
     banks.sort(key=lambda b: BANK_ORDER.index(b['id']) if b['id'] in BANK_ORDER else 99)
 
-    now = datetime.now()
-
     # 오늘 날짜 히스토리 항목 생성
     today_key = f"{now.month}/{now.day}"
     today_entry = {'date': today_key}
@@ -263,7 +263,7 @@ async def main():
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
-    print(f"\n✅ public/rates.json 업데이트 완료: {result['updatedAt']}")
+    print(f"\n[OK] public/rates.json 업데이트 완료: {result['updatedAt']}")
 
     # FSS 월별 데이터 업데이트
     print("\nFSS 월별 금리 수집 시작...")
@@ -437,9 +437,9 @@ def update_fss_history(now):
         bank_mins = calc_mins(b_json['result']['baseList'], b_json['result']['optionList'], BANK_MATCH)
         ins_mins  = calc_mins(i_json['result']['baseList'], i_json['result']['optionList'], INS_MATCH)
 
-        month_label = f"{str(now.year)[2:]}/{now.month:02d}"
+        date_label = f"{now.month}/{now.day}"
 
-        entry = {'month': month_label}
+        entry = {'date': date_label}
         for uid in ['kb', 'shinhan', 'hana', 'woori', 'nh']:
             entry[uid] = bank_mins.get(uid)
         for uid in ['samsungLife', 'hanwha', 'kyobo', 'samsungFire']:
@@ -450,14 +450,14 @@ def update_fss_history(now):
             with open(FSS_JSON_FILE, encoding='utf-8') as f:
                 history = json.load(f).get('history', [])
 
-        if history and history[-1]['month'] == month_label:
+        if history and history[-1].get('date') == date_label:
             history[-1] = entry
         else:
             history.append(entry)
 
         with open(FSS_JSON_FILE, 'w', encoding='utf-8') as f:
             json.dump({'history': history}, f, ensure_ascii=False, indent=2)
-        print(f"  [OK] fss.json 업데이트 완료: {month_label}")
+        print(f"  [OK] fss.json 업데이트 완료: {date_label}")
     except Exception as e:
         print(f"  [NG] FSS 수집 실패: {e}")
 

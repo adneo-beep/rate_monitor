@@ -190,7 +190,7 @@ export default function FSSView({ onBack }) {
     <div className="min-h-screen bg-slate-50 animate-fade-in">
       <PageHeader
         title="금융감독원 공시 기준"
-        subtitle={`월 단위 업데이트${data ? ` · ${data.updatedAt}` : ''}`}
+        subtitle={`일 단위 업데이트${data ? ` · ${data.updatedAt}` : ''}`}
         onBack={onBack}
         accent="emerald"
       />
@@ -218,7 +218,7 @@ export default function FSSView({ onBack }) {
             insuranceData={history}
             bankSeries={BANK_SERIES}
             insuranceSeries={INSURANCE_SERIES}
-            xKey="month"
+            xKey="date"
           />
         ) : (
           <div className="bg-white rounded-2xl border border-slate-200 px-6 py-8 text-center text-sm text-slate-400">
