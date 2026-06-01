@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.01 11:33 기준",
+  "updatedAt": "2026.06.01 19:34 기준",
   "banks": [
     {
       "id": "kb",
@@ -16,19 +16,19 @@
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.6,
-      "maxRate": 6.01,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.62,
+      "maxRate": 6.03,
+      "minChange": 0.02,
+      "maxChange": 0.02
     },
     {
       "id": "woori",
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 4.32,
+      "minRate": 4.34,
       "maxRate": null,
-      "minChange": 0.0,
+      "minChange": 0.02,
       "maxChange": 0
     },
     {
@@ -36,10 +36,10 @@
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 4.81,
-      "maxRate": 7.31,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.82,
+      "maxRate": 7.32,
+      "minChange": 0.01,
+      "maxChange": 0.01
     }
   ],
   "insurances": [
@@ -107,12 +107,12 @@
       "date": "6/1",
       "kb_min": 5.08,
       "kb_max": 6.48,
-      "shinhan_min": 4.6,
-      "shinhan_max": 6.01,
-      "woori_min": 4.32,
+      "shinhan_min": 4.62,
+      "shinhan_max": 6.03,
+      "woori_min": 4.34,
       "woori_max": null,
-      "nh_min": 4.81,
-      "nh_max": 7.31
+      "nh_min": 4.82,
+      "nh_max": 7.32
     }
   ]
 }

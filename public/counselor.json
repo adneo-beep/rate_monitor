@@ -41,19 +41,9 @@
       "colorHex": "#14b8a6",
       "rates": [
         {
-          "type": "6개월",
-          "sell": 4.3,
-          "lease": 4.3
-        },
-        {
-          "type": "5년주기",
-          "sell": 4.91,
-          "lease": 4.875
-        },
-        {
-          "type": "5년혼합",
-          "sell": 5.02,
-          "lease": 4.98
+          "type": "5년",
+          "sell": 5.3,
+          "lease": 5.26
         }
       ]
     },
@@ -62,11 +52,6 @@
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "rates": [
-        {
-          "type": "6개월",
-          "sell": 4.08,
-          "lease": 4.15
-        },
         {
           "type": "5년변동",
           "sell": 4.93,
@@ -78,7 +63,18 @@
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
-      "rates": null
+      "rates": [
+        {
+          "type": "6개월",
+          "sell": null,
+          "lease": 4.4
+        },
+        {
+          "type": "5년변동",
+          "sell": 5.5,
+          "lease": 5.58
+        }
+      ]
     }
   ],
   "insurances": [
@@ -95,7 +91,7 @@
       "rates": [
         {
           "type": "5년",
-          "sell": null,
+          "sell": 4.66,
           "lease": 4.66
         }
       ]
