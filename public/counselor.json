@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.01 기준",
+  "updatedAt": "2026.06.02 기준",
   "banks": [
     {
       "id": "kb",
@@ -26,12 +26,12 @@
         {
           "type": "5년",
           "sell": 5.11,
-          "lease": 5.34
+          "lease": 5.16
         },
         {
           "type": "6개월",
-          "sell": 4.41,
-          "lease": 4.51
+          "sell": 4.44,
+          "lease": 4.52
         }
       ]
     },
@@ -41,9 +41,19 @@
       "colorHex": "#14b8a6",
       "rates": [
         {
-          "type": "5년",
-          "sell": 5.3,
-          "lease": 5.26
+          "type": "6개월",
+          "sell": 4.36,
+          "lease": 4.31
+        },
+        {
+          "type": "5년주기",
+          "sell": 5.0,
+          "lease": 4.95
+        },
+        {
+          "type": "5년혼합",
+          "sell": 5.11,
+          "lease": 5.06
         }
       ]
     },
@@ -53,9 +63,14 @@
       "colorHex": "#3b82f6",
       "rates": [
         {
+          "type": "6개월",
+          "sell": 4.08,
+          "lease": 4.15
+        },
+        {
           "type": "5년변동",
-          "sell": 4.93,
-          "lease": 5.01
+          "sell": 4.95,
+          "lease": 5.03
         }
       ]
     },
@@ -63,18 +78,7 @@
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
-      "rates": [
-        {
-          "type": "6개월",
-          "sell": null,
-          "lease": 4.4
-        },
-        {
-          "type": "5년변동",
-          "sell": 5.5,
-          "lease": 5.58
-        }
-      ]
+      "rates": null
     }
   ],
   "insurances": [
@@ -88,13 +92,7 @@
       "id": "samsung-fire",
       "name": "삼성화재",
       "colorHex": "#e11d48",
-      "rates": [
-        {
-          "type": "5년",
-          "sell": 4.66,
-          "lease": 4.66
-        }
-      ]
+      "rates": null
     },
     {
       "id": "samsung-life",
