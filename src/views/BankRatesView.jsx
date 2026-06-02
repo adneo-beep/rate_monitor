@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { MOCK_BANK_RATES } from '../data/mockData'
 import RateRow from '../components/RateRow'
 import RateChart from '../components/RateChart'
@@ -29,13 +29,18 @@ export default function BankRatesView({ onBack }) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true)
     fetch('/rates.json', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then(setData)
       .catch(() => setData(MOCK_BANK_RATES))
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
 
   if (loading || !data) {
     return (
@@ -54,6 +59,8 @@ export default function BankRatesView({ onBack }) {
         title="금융사 홈페이지 공시 기준"
         subtitle={`일 단위 업데이트 · ${data.updatedAt}`}
         onBack={onBack}
+        onRefresh={load}
+        isRefreshing={loading}
         accent="blue"
       />
 

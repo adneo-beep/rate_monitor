@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { COUNSELOR_TABLE_DATA, COUNSELOR_SOURCE_URL } from '../data/mockData'
 import PageHeader from '../components/PageHeader'
 
@@ -73,7 +73,8 @@ export default function CounselorView({ onBack }) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true)
     fetch('/counselor.json', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then(setData)
@@ -81,12 +82,18 @@ export default function CounselorView({ onBack }) {
       .finally(() => setLoading(false))
   }, [])
 
+  useEffect(() => {
+    load()
+  }, [load])
+
   return (
     <div className="min-h-screen bg-slate-50 animate-fade-in">
       <PageHeader
         title="우리동네 대출상담사 기준"
         subtitle={`일 단위 업데이트${data ? ` · ${data.updatedAt}` : ''}`}
         onBack={onBack}
+        onRefresh={load}
+        isRefreshing={loading}
         accent="violet"
       />
 

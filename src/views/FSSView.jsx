@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { MOCK_FSS_RATES } from '../data/mockData'
 import SkeletonRows from '../components/SkeletonRows'
 import RateChart from '../components/RateChart'
@@ -29,7 +29,8 @@ function parseRates(baseList, optionList, config) {
     const products = baseList.filter((p) => p.kor_co_nm.includes(cfg.match))
     const codes = new Set(products.map((p) => p.fin_prdt_cd))
 
-    let opts = optionList.filter((o) => codes.has(o.fin_prdt_cd) && o.mrtg_type_nm?.includes('아파트'))
+    // mrtg_type === 'A' 로 정확히 매칭 (includes('아파트')는 '아파트외'도 포함되는 버그 있음)
+    let opts = optionList.filter((o) => codes.has(o.fin_prdt_cd) && o.mrtg_type === 'A')
     if (opts.length === 0) opts = optionList.filter((o) => codes.has(o.fin_prdt_cd))
 
     if (opts.length === 0) return { ...cfg, product: '주택담보대출', rateTypes: [] }
@@ -136,55 +137,56 @@ export default function FSSView({ onBack }) {
   const [statusMsg, setStatusMsg] = useState(null)
   const [statusType, setStatusType] = useState('warn')
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true)
-        const params = (grp) =>
-          `${FSS_API_BASE}?auth=${FSS_API_KEY}&topFinGrpNo=${grp}&pageNo=1`
+  const load = useCallback(async () => {
+    try {
+      setLoading(true)
+      const params = (grp) =>
+        `${FSS_API_BASE}?auth=${FSS_API_KEY}&topFinGrpNo=${grp}&pageNo=1`
 
-        const [banksRes, insRes, fssRes] = await Promise.all([
-          fetch(params('020000'), { signal: AbortSignal.timeout(10000) }),
-          fetch(params('050000'), { signal: AbortSignal.timeout(10000) }),
-          fetch('/fss.json', { cache: 'no-store' }),
-        ])
-        if (!banksRes.ok) throw new Error(`Banks HTTP ${banksRes.status}`)
-        if (!insRes.ok) throw new Error(`Insurance HTTP ${insRes.status}`)
+      const [banksRes, insRes, fssRes] = await Promise.all([
+        fetch(params('020000'), { signal: AbortSignal.timeout(10000) }),
+        fetch(params('050000'), { signal: AbortSignal.timeout(10000) }),
+        fetch('/fss.json', { cache: 'no-store' }),
+      ])
+      if (!banksRes.ok) throw new Error(`Banks HTTP ${banksRes.status}`)
+      if (!insRes.ok) throw new Error(`Insurance HTTP ${insRes.status}`)
 
-        const [banksJson, insJson] = await Promise.all([banksRes.json(), insRes.json()])
+      const [banksJson, insJson] = await Promise.all([banksRes.json(), insRes.json()])
 
-        const banks = parseRates(
-          banksJson.result?.baseList ?? [],
-          banksJson.result?.optionList ?? [],
-          BANK_CONFIG,
-        )
-        const insurances = parseRates(
-          insJson.result?.baseList ?? [],
-          insJson.result?.optionList ?? [],
-          INSURANCE_CONFIG,
-        )
+      const banks = parseRates(
+        banksJson.result?.baseList ?? [],
+        banksJson.result?.optionList ?? [],
+        BANK_CONFIG,
+      )
+      const insurances = parseRates(
+        insJson.result?.baseList ?? [],
+        insJson.result?.optionList ?? [],
+        INSURANCE_CONFIG,
+      )
 
-        const now = new Date()
-        const updatedAt = `${now.getFullYear()}년 ${now.getMonth() + 1}월 기준`
-        setData({ updatedAt, banks, insurances })
+      const now = new Date()
+      const updatedAt = `${now.getFullYear()}년 ${now.getMonth() + 1}월 기준`
+      setData({ updatedAt, banks, insurances })
 
-        if (fssRes.ok) {
-          const fssJson = await fssRes.json()
-          setHistory(fssJson.history ?? [])
-        }
-        setStatusMsg(null)
-      } catch (err) {
-        console.warn('FSS API 연결 실패:', err.message)
-        setData(MOCK_FSS_RATES)
-        setHistory([])
-        setStatusMsg('API 미연결 상태입니다 — Mock 데이터를 표시하고 있습니다.')
-        setStatusType('warn')
-      } finally {
-        setLoading(false)
+      if (fssRes.ok) {
+        const fssJson = await fssRes.json()
+        setHistory(fssJson.history ?? [])
       }
+      setStatusMsg(null)
+    } catch (err) {
+      console.warn('FSS API 연결 실패:', err.message)
+      setData(MOCK_FSS_RATES)
+      setHistory([])
+      setStatusMsg('API 미연결 상태입니다 — Mock 데이터를 표시하고 있습니다.')
+      setStatusType('warn')
+    } finally {
+      setLoading(false)
     }
-    load()
   }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
 
   return (
     <div className="min-h-screen bg-slate-50 animate-fade-in">
@@ -192,6 +194,8 @@ export default function FSSView({ onBack }) {
         title="금융감독원 공시 기준"
         subtitle={`월 단위 업데이트${data ? ` · ${data.updatedAt}` : ''}`}
         onBack={onBack}
+        onRefresh={load}
+        isRefreshing={loading}
         accent="emerald"
       />
 
