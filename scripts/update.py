@@ -50,7 +50,11 @@ async def scrape_woori(browser):
                 for (const row of table.querySelectorAll('tbody tr')) {
                     const c = [...row.querySelectorAll('td')];
                     if (c[0] && c[0].textContent.includes('변동금리(5년)'))
-                        return { min_rate: c[3]?.textContent.trim(), max_rate: '-' };
+                        // c[1]=기본금리, c[2]=가산금리, c[3]=최종금리(적용금리)
+                        return {
+                            min_rate: c[3]?.textContent.trim(),
+                            max_rate: c[1]?.textContent.trim()   // 기본금리를 최고금리로 표시
+                        };
                 }
             }
             return null;
