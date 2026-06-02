@@ -24,14 +24,14 @@
       "colorHex": "#f97316",
       "rates": [
         {
-          "type": "5년",
-          "sell": 5.11,
-          "lease": 5.16
-        },
-        {
-          "type": "6개월",
+          "type": "1년",
           "sell": 4.44,
           "lease": 4.52
+        },
+        {
+          "type": "5년",
+          "sell": 5.13,
+          "lease": 5.36
         }
       ]
     },
@@ -41,19 +41,9 @@
       "colorHex": "#14b8a6",
       "rates": [
         {
-          "type": "6개월",
-          "sell": 4.36,
-          "lease": 4.31
-        },
-        {
-          "type": "5년주기",
-          "sell": 5.0,
-          "lease": 4.95
-        },
-        {
-          "type": "5년혼합",
-          "sell": 5.11,
-          "lease": 5.06
+          "type": "5년",
+          "sell": 5.36,
+          "lease": 5.26
         }
       ]
     },
@@ -64,7 +54,7 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 4.08,
+          "sell": null,
           "lease": 4.15
         },
         {
@@ -86,13 +76,35 @@
       "id": "hanwha",
       "name": "한화생명",
       "colorHex": "#ef4444",
-      "rates": null
+      "rates": [
+        {
+          "type": "1년",
+          "sell": 5.55,
+          "lease": 5.35
+        },
+        {
+          "type": "5년",
+          "sell": 5.32,
+          "lease": 5.12
+        },
+        {
+          "type": "3년",
+          "sell": 5.55,
+          "lease": 5.35
+        }
+      ]
     },
     {
       "id": "samsung-fire",
       "name": "삼성화재",
       "colorHex": "#e11d48",
-      "rates": null
+      "rates": [
+        {
+          "type": "5년",
+          "sell": 5.02,
+          "lease": 5.12
+        }
+      ]
     },
     {
       "id": "samsung-life",
