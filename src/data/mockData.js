@@ -7,6 +7,8 @@ export const MOCK_BANK_RATES = {
     { id: 'hana',    name: '하나은행',   colorHex: '#14b8a6', product: '하나 혼합금리 모기지론 5년물 금융채',    minRate: 5.636, maxRate: 6.936, minChange: +0.056, maxChange: +0.056 },
     { id: 'woori',   name: '우리은행',   colorHex: '#3b82f6', product: '우리아파트론 변동금리(5년)',              minRate: 4.25,  maxRate: 6.64,  minChange: -0.01,  maxChange: null   },
     { id: 'nh',      name: 'NH농협은행', colorHex: '#22c55e', product: 'NH주택담보대출_5년주기형',               minRate: 4.51,  maxRate: 7.11,  minChange: -0.02,  maxChange: -0.02  },
+    { id: 'kakao',   name: '카카오뱅크', colorHex: '#fde047', product: '카카오뱅크 주택담보대출',                 minRate: 3.89,  maxRate: 6.29,  minChange: 0,      maxChange: 0      },
+    { id: 'kbank',   name: '케이뱅크',   colorHex: '#a78bfa', product: '케이뱅크 아파트담보대출',                 minRate: 3.95,  maxRate: 6.15,  minChange: 0,      maxChange: 0      },
   ],
   insurances: [
     // Samsung Life: displayRange로 웹사이트 표기 방식 그대로 노출

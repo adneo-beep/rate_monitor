@@ -1,24 +1,28 @@
 """
-매일 10시 실행: 5대 은행 금리 스크레이핑 → public/rates.json 업데이트
+매일 10시 실행: 금리 스크레이핑 → public/rates.json, public/market-rates.json 업데이트
+변경: 5대 은행 → 7개 은행(카카오뱅크·케이뱅크 추가), 시장금리 BOK API 추가
 """
 import asyncio
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from playwright.async_api import async_playwright
 
 import urllib.request
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_FILE = os.path.join(BASE_DIR, '..', 'public', 'rates.json')
-FSS_JSON_FILE = os.path.join(BASE_DIR, '..', 'public', 'fss.json')
+OUTPUT_FILE       = os.path.join(BASE_DIR, '..', 'public', 'rates.json')
+FSS_JSON_FILE     = os.path.join(BASE_DIR, '..', 'public', 'fss.json')
+MARKET_RATES_FILE = os.path.join(BASE_DIR, '..', 'public', 'market-rates.json')
 
 BANK_META = {
-    '우리은행':   {'id': 'woori',   'colorHex': '#3b82f6', 'name': '우리은행'},
-    'KB국민은행': {'id': 'kb',      'colorHex': '#f59e0b', 'name': 'KB국민은행'},
-    '하나은행':   {'id': 'hana',    'colorHex': '#14b8a6', 'name': '하나은행'},
-    '신한은행':   {'id': 'shinhan', 'colorHex': '#f97316', 'name': '신한은행'},
-    'NH농협은행': {'id': 'nh',      'colorHex': '#22c55e', 'name': 'NH농협은행'},
+    '우리은행':    {'id': 'woori',   'colorHex': '#3b82f6', 'name': '우리은행'},
+    'KB국민은행':  {'id': 'kb',      'colorHex': '#f59e0b', 'name': 'KB국민은행'},
+    '하나은행':    {'id': 'hana',    'colorHex': '#14b8a6', 'name': '하나은행'},
+    '신한은행':    {'id': 'shinhan', 'colorHex': '#f97316', 'name': '신한은행'},
+    'NH농협은행':  {'id': 'nh',      'colorHex': '#22c55e', 'name': 'NH농협은행'},
+    '카카오뱅크':  {'id': 'kakao',   'colorHex': '#fde047', 'name': '카카오뱅크'},
+    '케이뱅크':    {'id': 'kbank',   'colorHex': '#a78bfa', 'name': '케이뱅크'},
 }
 
 INSURANCE_STATIC = [
@@ -28,7 +32,10 @@ INSURANCE_STATIC = [
     {'id': 'samsung-fire', 'name': '삼성화재', 'colorHex': '#e11d48', 'product': '삼성화재 주택담보대출', 'minRate': 4.65, 'maxRate': 6.78},
 ]
 
-BANK_ORDER = ['kb', 'shinhan', 'hana', 'woori', 'nh']
+BOK_API_KEY = 'Y2VMNWAZOAZNS0806QB9'
+BOK_BASE    = 'https://ecos.bok.or.kr/api'
+
+BANK_ORDER = ['kb', 'shinhan', 'hana', 'woori', 'nh', 'kakao', 'kbank']
 
 
 def parse_rate(s):
@@ -184,6 +191,189 @@ async def scrape_nh(browser):
         await page.close()
 
 
+async def scrape_kakao(browser):
+    """카카오뱅크 - https://www.kakaobank.com/products/mortgageLoan"""
+    page = await browser.new_page()
+    try:
+        await page.goto("https://www.kakaobank.com/products/mortgageLoan", timeout=30000)
+        await page.wait_for_load_state("networkidle", timeout=20000)
+        data = await page.evaluate("""() => {
+            // 금리 범위 텍스트 탐색
+            const allText = document.body.innerText;
+            // "연 X.XX% ~ Y.YY%" 패턴 찾기
+            const m = allText.match(/연\\s*([\\d.]+)%?\\s*[~\\-]\\s*([\\d.]+)%/);
+            if (m) return { min_rate: m[1], max_rate: m[2] };
+            // 단일 금리 탐색
+            const m2 = allText.match(/([\\d.]+)%/);
+            if (m2) return { min_rate: m2[1], max_rate: null };
+            return null;
+        }""")
+        if data and data.get('min_rate'):
+            return {'bank': '카카오뱅크', 'product': '카카오뱅크 주택담보대출',
+                    'min_rate': data['min_rate'], 'max_rate': data.get('max_rate', '-'), 'status': 'success'}
+        # fallback: 텍스트에서 직접 탐색
+        content = await page.evaluate("() => document.body.innerText")
+        import re
+        rates = re.findall(r'(\d+\.\d+)%', content)
+        rates_f = [float(r) for r in rates if 1 < float(r) < 15]
+        if rates_f:
+            return {'bank': '카카오뱅크', 'product': '카카오뱅크 주택담보대출',
+                    'min_rate': str(min(rates_f)), 'max_rate': str(max(rates_f)), 'status': 'success'}
+        return {'bank': '카카오뱅크', 'status': 'error', 'message': '금리 데이터 없음'}
+    except Exception as e:
+        return {'bank': '카카오뱅크', 'status': 'error', 'message': str(e)[:100]}
+    finally:
+        await page.close()
+
+
+async def scrape_kbank(browser):
+    """케이뱅크 - https://www.kbanknow.com/ib20/mnu/FPMLON250000"""
+    page = await browser.new_page()
+    try:
+        await page.goto(
+            "https://www.kbanknow.com/ib20/mnu/FPMLON250000?phashid=sAySEh8",
+            timeout=30000)
+        await page.wait_for_load_state("networkidle", timeout=20000)
+        await page.wait_for_timeout(2000)
+        data = await page.evaluate("""() => {
+            const allText = document.body.innerText;
+            // "연 X.XX% ~ Y.YY%" 패턴
+            const m = allText.match(/연\\s*([\\d.]+)%?\\s*[~\\-]\\s*([\\d.]+)%/);
+            if (m) return { min_rate: m[1], max_rate: m[2] };
+            return null;
+        }""")
+        if data and data.get('min_rate'):
+            return {'bank': '케이뱅크', 'product': '케이뱅크 아파트담보대출',
+                    'min_rate': data['min_rate'], 'max_rate': data.get('max_rate', '-'), 'status': 'success'}
+        content = await page.evaluate("() => document.body.innerText")
+        import re
+        rates = re.findall(r'(\d+\.\d+)%', content)
+        rates_f = [float(r) for r in rates if 1 < float(r) < 15]
+        if rates_f:
+            return {'bank': '케이뱅크', 'product': '케이뱅크 아파트담보대출',
+                    'min_rate': str(min(rates_f)), 'max_rate': str(max(rates_f)), 'status': 'success'}
+        return {'bank': '케이뱅크', 'status': 'error', 'message': '금리 데이터 없음'}
+    except Exception as e:
+        return {'bank': '케이뱅크', 'status': 'error', 'message': str(e)[:100]}
+    finally:
+        await page.close()
+
+
+def update_market_rates(now):
+    """BOK API + KOFIA 스크레이핑으로 시장금리 업데이트 → public/market-rates.json"""
+    import re
+
+    # --- BOK ECOS API 국고채 조회 ---
+    def fetch_bok_rate(item_code, days_back=7):
+        end_d   = now.strftime('%Y%m%d')
+        start_d = (now - timedelta(days=days_back)).strftime('%Y%m%d')
+        url = f'{BOK_BASE}/StatisticSearch/{BOK_API_KEY}/json/kr/1/10/817Y002/D/{start_d}/{end_d}/{item_code}'
+        try:
+            with urllib.request.urlopen(url, timeout=10) as r:
+                j = json.loads(r.read().decode('utf-8'))
+            rows = [x for x in (j.get('StatisticSearch', {}).get('row') or [])
+                    if x.get('DATA_VALUE') and x['DATA_VALUE'] != '-']
+            if rows:
+                return round(float(rows[-1]['DATA_VALUE']), 3)
+        except Exception as e:
+            print(f'    BOK fetch error ({item_code}): {e}')
+        return None
+
+    # --- KOFIA 금융채 AAA 시가평가 스크레이핑 ---
+    def fetch_kofia_fin_bonds():
+        """KOFIA 채권정보센터에서 금융채 AAA 시가평가수익률 조회"""
+        date_str = now.strftime('%Y%m%d')
+        # 공공데이터 API 시도 (JSON 응답)
+        base_url = 'https://kofiabond.or.kr'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json, text/json, */*',
+            'Referer': 'https://kofiabond.or.kr/',
+        }
+        # 방법 1: getDiscountCurveInfo (금융채=4)
+        try:
+            import urllib.request as ureq
+            req = ureq.Request(
+                f'{base_url}/publicData/getDiscountCurveInfo.json?workDate={date_str}&typecode=4',
+                headers=headers
+            )
+            with ureq.urlopen(req, timeout=10) as r:
+                text = r.read().decode('utf-8')
+                j = json.loads(text)
+                # 응답 구조: [{term: '0.5', yield: '3.xx'}, ...]
+                result = {}
+                for item in j:
+                    term = str(item.get('term') or item.get('TERM') or '')
+                    rate = item.get('yield') or item.get('YIELD') or item.get('rate') or item.get('RATE')
+                    if term and rate:
+                        try:
+                            result[float(term)] = round(float(str(rate).replace('%','')), 3)
+                        except Exception:
+                            pass
+                if result:
+                    return {
+                        'fin6m':  result.get(0.5),
+                        'fin1y':  result.get(1.0),
+                        'fin3y':  result.get(3.0),
+                        'fin5y':  result.get(5.0),
+                    }
+        except Exception as e:
+            print(f'    KOFIA fetch error: {e}')
+        return {}
+
+    # 이전 값 읽기
+    prev = {}
+    if os.path.exists(MARKET_RATES_FILE):
+        try:
+            with open(MARKET_RATES_FILE, encoding='utf-8') as f:
+                prev = json.load(f).get('rates', {})
+        except Exception:
+            pass
+
+    def make_rate(key, new_val):
+        old_val = (prev.get(key) or {}).get('value')
+        change = round(new_val - old_val, 3) if new_val is not None and old_val is not None else None
+        return {'value': new_val, 'change': change}
+
+    print('  BOK 국고채 조회 중...')
+    ktb3y  = fetch_bok_rate('010200000')
+    ktb10y = fetch_bok_rate('010210000')
+    print(f'    국고채 3년: {ktb3y}%  |  10년: {ktb10y}%')
+
+    print('  KOFIA 금융채 AAA 시가평가 조회 중...')
+    fin = fetch_kofia_fin_bonds()
+    print(f'    금융채: {fin}')
+
+    rates_out = {
+        'ktb3y':  make_rate('ktb3y',  ktb3y ),
+        'ktb10y': make_rate('ktb10y', ktb10y),
+        'fin6m':  make_rate('fin6m',  fin.get('fin6m') ),
+        'fin1y':  make_rate('fin1y',  fin.get('fin1y') ),
+        'fin3y':  make_rate('fin3y',  fin.get('fin3y') ),
+        'fin5y':  make_rate('fin5y',  fin.get('fin5y') ),
+    }
+
+    # 레이블 추가
+    labels = {
+        'ktb3y':  '국고채 3년',
+        'ktb10y': '국고채 10년',
+        'fin6m':  '금융채 6개월',
+        'fin1y':  '금융채 1년',
+        'fin3y':  '금융채 3년',
+        'fin5y':  '금융채 5년',
+    }
+    for k in rates_out:
+        rates_out[k]['label'] = labels[k]
+
+    result = {
+        'updatedAt': now.strftime('%Y.%m.%d %H:%M 기준'),
+        'rates': rates_out,
+    }
+    with open(MARKET_RATES_FILE, 'w', encoding='utf-8') as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)
+    print(f'  [OK] market-rates.json 업데이트: {result["updatedAt"]}')
+
+
 async def main():
     # 이전 rates.json 읽기 (히스토리 누적용)
     prev_banks = {}
@@ -204,7 +394,8 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         scraped = []
-        for fn in [scrape_woori, scrape_kb, scrape_hana, scrape_shinhan, scrape_nh]:
+        for fn in [scrape_woori, scrape_kb, scrape_hana, scrape_shinhan, scrape_nh,
+                   scrape_kakao, scrape_kbank]:
             r = await fn(browser)
             scraped.append(r)
             ok = r.get('status') == 'success'
@@ -273,13 +464,17 @@ async def main():
     print("\nFSS 월별 금리 수집 시작...")
     update_fss_history(now)
 
+    # 시장금리 업데이트 (BOK + KOFIA)
+    print("\n시장금리 수집 시작...")
+    update_market_rates(now)
+
     # Git commit & push (로컬 실행 시에만, GitHub Actions는 EndBug/add-and-commit이 처리)
     if not os.environ.get('CI'):
         import subprocess
         repo_dir = os.path.join(BASE_DIR, '..')
         commit_msg = f"chore: update rates {result['updatedAt']} [skip ci]"
         try:
-            subprocess.run(['git', 'add', 'public/rates.json', 'public/counselor.json', 'public/fss.json'], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'add', 'public/rates.json', 'public/counselor.json', 'public/fss.json', 'public/market-rates.json'], cwd=repo_dir, check=True)
             subprocess.run(['git', 'commit', '-m', commit_msg], cwd=repo_dir, check=True)
             subprocess.run(['git', 'push', 'origin', 'master'], cwd=repo_dir, check=True)
             print("[OK] GitHub 푸시 완료")
@@ -425,12 +620,31 @@ def update_fss_history(now):
             return json.loads(r.read().decode('utf-8'))
 
     def calc_mins(base_list, option_list, match_map):
+        """
+        아파트(mrtg_type=A) + 분할상환(rpay_type=D) + (아파트) 상품명 우선 필터
+        """
         result = {}
         for keyword, uid in match_map.items():
-            codes = {p['fin_prdt_cd'] for p in base_list if keyword in p.get('kor_co_nm', '')}
-            opts = [o for o in option_list if o.get('fin_prdt_cd') in codes and '아파트' in (o.get('mrtg_type_nm') or '')]
+            # 기관 매칭
+            matched_prods = [p for p in base_list if keyword in p.get('kor_co_nm', '')]
+            # 신한은행처럼 여러 상품 있을 경우, '(아파트)' 포함 상품 우선
+            apt_prods = [p for p in matched_prods if '(아파트)' in p.get('fin_prdt_nm', '')]
+            target_prods = apt_prods if apt_prods else matched_prods
+            codes = {p['fin_prdt_cd'] for p in target_prods}
+
+            # mrtg_type=A(아파트) AND rpay_type=D(분할상환)
+            opts = [o for o in option_list
+                    if o.get('fin_prdt_cd') in codes
+                    and o.get('mrtg_type') == 'A'
+                    and o.get('rpay_type') == 'D']
+            # 위 조건 없으면 mrtg_type=A 만
+            if not opts:
+                opts = [o for o in option_list
+                        if o.get('fin_prdt_cd') in codes and o.get('mrtg_type') == 'A']
+            # 그래도 없으면 전체
             if not opts:
                 opts = [o for o in option_list if o.get('fin_prdt_cd') in codes]
+
             mins = [o['lend_rate_min'] for o in opts if o.get('lend_rate_min') and o['lend_rate_min'] > 0]
             result[uid] = round(min(mins), 2) if mins else None
         return result

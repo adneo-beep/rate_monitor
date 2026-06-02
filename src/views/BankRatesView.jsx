@@ -5,12 +5,18 @@ import RateChart from '../components/RateChart'
 import PageHeader from '../components/PageHeader'
 
 const BANK_SERIES = [
-  { key: 'kb',     name: 'KB국민',  color: '#f59e0b' },
-  { key: 'shinhan',name: '신한',    color: '#3b82f6' },
-  { key: 'hana',   name: '하나',    color: '#10b981' },
-  { key: 'woori',  name: '우리',    color: '#8b5cf6' },
-  { key: 'nh',     name: '농협',    color: '#f97316' },
+  { key: 'kb',     name: 'KB국민',   color: '#f59e0b' },
+  { key: 'shinhan',name: '신한',     color: '#3b82f6' },
+  { key: 'hana',   name: '하나',     color: '#10b981' },
+  { key: 'woori',  name: '우리',     color: '#8b5cf6' },
+  { key: 'nh',     name: '농협',     color: '#f97316' },
+  { key: 'kakao',  name: '카카오',   color: '#facc15' },
+  { key: 'kbank',  name: '케이뱅크', color: '#a78bfa' },
 ]
+
+// 은행/인터넷은행 구분
+const TRAD_BANK_IDS   = new Set(['kb', 'shinhan', 'hana', 'woori', 'nh'])
+const INET_BANK_IDS   = new Set(['kakao', 'kbank'])
 
 function SectionPanel({ title, subtitle, children }) {
   return (
@@ -67,18 +73,31 @@ export default function BankRatesView({ onBack }) {
       <div className="max-w-screen-xl mx-auto px-5 py-6 space-y-5">
         {/* Split panels */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <SectionPanel title="🏦 은행권" subtitle="금융채(5년)변동 기준">
-            {data.banks.map((b) => (
+          {/* 시중은행 */}
+          <SectionPanel title="🏦 시중은행" subtitle="금융채(5년)변동 기준">
+            {data.banks.filter(b => TRAD_BANK_IDS.has(b.id)).map((b) => (
               <RateRow key={b.id} {...b} minChange={b.minChange} />
             ))}
           </SectionPanel>
 
+          {/* 보험사 */}
           <SectionPanel title="🛡️ 보험사" subtitle="삼성생명 · 한화생명 · 교보생명 · 삼성화재">
             {data.insurances.map((ins) => (
               <RateRow key={ins.id} {...ins} />
             ))}
           </SectionPanel>
         </div>
+
+        {/* 인터넷 은행 */}
+        {data.banks.some(b => INET_BANK_IDS.has(b.id)) && (
+          <SectionPanel title="🌐 인터넷은행" subtitle="카카오뱅크 · 케이뱅크">
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              {data.banks.filter(b => INET_BANK_IDS.has(b.id)).map((b) => (
+                <RateRow key={b.id} {...b} minChange={b.minChange} />
+              ))}
+            </div>
+          </SectionPanel>
+        )}
 
         {/* Time series chart */}
         <RateChart

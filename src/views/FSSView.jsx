@@ -26,12 +26,20 @@ const RATE_TYPE_ORDER = ['고정금리', '변동금리']
 
 function parseRates(baseList, optionList, config) {
   return config.map((cfg) => {
-    const products = baseList.filter((p) => p.kor_co_nm.includes(cfg.match))
-    const codes = new Set(products.map((p) => p.fin_prdt_cd))
+    const allProds = baseList.filter((p) => p.kor_co_nm.includes(cfg.match))
+    // '(아파트)' 포함 상품 우선 (신한은행 등 여러 상품 분리 대응)
+    const aptProds = allProds.filter((p) => p.fin_prdt_nm.includes('(아파트)'))
+    const products = aptProds.length > 0 ? aptProds : allProds
+    const codes    = new Set(products.map((p) => p.fin_prdt_cd))
 
-    // mrtg_type === 'A' 로 정확히 매칭 (includes('아파트')는 '아파트외'도 포함되는 버그 있음)
-    let opts = optionList.filter((o) => codes.has(o.fin_prdt_cd) && o.mrtg_type === 'A')
-    if (opts.length === 0) opts = optionList.filter((o) => codes.has(o.fin_prdt_cd))
+    // 조건: mrtg_type=A(아파트) + rpay_type=D(분할상환) — 사용자 지정 기본 조건
+    let opts = optionList.filter(
+      (o) => codes.has(o.fin_prdt_cd) && o.mrtg_type === 'A' && o.rpay_type === 'D'
+    )
+    if (opts.length === 0)
+      opts = optionList.filter((o) => codes.has(o.fin_prdt_cd) && o.mrtg_type === 'A')
+    if (opts.length === 0)
+      opts = optionList.filter((o) => codes.has(o.fin_prdt_cd))
 
     if (opts.length === 0) return { ...cfg, product: '주택담보대출', rateTypes: [] }
 
@@ -39,18 +47,28 @@ function parseRates(baseList, optionList, config) {
     for (const o of opts) {
       const type = o.lend_rate_type_nm
       if (!type) continue
-      if (!byType[type]) byType[type] = { mins: [], maxs: [] }
+      if (!byType[type]) byType[type] = { mins: [], maxs: [], avgs: [] }
       if (o.lend_rate_min != null && o.lend_rate_min > 0) byType[type].mins.push(o.lend_rate_min)
       if (o.lend_rate_max != null && o.lend_rate_max > 0) byType[type].maxs.push(o.lend_rate_max)
+      if (o.lend_rate_avg != null && o.lend_rate_avg > 0) byType[type].avgs.push(o.lend_rate_avg)
     }
 
     const rateTypes = RATE_TYPE_ORDER
       .filter((t) => byType[t])
-      .map((t) => ({
-        type: t,
-        minRate: byType[t].mins.length ? Math.min(...byType[t].mins) : null,
-        maxRate: byType[t].maxs.length ? Math.max(...byType[t].maxs) : null,
-      }))
+      .map((t) => {
+        const minRate   = byType[t].mins.length ? Math.min(...byType[t].mins) : null
+        const avgRate   = byType[t].avgs.length ? Math.min(...byType[t].avgs) : null
+        // 변동폭: 현재 최저금리 - 전월 평균금리
+        const minChange = minRate != null && avgRate != null
+          ? Math.round((minRate - avgRate) * 100) / 100
+          : null
+        return {
+          type: t,
+          minRate,
+          maxRate:   byType[t].maxs.length ? Math.max(...byType[t].maxs) : null,
+          minChange,
+        }
+      })
 
     const product = products[0]?.fin_prdt_nm ?? '주택담보대출'
     return { id: cfg.id, name: cfg.name, colorHex: cfg.colorHex, product, rateTypes }
@@ -71,28 +89,43 @@ const INSURANCE_SERIES = [
   { key: 'samsungFire', name: '삼성화재', color: '#14b8a6' },
 ]
 
+function ChangeChip({ value }) {
+  if (value == null || value === 0) return null
+  return value > 0
+    ? <span className="text-rose-500 text-[10px] font-semibold">▲ +{value.toFixed(2)}%</span>
+    : <span className="text-blue-500 text-[10px] font-semibold">▼ {value.toFixed(2)}%</span>
+}
+
 function FSSRateCard({ name, colorHex, product, rateTypes }) {
   return (
     <div className="flex items-start py-4 px-5 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors gap-3">
-      <div className="w-1.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: colorHex, height: rateTypes.length > 1 ? '44px' : '28px' }} />
+      <div className="w-1.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: colorHex, height: rateTypes.length > 1 ? '52px' : '36px' }} />
       <div className="flex-1 min-w-0">
         <div className="font-semibold text-slate-800 text-sm leading-tight">{name}</div>
         <div className="text-xs text-slate-400 truncate mt-0.5 mb-2">{product}</div>
         {rateTypes.length === 0 ? (
           <div className="text-xs text-slate-400">데이터 없음</div>
         ) : (
-          <div className="space-y-1.5">
-            {rateTypes.map(({ type, minRate, maxRate }) => (
-              <div key={type} className="flex items-center gap-3">
-                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+          <div className="space-y-2">
+            {rateTypes.map(({ type, minRate, maxRate, minChange }) => (
+              <div key={type} className="flex items-start gap-3">
+                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
                   {type}
                 </span>
-                <div className="flex items-center gap-2 text-xs tabular-nums">
-                  <span className="text-slate-400">최저</span>
-                  <span className="font-bold text-emerald-600">{minRate != null ? `${minRate.toFixed(2)}%` : '—'}</span>
-                  <span className="text-slate-300">|</span>
-                  <span className="text-slate-400">최고</span>
-                  <span className="font-bold text-rose-500">{maxRate != null ? `${maxRate.toFixed(2)}%` : '—'}</span>
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-2 text-xs tabular-nums">
+                    <span className="text-slate-400">최저</span>
+                    <span className="font-bold text-emerald-600">{minRate != null ? `${minRate.toFixed(2)}%` : '—'}</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="text-slate-400">최고</span>
+                    <span className="font-bold text-rose-500">{maxRate != null ? `${maxRate.toFixed(2)}%` : '—'}</span>
+                  </div>
+                  {minChange != null && minChange !== 0 && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] text-slate-400">전월比</span>
+                      <ChangeChip value={minChange} />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

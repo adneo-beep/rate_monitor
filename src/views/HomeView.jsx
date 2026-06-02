@@ -4,10 +4,10 @@ const CARDS = [
     title: '금융사 홈페이지\n공시 기준',
     badge: '일별 업데이트',
     badgeBg: 'bg-blue-100 text-blue-700',
-    desc: '5대 은행 + 4대 보험사의 최신 주택담보대출 금리를 확인하세요.',
+    desc: '7개 은행 + 4대 보험사의 최신 주택담보대출 금리를 확인하세요.',
     topBar: 'from-blue-500 to-indigo-600',
     btnColor: 'text-blue-600 group-hover:text-blue-700',
-    institutions: ['KB국민 · 신한 · 하나 · 우리 · 농협', '삼성생명 · 한화 · 교보 · 삼성화재'],
+    institutions: ['KB국민 · 신한 · 하나 · 우리 · 농협', '카카오뱅크 · 케이뱅크 · 삼성생명 外'],
     icon: '🏦',
   },
   {
@@ -18,7 +18,7 @@ const CARDS = [
     desc: '금융감독원이 공시하는 주택담보대출 금리를 비교하세요.',
     topBar: 'from-emerald-500 to-teal-600',
     btnColor: 'text-emerald-600 group-hover:text-emerald-700',
-    institutions: ['5대 은행 공시 기준', '4대 보험사 공시 기준'],
+    institutions: ['5대 은행 · 4대 보험사 공시 기준', '아파트 · 분할상환 · 변동폭 포함'],
     icon: '🏛️',
   },
   {
@@ -31,6 +31,17 @@ const CARDS = [
     btnColor: 'text-violet-600 group-hover:text-violet-700',
     institutions: ['서울 · 경기 · 부산 지역 상담사', '은행별 실제 제안 금리'],
     icon: '🤝',
+  },
+  {
+    id: 'market',
+    title: '시장금리',
+    badge: '일별 업데이트',
+    badgeBg: 'bg-sky-100 text-sky-700',
+    desc: '국고채 · 금융채 시가평가 금리를 한눈에 확인하세요.',
+    topBar: 'from-sky-500 to-cyan-600',
+    btnColor: 'text-sky-600 group-hover:text-sky-700',
+    institutions: ['국고채 3년 · 10년', '금융채 AAA 6개월 · 1년 · 3년 · 5년'],
+    icon: '📈',
   },
 ]
 
