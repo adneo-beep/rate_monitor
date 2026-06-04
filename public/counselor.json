@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.02 기준",
+  "updatedAt": "2026.06.04 기준",
   "banks": [
     {
       "id": "kb",
@@ -24,14 +24,14 @@
       "colorHex": "#f97316",
       "rates": [
         {
-          "type": "5년",
-          "sell": 5.13,
-          "lease": 5.36
+          "type": "1년",
+          "sell": 4.46,
+          "lease": 4.54
         },
         {
-          "type": "6개월",
-          "sell": 4.44,
-          "lease": 4.52
+          "type": "5년",
+          "sell": 5.12,
+          "lease": 5.35
         }
       ]
     },
@@ -42,18 +42,18 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 4.36,
-          "lease": 4.31
+          "sell": 4.37,
+          "lease": 4.32
         },
         {
           "type": "5년주기",
-          "sell": 4.95,
-          "lease": 5.06
+          "sell": 4.93,
+          "lease": 5.04
         },
         {
           "type": "5년혼합",
-          "sell": 5.11,
-          "lease": 5.06
+          "sell": 5.09,
+          "lease": null
         }
       ]
     },
@@ -63,14 +63,9 @@
       "colorHex": "#3b82f6",
       "rates": [
         {
-          "type": "1년",
-          "sell": 4.08,
-          "lease": 4.15
-        },
-        {
           "type": "5년변동",
-          "sell": 4.95,
-          "lease": 5.03
+          "sell": 4.94,
+          "lease": 5.02
         }
       ]
     },
@@ -78,7 +73,13 @@
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
-      "rates": null
+      "rates": [
+        {
+          "type": "5년",
+          "sell": 5.53,
+          "lease": 5.61
+        }
+      ]
     }
   ],
   "insurances": [
@@ -86,13 +87,35 @@
       "id": "hanwha",
       "name": "한화생명",
       "colorHex": "#ef4444",
-      "rates": null
+      "rates": [
+        {
+          "type": "1년",
+          "sell": 5.55,
+          "lease": 5.35
+        },
+        {
+          "type": "5년",
+          "sell": 5.32,
+          "lease": 5.12
+        },
+        {
+          "type": "3년",
+          "sell": 5.55,
+          "lease": 5.35
+        }
+      ]
     },
     {
       "id": "samsung-fire",
       "name": "삼성화재",
       "colorHex": "#e11d48",
-      "rates": null
+      "rates": [
+        {
+          "type": "5년",
+          "sell": 5.02,
+          "lease": 5.12
+        }
+      ]
     },
     {
       "id": "samsung-life",
