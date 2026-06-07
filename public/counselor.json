@@ -32,18 +32,6 @@
           "type": "5년",
           "sell": 5.18,
           "lease": 5.41
-        }
-      ]
-    },
-    {
-      "id": "hana",
-      "name": "하나은행",
-      "colorHex": "#14b8a6",
-      "rates": [
-        {
-          "type": "6개월",
-          "sell": 4.31,
-          "lease": 4.34
         },
         {
           "type": "5년혼합",
@@ -53,10 +41,37 @@
       ]
     },
     {
+      "id": "hana",
+      "name": "하나은행",
+      "colorHex": "#14b8a6",
+      "rates": [
+        {
+          "type": "1년",
+          "sell": 5.03,
+          "lease": 5.03
+        },
+        {
+          "type": "3개월",
+          "sell": 4.39,
+          "lease": 4.34
+        },
+        {
+          "type": "6개월",
+          "sell": 4.39,
+          "lease": 4.34
+        }
+      ]
+    },
+    {
       "id": "woori",
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "rates": [
+        {
+          "type": "6개월",
+          "sell": 4.78,
+          "lease": 4.85
+        },
         {
           "type": "5년변동",
           "sell": 5.0,
@@ -70,6 +85,11 @@
       "colorHex": "#22c55e",
       "rates": [
         {
+          "type": "6개월",
+          "sell": 4.32,
+          "lease": 4.4
+        },
+        {
           "type": "5년변동",
           "sell": 5.52,
           "lease": 5.6
@@ -82,35 +102,13 @@
       "id": "hanwha",
       "name": "한화생명",
       "colorHex": "#ef4444",
-      "rates": [
-        {
-          "type": "1년",
-          "sell": 5.55,
-          "lease": 5.35
-        },
-        {
-          "type": "5년",
-          "sell": 5.32,
-          "lease": 5.12
-        },
-        {
-          "type": "3년",
-          "sell": 5.55,
-          "lease": 5.35
-        }
-      ]
+      "rates": null
     },
     {
       "id": "samsung-fire",
       "name": "삼성화재",
       "colorHex": "#e11d48",
-      "rates": [
-        {
-          "type": "5년",
-          "sell": 5.02,
-          "lease": 5.12
-        }
-      ]
+      "rates": null
     },
     {
       "id": "samsung-life",
