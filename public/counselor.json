@@ -32,11 +32,6 @@
           "type": "6개월",
           "sell": 4.48,
           "lease": 4.56
-        },
-        {
-          "type": "5년혼합",
-          "sell": 5.27,
-          "lease": 5.45
         }
       ]
     },
@@ -51,14 +46,14 @@
           "lease": 4.35
         },
         {
-          "type": "5년혼합",
-          "sell": 5.24,
-          "lease": 5.19
-        },
-        {
           "type": "5년주기",
           "sell": 5.11,
           "lease": 5.08
+        },
+        {
+          "type": "5년혼합",
+          "sell": 5.24,
+          "lease": 5.19
         }
       ]
     },
@@ -91,23 +86,7 @@
       "id": "hanwha",
       "name": "한화생명",
       "colorHex": "#ef4444",
-      "rates": [
-        {
-          "type": "1년",
-          "sell": 5.55,
-          "lease": 5.35
-        },
-        {
-          "type": "5년",
-          "sell": 5.32,
-          "lease": 5.12
-        },
-        {
-          "type": "3년",
-          "sell": 5.55,
-          "lease": 5.35
-        }
-      ]
+      "rates": null
     },
     {
       "id": "samsung-fire",
