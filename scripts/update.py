@@ -222,58 +222,36 @@ async def scrape_nh(browser):
 
 async def scrape_kakao(browser):
     """
-    카카오뱅크 - '금리정보' 탭 클릭 → '5년 변동 금리 대출' 기준 (예: 4.944 ~ 7.01)
-    ※ 폴백 최소금리 사용 금지 – '5년 변동' 섹션에서만 추출
+    카카오뱅크 - '금리정보' 아코디언 클릭 → '5년 변동금리 대출' 기준
+    페이지 구조: .board_item 아코디언, 클릭 시 .board_item.on 클래스 추가
+    금리 표시: '5년 변동금리 대출\n연 X.XXX% ~ Y.YY% (기준일)'
     """
     page = await browser.new_page()
     try:
-        await page.goto("https://www.kakaobank.com/products/mortgageLoan", timeout=30000)
-        await page.wait_for_load_state("networkidle", timeout=20000)
-        await page.wait_for_timeout(2000)
+        await page.goto(
+            "https://www.kakaobank.com/products/mortgageLoan",
+            timeout=30000, wait_until='domcontentloaded'
+        )
+        await page.wait_for_load_state('networkidle', timeout=20000)
+        await page.wait_for_timeout(1000)
 
-        # 스크롤하면서 '금리정보' 버튼/탭 찾아 클릭
-        for scroll_pct in [0.5, 0.7, 0.9, 1.0]:
-            await page.evaluate(f"window.scrollTo(0, document.body.scrollHeight * {scroll_pct})")
-            await page.wait_for_timeout(800)
-            for selector in [
-                'button:has-text("금리정보")',
-                'a:has-text("금리정보")',
-                'span:has-text("금리정보")',
-                'li:has-text("금리정보")',
-            ]:
-                try:
-                    el = await page.query_selector(selector)
-                    if el and await el.is_visible():
-                        await el.click()
-                        await page.wait_for_timeout(2000)
-                        break
-                except Exception:
-                    pass
+        # '금리정보' 링크(a.link_tit) 클릭 - get_by_role로 정확히 타겟팅
+        await page.get_by_role('link', name='금리정보').click()
+        await page.wait_for_timeout(1500)
 
         data = await page.evaluate("""() => {
-            const body = document.body.innerText || '';
-            const lines = body.split(/[\\n\\r]+/).map(l => l.trim()).filter(Boolean);
+            // '금리정보' 섹션(.board_item.on)에서 데이터 추출
+            const boardItems = [...document.querySelectorAll('.board_item.on')];
+            const rateItem = boardItems.find(el =>
+                el.querySelector('a')?.textContent?.trim() === '금리정보'
+            );
 
-            // ① '5년 변동 금리 대출' 섹션에서 금리 범위 찾기
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-                if ((line.includes('5년') && line.includes('변동')) ||
-                     line.includes('5년 변동 금리')) {
-                    const area = lines.slice(i, Math.min(lines.length, i + 8)).join(' ');
-                    // 연 4.944% ~ 7.01% 또는 4.944 ~ 7.01 패턴
-                    const m = area.match(/([3-9]\\.[0-9]{2,3})\\s*%?\\s*[~\\-]\\s*([3-9]\\.[0-9]{2,3})\\s*%?/);
-                    if (m) return { min_rate: m[1], max_rate: m[2], found: '5년변동' };
-                }
-            }
+            const txt = rateItem ? (rateItem.innerText || '') : (document.body.innerText || '');
 
-            // ② 테이블에서 '5년 변동' 행 찾기
-            for (const row of document.querySelectorAll('table tr, [class*="row"]')) {
-                const txt = row.innerText || '';
-                if (txt.includes('5년') && txt.includes('변동')) {
-                    const m = txt.match(/([3-9]\\.[0-9]{2,3})\\s*[~\\-]\\s*([3-9]\\.[0-9]{2,3})/);
-                    if (m) return { min_rate: m[1], max_rate: m[2], found: '테이블' };
-                }
-            }
+            // '5년 변동금리 대출' 다음 줄의 '연 X.XXX% ~ Y.YY%' 패턴
+            const m = txt.match(/5년\\s*변동금리\\s*대출[\\s\\S]*?연\\s*([\\d.]+)%\\s*~\\s*([\\d.]+)%/);
+            if (m) return { min_rate: m[1], max_rate: m[2] };
+
             return null;
         }""")
 
@@ -289,62 +267,38 @@ async def scrape_kakao(browser):
 
 async def scrape_kbank(browser):
     """
-    케이뱅크 - '금리안내' 클릭 → '주기형 금리(금융채 5년)' 최저·최고 (예: 4.56 ~ 8.44)
-    ※ '주기형' 섹션에서만 추출 – 전체 페이지 최솟값 사용 금지
+    케이뱅크 - 아파트담보대출 페이지에서 '금리안내' 아코디언 클릭
+    → 대출금리 테이블의 '주기형 금리(금융채 5년)' 행에서 최저/최고금리 추출
+    테이블 컬럼: 기준금리 | 가산금리 | 최저금리 | 최고금리
     """
     page = await browser.new_page()
     try:
         await page.goto(
             "https://www.kbanknow.com/ib20/mnu/FPMLON250000?phashid=sAySEh8",
-            timeout=30000)
-        await page.wait_for_load_state("networkidle", timeout=20000)
+            timeout=30000, wait_until='domcontentloaded'
+        )
+        await page.wait_for_load_state('networkidle', timeout=20000)
+        await page.wait_for_timeout(1000)
+
+        # '금리안내' 아코디언 클릭 (a.section-link.ui-accordion-btn)
+        await page.locator('a.section-link.ui-accordion-btn:has-text("금리안내")').click()
         await page.wait_for_timeout(2000)
 
-        # 스크롤하면서 '금리안내' 버튼/탭 클릭
-        for scroll_pct in [0.5, 0.7, 0.9, 1.0]:
-            await page.evaluate(f"window.scrollTo(0, document.body.scrollHeight * {scroll_pct})")
-            await page.wait_for_timeout(800)
-            for selector in [
-                'button:has-text("금리안내")',
-                'a:has-text("금리안내")',
-                'span:has-text("금리안내")',
-                'li:has-text("금리안내")',
-            ]:
-                try:
-                    el = await page.query_selector(selector)
-                    if el and await el.is_visible():
-                        await el.click()
-                        await page.wait_for_timeout(2500)
-                        break
-                except Exception:
-                    pass
-
         data = await page.evaluate("""() => {
-            // ① 테이블에서 '주기형' + '금융채 5년' 행 탐색
-            for (const row of document.querySelectorAll('table tr')) {
-                const txt = row.innerText || row.textContent || '';
-                if ((txt.includes('주기형') && (txt.includes('금융채') || txt.includes('5년'))) ||
-                     txt.includes('주기형 금리')) {
-                    const cells = [...row.querySelectorAll('td')];
-                    // 4.XX 이상의 값만 허용 (전세/기타 저금리 제외)
-                    const nums = cells
-                        .map(c => parseFloat((c.innerText || c.textContent || '').replace('%','').trim()))
-                        .filter(n => !isNaN(n) && n >= 4.0 && n < 15);
-                    if (nums.length >= 2) {
-                        return { min_rate: String(Math.min(...nums)), max_rate: String(Math.max(...nums)) };
-                    }
-                }
-            }
+            // 대출금리 테이블에서 '주기형 금리(금융채 5년)' 행 탐색
+            // 컬럼 순서: 기준금리 | 가산금리 | 최저금리 | 최고금리
+            for (const tbl of document.querySelectorAll('table')) {
+                const tblTxt = tbl.innerText || '';
+                if (!tblTxt.includes('주기형') || !tblTxt.includes('최저금리')) continue;
 
-            // ② 텍스트에서 '주기형' 줄 근처 금리 범위 찾기
-            const body = document.body.innerText || '';
-            const lines = body.split(/[\\n\\r]+/).map(l => l.trim()).filter(Boolean);
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-                if (line.includes('주기형') && (line.includes('금융채') || line.includes('5년'))) {
-                    const area = lines.slice(i, Math.min(lines.length, i + 10)).join(' ');
-                    const m = area.match(/([4-9]\\.[0-9]{2,3})\\s*[~\\-]\\s*([4-9]\\.[0-9]{2,3})/);
-                    if (m) return { min_rate: m[1], max_rate: m[2] };
+                for (const row of tbl.querySelectorAll('tr')) {
+                    const cells = [...row.querySelectorAll('th, td')];
+                    const rowTxt = cells[0]?.innerText || '';
+                    if (rowTxt.includes('주기형') && (rowTxt.includes('금융채') || rowTxt.includes('5년'))) {
+                        const minRate = cells[2]?.innerText.trim().replace('%', '').trim();
+                        const maxRate = cells[3]?.innerText.trim().replace('%', '').trim();
+                        if (minRate && maxRate) return { min_rate: minRate, max_rate: maxRate };
+                    }
                 }
             }
             return null;
@@ -353,7 +307,7 @@ async def scrape_kbank(browser):
         if data and data.get('min_rate'):
             return {'bank': '케이뱅크', 'product': '케이뱅크 아파트담보대출 주기형(금융채 5년)',
                     'min_rate': data['min_rate'], 'max_rate': data.get('max_rate', '-'), 'status': 'success'}
-        return {'bank': '케이뱅크', 'status': 'error', 'message': '주기형 금리 섹션 없음'}
+        return {'bank': '케이뱅크', 'status': 'error', 'message': '주기형 금리 테이블 없음'}
     except Exception as e:
         return {'bank': '케이뱅크', 'status': 'error', 'message': str(e)[:100]}
     finally:
@@ -365,48 +319,31 @@ async def scrape_kbank(browser):
 # ══════════════════════════════════════════════════════════
 
 async def scrape_samsung_life(browser):
-    """삼성생명 주택담보대출 - 5년 주기형 기준"""
+    """삼성생명 주택담보대출 금리 - 공시 페이지에서 직접 추출
+    페이지에 '연 X.XX ~ Y.YY%' 형태로 금리가 노출됨 (탭 클릭 불필요)
+    """
     page = await browser.new_page()
     try:
-        # 삼성생명 모바일 주담대 상품 페이지
-        await page.goto("https://www.samsunglife.com/individual/products/loan/detail/F34820",
-                        timeout=30000)
-        await page.wait_for_load_state("networkidle", timeout=20000)
+        await page.goto(
+            "https://www.samsunglife.com/individual/products/loan/detail/F34820",
+            timeout=30000, wait_until='domcontentloaded'
+        )
+        await page.wait_for_load_state('networkidle', timeout=20000)
         await page.wait_for_timeout(2000)
-
-        # '금리안내' 탭 클릭 시도
-        for selector in [
-            'button:has-text("금리안내")', 'a:has-text("금리안내")',
-            'button:has-text("금리")',     'li:has-text("금리안내")',
-        ]:
-            try:
-                el = await page.query_selector(selector)
-                if el:
-                    await el.click()
-                    await page.wait_for_timeout(2000)
-                    break
-            except Exception:
-                pass
 
         data = await page.evaluate("""() => {
             const body = document.body.innerText || '';
-            const lines = body.split(/[\\n\\r]+/).map(l => l.trim()).filter(Boolean);
 
-            // '5년 주기형' 또는 '5년' 금리 찾기
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-                if (line.includes('5년') && (line.includes('주기') || line.includes('변동') || line.includes('고정'))) {
-                    const area = lines.slice(Math.max(0, i-1), Math.min(lines.length, i+8)).join(' ');
-                    const m = area.match(/([3-9]\\.\\d{2,3})\\s*%?\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%?/);
-                    if (m) return { min_rate: m[1], max_rate: m[2] };
-                }
+            // '대출금리' 섹션 근처에서 '연 X.XX ~ Y.YY%' 패턴 추출
+            const idx = body.indexOf('대출금리');
+            if (idx > -1) {
+                const section = body.substring(idx, idx + 300);
+                const m = section.match(/연\\s*([\\d]+\\.[\\d]{2,3})\\s*%?\\s*~\\s*([\\d]+\\.[\\d]{2,3})\\s*%/);
+                if (m) return { min_rate: m[1], max_rate: m[2] };
             }
 
-            // 폴백: 연 X.XX% ~ Y.YY% 패턴
-            const m1 = body.match(/연\\s*([3-9]\\.\\d{2,3})\\s*%?\\s*~\\s*연?\\s*([3-9]\\.\\d{2,3})\\s*%/);
-            if (m1) return { min_rate: m1[1], max_rate: m1[2] };
-
-            const m2 = body.match(/([3-9]\\.\\d{2,3})\\s*%\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
+            // 폴백: 전체 페이지에서 '연 X.XX ~ Y.YY%' 패턴
+            const m2 = body.match(/연\\s*([3-9]\\.[\\d]{2,3})\\s*%?\\s*~\\s*([3-9]\\.[\\d]{2,3})\\s*%/);
             if (m2) return { min_rate: m2[1], max_rate: m2[2] };
 
             return null;
@@ -415,7 +352,7 @@ async def scrape_samsung_life(browser):
         if data and data.get('min_rate'):
             return {'bank': '삼성생명', 'product': '삼성생명 주담대 (5년 주기형)',
                     'min_rate': data['min_rate'], 'max_rate': data.get('max_rate'), 'status': 'success'}
-        return {'bank': '삼성생명', 'status': 'error', 'message': '금리 데이터 없음'}
+        return {'bank': '삼성생명', 'status': 'error', 'message': '금리 패턴 없음'}
     except Exception as e:
         return {'bank': '삼성생명', 'status': 'error', 'message': str(e)[:100]}
     finally:
@@ -423,49 +360,42 @@ async def scrape_samsung_life(browser):
 
 
 async def scrape_samsung_fire(browser):
-    """삼성화재 주택담보대출 금리"""
+    """삼성화재 주택담보대출 금리 - 공시 페이지에서 직접 추출
+    URL이 /vh/page/VH.HPLN0023.do 로 리다이렉트됨
+    '대출금리' 근처에 'X.X~Y.YY%' 형태로 금리 노출 (버튼 클릭 불필요)
+    """
     page = await browser.new_page()
     try:
-        await page.goto("https://www.samsungfire.com/loan/P_P04_04_01_066.html", timeout=30000)
-        await page.wait_for_load_state("networkidle", timeout=20000)
+        await page.goto(
+            "https://www.samsungfire.com/loan/P_P04_04_01_066.html",
+            timeout=30000, wait_until='domcontentloaded'
+        )
+        await page.wait_for_load_state('networkidle', timeout=20000)
         await page.wait_for_timeout(2000)
-
-        # '금리안내' 또는 '한도/금리 확인' 버튼 클릭 시도
-        for selector in [
-            'button:has-text("금리안내")', 'a:has-text("금리안내")',
-            'button:has-text("금리")',     'a:has-text("한도/금리")',
-            'button:has-text("한도")',
-        ]:
-            try:
-                el = await page.query_selector(selector)
-                if el:
-                    await el.click()
-                    await page.wait_for_timeout(2000)
-                    break
-            except Exception:
-                pass
 
         data = await page.evaluate("""() => {
             const body = document.body.innerText || '';
 
-            // 금리 범위 패턴
-            const patterns = [
-                /([3-9]\\.\\d{2,3})\\s*%\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/,
-                /연\\s*([3-9]\\.\\d{2,3})\\s*%?\\s*~\\s*([3-9]\\.\\d{2,3})/,
-                /최저\\s*연?\\s*([3-9]\\.\\d{2,3})/,
-            ];
-
-            for (const pat of patterns) {
-                const m = body.match(pat);
-                if (m) return { min_rate: m[1], max_rate: m[2] || null };
+            // '대출금리' 섹션 근처에서 'X.X~Y.YY%' 패턴 추출
+            // ※ 소수점 1자리도 허용 (예: 4.7~6.62%)
+            const idx = body.indexOf('대출금리');
+            if (idx > -1) {
+                const section = body.substring(idx, idx + 200);
+                const m = section.match(/([3-9]\\.\\d{1,3})\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
+                if (m) return { min_rate: m[1], max_rate: m[2] };
             }
+
+            // 폴백: 전체 페이지에서 X.X~Y.YY% 패턴
+            const m2 = body.match(/([3-9]\\.\\d{1,3})\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
+            if (m2) return { min_rate: m2[1], max_rate: m2[2] };
+
             return null;
         }""")
 
         if data and data.get('min_rate'):
             return {'bank': '삼성화재', 'product': '삼성화재 주택담보대출',
                     'min_rate': data['min_rate'], 'max_rate': data.get('max_rate'), 'status': 'success'}
-        return {'bank': '삼성화재', 'status': 'error', 'message': '금리 데이터 없음'}
+        return {'bank': '삼성화재', 'status': 'error', 'message': '금리 패턴 없음'}
     except Exception as e:
         return {'bank': '삼성화재', 'status': 'error', 'message': str(e)[:100]}
     finally:
@@ -479,155 +409,126 @@ async def scrape_samsung_fire(browser):
 async def fetch_kofia_fin_bonds(browser, prev_day):
     """
     KOFIA 채권정보센터 - 금융채Ⅰ(은행채) 무보증 AAA 시가평가수익률
-    1단계: 직접 API 호출 시도
-    2단계: Playwright 스크레이핑
+    WebSquare 앱(BISBndSrtPrcDay.xml)에서 Playwright로 데이터 추출
+
+    접근법:
+      1. 일자별 시가평가 WebSquare 페이지로 이동
+      2. 10초 대기 후 WebSquare JS 초기화 확인
+      3. page.evaluate() 내에서 callBack 후킹 → searchData() 호출 → XML 응답 수신
+      4. XML 파싱: 금융채Ⅰ(은행채) 무보증 AAA 행에서 val2/val4/val8/val10 추출
+
+    컬럼 매핑 (respHead 기준):
+      val2 = 6개월(fin6m), val4 = 1년(fin1y), val8 = 3년(fin3y), val10 = 5년(fin5y)
     """
+    import xml.etree.ElementTree as ET
+
     date_str = prev_day.strftime('%Y%m%d')
-    result = {}
+    kofia_url = (
+        'https://www.kofiabond.or.kr/websquare/websquare.html'
+        '?w2xPath=/xml/startest/BISBndSrtPrcDay.xml'
+        '&divisionId=MBIS01070010000000'
+        '&divisionNm=%EC%9D%BC%EC%9E%90%EB%B3%84'
+        '&tabIdx=1&w2xHome=/xml/Com/&w2xDocumentRoot='
+    )
 
-    # ── 1단계: 직접 HTTP API 시도 ──────────────────────────
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                      'AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/125.0.0.0 Safari/537.36',
-        'Referer':    'https://www.kofiabond.or.kr/',
-        'Accept':     'application/json, text/javascript, */*; q=0.01',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'X-Requested-With': 'XMLHttpRequest',
-    }
-
-    # 알려진 KOFIA API 엔드포인트 패턴 순서대로 시도
-    api_attempts = [
-        {
-            'url':    'https://www.kofiabond.or.kr/publicData/getDiscountCurveInfo.json',
-            'params': f'workDate={date_str}&typecode=4'.encode(),  # typecode 4 = 금융채
-        },
-        {
-            'url':    'https://www.kofiabond.or.kr/BondSta/getBondGrpSrtPrcInfo.json',
-            'params': f'workDate={date_str}&bondKndCd=F&bondGrpCd=FA'.encode(),
-        },
-        {
-            'url':    'https://www.kofiabond.or.kr/BondGrpSta/getBondGrpSrtPrcInfo.json',
-            'params': f'workDate={date_str}&gubun=4'.encode(),
-        },
-    ]
-
-    TERM_MAP = {0.5: 'fin6m', 1.0: 'fin1y', 3.0: 'fin3y', 5.0: 'fin5y'}
-    TERM_LABELS = {'6M': 'fin6m', '1Y': 'fin1y', '3Y': 'fin3y', '5Y': 'fin5y',
-                   '0.5': 'fin6m', '1': 'fin1y', '3': 'fin3y', '5': 'fin5y'}
-
-    for attempt in api_attempts:
-        try:
-            req = urllib.request.Request(
-                attempt['url'], data=attempt['params'], headers=headers, method='POST')
-            with urllib.request.urlopen(req, timeout=10) as r:
-                raw = r.read().decode('utf-8', errors='replace')
-            if not raw or raw.strip().startswith('<'):
-                continue
-            j = json.loads(raw)
-            items = j if isinstance(j, list) else j.get('result') or j.get('data') or []
-            if not items:
-                continue
-            for item in items:
-                # term 필드 추출 (다양한 키 이름 처리)
-                term_raw = str(item.get('term') or item.get('TERM') or
-                               item.get('mtrtyTrm') or item.get('maturity') or '')
-                rate_raw = (item.get('yield') or item.get('YIELD') or
-                            item.get('rate') or item.get('RATE') or
-                            item.get('srPrc') or '')
-                if not term_raw or not rate_raw:
-                    continue
-                try:
-                    term_f = float(term_raw)
-                    rate_f = round(float(str(rate_raw).replace('%', '')), 3)
-                    key = TERM_MAP.get(term_f)
-                    if key:
-                        result[key] = rate_f
-                except Exception:
-                    pass
-            if result:
-                print(f'    KOFIA API 성공 ({attempt["url"].split("/")[-1]}): {result}')
-                return result
-        except Exception as e:
-            print(f'    KOFIA API 실패 ({attempt["url"].split("/")[-1]}): {e}')
-
-    # ── 2단계: Playwright 스크레이핑 ───────────────────────
-    print('    KOFIA Playwright 스크레이핑 시도...')
     page = await browser.new_page()
     try:
-        # 채권시가평가수익률 페이지 직접 이동
-        kofia_url = (
-            'https://www.kofiabond.or.kr/websquare/websquare.html'
-            '?w2xPath=/xml/subMain.xml'
-            '&divisionId=MBIS01040010000000'
-            '&parentDivisionId=MBIS01040000000000'
-            '&parentMenuIndex=3&menuIndex=0'
-        )
+        print(f'    KOFIA WebSquare 페이지 로딩 ({date_str})...')
         await page.goto(kofia_url, timeout=60000, wait_until='domcontentloaded')
-        # WebSquare 렌더링 대기
-        await page.wait_for_timeout(25000)
+        # WebSquare 초기화 완료까지 약 8~10초 필요
+        await page.wait_for_timeout(10000)
 
-        dom_data = await page.evaluate("""() => {
-            const body = document.body;
-            if (!body || body.innerHTML.length < 500) return null;
-
-            const allText = (body.innerText || body.textContent || '');
-            const lines = allText.split(/[\\n\\r]+/).map(l => l.trim()).filter(Boolean);
-
-            // 금융채Ⅰ(은행채) 무보증 AAA 행 찾기
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-                if ((line.includes('금융채') || line.includes('은행채')) &&
-                    (line.includes('AAA') || line.includes('무보증'))) {
-
-                    // 해당 줄 및 다음 20줄에서 금리 추출
-                    const area = lines.slice(i, Math.min(lines.length, i + 20)).join(' ');
-                    const nums = [...area.matchAll(/([2-9]\\.\\d{2,3})/g)]
-                        .map(m => parseFloat(m[1]))
-                        .filter(n => n > 0.5 && n < 15)
-                        .sort((a, b) => a - b);
-
-                    // 만기 오름차순: 6개월, 1년, 3년, 5년
-                    if (nums.length >= 4) {
-                        return { fin6m: nums[0], fin1y: nums[1], fin3y: nums[2], fin5y: nums[3] };
-                    } else if (nums.length >= 2) {
-                        return { fin6m: nums[0], fin5y: nums[nums.length - 1] };
-                    }
+        js_result = await page.evaluate("""(dateStr) => {
+            return new Promise((resolve) => {
+                // WebSquare 초기화 확인
+                if (typeof selectComp === 'undefined' || typeof searchData === 'undefined') {
+                    resolve({ error: 'WebSquare not initialized' });
+                    return;
                 }
-            }
 
-            // 테이블 구조에서 직접 추출
-            for (const table of document.querySelectorAll('table')) {
-                for (const row of table.querySelectorAll('tr')) {
-                    const rowText = row.innerText || row.textContent || '';
-                    if ((rowText.includes('금융채') || rowText.includes('은행채')) &&
-                         rowText.includes('AAA')) {
-                        const cells = [...row.querySelectorAll('td')];
-                        const nums = cells
-                            .map(c => parseFloat((c.innerText || c.textContent || '').trim()))
-                            .filter(n => !isNaN(n) && n > 0.5 && n < 15)
-                            .sort((a, b) => a - b);
-                        if (nums.length >= 4) {
-                            return { fin6m: nums[0], fin1y: nums[1], fin3y: nums[2], fin5y: nums[3] };
+                // 한국자산평가(A10002) 선택 및 조회 날짜 설정
+                try {
+                    selectComp.setValue('A10002');
+                    srchDt.setValue(dateStr);
+                } catch(e) {
+                    resolve({ error: 'setValue failed: ' + e.message });
+                    return;
+                }
+
+                // window.callBack 후킹 → selectDay 응답에서 XML 추출
+                const origCallBack = window.callBack;
+                window.callBack = function(svcId, fnId, strResp) {
+                    origCallBack(svcId, fnId, strResp);
+                    if (fnId === 'selectDay') {
+                        try {
+                            const node = getInstanceNode('respList');
+                            const xml  = WebSquare.xml.serialize(node);
+                            window.callBack = origCallBack;
+                            resolve({ xml: xml || '' });
+                        } catch(e) {
+                            window.callBack = origCallBack;
+                            resolve({ error: 'serialize error: ' + e.message });
                         }
                     }
-                }
-            }
-            return null;
-        }""")
+                };
 
-        if dom_data and dom_data.get('fin6m'):
-            print(f'    KOFIA Playwright 성공: {dom_data}')
-            return dom_data
-        else:
-            print(f'    KOFIA Playwright: 데이터 없음 (bodyLen={await page.evaluate("document.body?.innerHTML?.length||0")})')
+                searchData();
+
+                // 20초 타임아웃 보호
+                setTimeout(() => {
+                    window.callBack = origCallBack;
+                    resolve({ timeout: true });
+                }, 20000);
+            });
+        }""", date_str)
+
+        if js_result.get('error'):
+            print(f'    KOFIA JS 오류: {js_result["error"]}')
+            return {}
+        if js_result.get('timeout'):
+            print(f'    KOFIA 타임아웃: 응답 없음')
+            return {}
+
+        xml_str = js_result.get('xml', '')
+        if not xml_str:
+            print(f'    KOFIA XML 응답 비어있음')
+            return {}
+
+        # XML 파싱 - 금융채Ⅰ(은행채) 무보증 AAA 행 탐색
+        root = ET.fromstring(xml_str)
+        for dto in root.iter('BISBndSrtPrcDayDTO'):
+            cat     = (dto.findtext('largeCategoryMrk') or '').strip()
+            type_nm = (dto.findtext('typeNmMrk') or '').strip()
+            credit  = (dto.findtext('creditRnkMrk') or '').strip()
+
+            if ('금융채' in cat or '은행채' in cat) and '무보증' in type_nm and credit == 'AAA':
+                def _get_val(n):
+                    v = dto.findtext(f'val{n}')
+                    if v:
+                        try:
+                            f = round(float(v), 3)
+                            return f if f > 0 else None
+                        except Exception:
+                            pass
+                    return None
+
+                result = {
+                    'fin6m': _get_val(2),   # 6개월
+                    'fin1y': _get_val(4),   # 1년
+                    'fin3y': _get_val(8),   # 3년
+                    'fin5y': _get_val(10),  # 5년
+                }
+                print(f'    KOFIA 금융채Ⅰ AAA ({date_str}): {result}')
+                return result
+
+        print(f'    KOFIA: 금융채Ⅰ 무보증 AAA 행 없음 (XML 길이={len(xml_str)})')
+        return {}
 
     except Exception as e:
-        print(f'    KOFIA Playwright 실패: {e}')
+        print(f'    KOFIA 실패: {e}')
+        return {}
     finally:
         await page.close()
-
-    return {}
 
 
 def update_market_rates(now, kofia_data: dict):
@@ -950,6 +851,17 @@ async def main():
             'minRate':   min_r, 'maxRate': max_r,
             'minChange': min_change, 'maxChange': max_change,
         })
+    banks.sort(key=lambda b: BANK_ORDER.index(b['id']) if b['id'] in BANK_ORDER else 99)
+
+    # 스크레이핑 실패 시 이전값 유지 (카카오뱅크·케이뱅크 등 인터넷은행 포함)
+    bank_ids_done = {b['id'] for b in banks}
+    for bid in BANK_ORDER:
+        if bid not in bank_ids_done:
+            prev_b = prev_banks.get(bid)
+            if prev_b:
+                banks.append(prev_b)
+                print(f"  [--] {bid}: 스크레이핑 실패, 이전값 유지 ({prev_b.get('minRate')} ~ {prev_b.get('maxRate')})")
+                bank_ids_done.add(bid)
     banks.sort(key=lambda b: BANK_ORDER.index(b['id']) if b['id'] in BANK_ORDER else 99)
 
     # ── 보험사 데이터 빌드 ────────────────────────────────

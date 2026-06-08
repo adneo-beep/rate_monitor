@@ -1,11 +1,4 @@
-function ChangeIndicator({ value }) {
-  if (!value) return null
-  if (value > 0) return <span className="text-rose-500 text-xs font-semibold leading-none">▲ +{value.toFixed(2)}%</span>
-  if (value < 0) return <span className="text-blue-500 text-xs font-semibold leading-none">▼ {value.toFixed(2)}%</span>
-  return null
-}
-
-export default function RateRow({ name, product, minRate, maxRate, colorHex, minChange }) {
+export default function RateRow({ name, product, minRate, maxRate, colorHex }) {
   return (
     <div className="flex items-center py-4 px-5 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
       <div className="flex items-center gap-3 flex-1 min-w-0 mr-4">
@@ -22,11 +15,6 @@ export default function RateRow({ name, product, minRate, maxRate, colorHex, min
           <div className="text-xl font-bold text-emerald-600 leading-none tabular-nums">
             {minRate !== null ? `${minRate.toFixed(2)}%` : '—'}
           </div>
-          {minChange ? (
-            <div className="mt-1">
-              <ChangeIndicator value={minChange} />
-            </div>
-          ) : null}
         </div>
 
         <div className="w-px h-10 bg-slate-200" />

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { MOCK_BANK_RATES } from '../data/mockData'
 import RateRow from '../components/RateRow'
-import RateChart from '../components/RateChart'
 import PageHeader from '../components/PageHeader'
 
 const BANK_SERIES = [
@@ -89,22 +88,16 @@ export default function BankRatesView({ onBack }) {
         </div>
 
         {/* 인터넷 은행 */}
-        {data.banks.some(b => INET_BANK_IDS.has(b.id)) && (
-          <SectionPanel title="🌐 인터넷은행" subtitle="카카오뱅크 · 케이뱅크">
-            <div className="grid grid-cols-1 sm:grid-cols-2">
-              {data.banks.filter(b => INET_BANK_IDS.has(b.id)).map((b) => (
-                <RateRow key={b.id} {...b} minChange={b.minChange} />
-              ))}
-            </div>
-          </SectionPanel>
-        )}
-
-        {/* Time series chart */}
-        <RateChart
-          bankData={data.bankHistory ?? []}
-          bankSeries={BANK_SERIES}
-          showMax
-        />
+        <SectionPanel title="🌐 인터넷은행" subtitle="카카오뱅크 · 케이뱅크">
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            {data.banks.filter(b => INET_BANK_IDS.has(b.id)).map((b) => (
+              <RateRow key={b.id} {...b} />
+            ))}
+            {!data.banks.some(b => INET_BANK_IDS.has(b.id)) && (
+              <div className="col-span-2 py-6 text-center text-sm text-slate-400">데이터를 불러오는 중입니다</div>
+            )}
+          </div>
+        </SectionPanel>
 
         <p className="text-xs text-slate-400 text-center pb-2">
           * 공시 기준 금리는 실제 적용 금리와 다를 수 있으며, 개인 신용등급 및 대출 조건에 따라 차등 적용됩니다.
