@@ -58,10 +58,10 @@
       "name": "삼성생명",
       "colorHex": "#6366f1",
       "product": "삼성생명 주담대 (5년 주기형)",
-      "minRate": 5.0,
-      "maxRate": 6.5,
-      "minChange": 0.01,
-      "maxChange": 0.01
+      "minRate": 4.99,
+      "maxRate": 6.49,
+      "minChange": -0.01,
+      "maxChange": -0.01
     },
     {
       "id": "hanwha",
