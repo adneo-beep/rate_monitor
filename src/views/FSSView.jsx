@@ -16,17 +16,25 @@ const BANK_CONFIG = [
 ]
 
 const INSURANCE_CONFIG = [
-  { id: 'samsung-life', name: '삼성생명', match: '삼성생명',  colorHex: '#6366f1' },
+  // preferProduct: 여러 상품 중 특정 상품명(일부 일치)을 우선 사용
+  { id: 'samsung-life', name: '삼성생명', match: '삼성생명', preferProduct: '일반형', colorHex: '#6366f1' },
   { id: 'hanwha',       name: '한화생명', match: '한화생명',  colorHex: '#ef4444' },
   { id: 'kyobo',        name: '교보생명', match: '교보생명',  colorHex: '#10b981' },
   { id: 'samsung-fire', name: '삼성화재', match: '삼성화재',  colorHex: '#e11d48' },
 ]
 
-const RATE_TYPE_ORDER = ['고정금리', '변동금리']
+const RATE_TYPE_ORDER = ['고정금리', '혼합금리', '변동금리']
 
 function parseRates(baseList, optionList, config) {
   return config.map((cfg) => {
-    const allProds = baseList.filter((p) => p.kor_co_nm.includes(cfg.match))
+    let allProds = baseList.filter((p) => p.kor_co_nm.includes(cfg.match))
+
+    // preferProduct 지정 시 해당 상품명 포함 상품 우선 사용 (예: 삼성생명 일반형만)
+    if (cfg.preferProduct) {
+      const preferred = allProds.filter((p) => p.fin_prdt_nm.includes(cfg.preferProduct))
+      if (preferred.length > 0) allProds = preferred
+    }
+
     // '(아파트)' 포함 상품 우선 (신한은행 등 여러 상품 분리 대응)
     const aptProds = allProds.filter((p) => p.fin_prdt_nm.includes('(아파트)'))
     const products = aptProds.length > 0 ? aptProds : allProds
@@ -109,7 +117,7 @@ function FSSRateCard({ name, colorHex, product, rateTypes }) {
           <div className="space-y-2">
             {rateTypes.map(({ type, minRate, maxRate, minChange }) => (
               <div key={type} className="flex items-start gap-3">
-                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : type === '혼합금리' ? 'bg-violet-100 text-violet-700' : 'bg-amber-100 text-amber-700'}`}>
                   {type}
                 </span>
                 <div className="flex flex-col gap-0.5">
