@@ -23,7 +23,14 @@ const INSURANCE_CONFIG = [
   { id: 'samsung-fire', name: '삼성화재', match: '삼성화재',  colorHex: '#e11d48' },
 ]
 
-const RATE_TYPE_ORDER = ['고정금리', '혼합금리', '변동금리']
+// FSS API 금리유형 → 화면 표시명 정규화
+// 혼합금리(C)는 변동금리로 표시 (삼성생명 등 보험사 주담대 특성)
+const RATE_TYPE_NORMALIZE = {
+  '고정금리': '고정금리',
+  '혼합금리': '변동금리',
+  '변동금리': '변동금리',
+}
+const RATE_TYPE_ORDER = ['고정금리', '변동금리']
 
 function parseRates(baseList, optionList, config) {
   return config.map((cfg) => {
@@ -53,7 +60,9 @@ function parseRates(baseList, optionList, config) {
 
     const byType = {}
     for (const o of opts) {
-      const type = o.lend_rate_type_nm
+      // FSS 원본 유형을 정규화된 표시명으로 변환 (혼합금리 → 변동금리)
+      const rawType = o.lend_rate_type_nm
+      const type    = RATE_TYPE_NORMALIZE[rawType] ?? rawType
       if (!type) continue
       if (!byType[type]) byType[type] = { mins: [], maxs: [], avgs: [] }
       if (o.lend_rate_min != null && o.lend_rate_min > 0) byType[type].mins.push(o.lend_rate_min)
@@ -117,7 +126,7 @@ function FSSRateCard({ name, colorHex, product, rateTypes }) {
           <div className="space-y-2">
             {rateTypes.map(({ type, minRate, maxRate, minChange }) => (
               <div key={type} className="flex items-start gap-3">
-                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : type === '혼합금리' ? 'bg-violet-100 text-violet-700' : 'bg-amber-100 text-amber-700'}`}>
+                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
                   {type}
                 </span>
                 <div className="flex flex-col gap-0.5">
