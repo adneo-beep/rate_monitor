@@ -16,8 +16,8 @@ const BANK_CONFIG = [
 ]
 
 const INSURANCE_CONFIG = [
-  // preferProduct: 여러 상품 중 특정 상품명(일부 일치)을 우선 사용
-  { id: 'samsung-life', name: '삼성생명', match: '삼성생명', preferProduct: '일반형', colorHex: '#6366f1' },
+  // productCode: FSS 상품코드 직접 지정 (이름 매칭보다 정확) — F35605=주택담보대출(일반형), F35405=주택담보대출(한도형)
+  { id: 'samsung-life', name: '삼성생명', match: '삼성생명', productCode: 'F35605', colorHex: '#6366f1' },
   { id: 'hanwha',       name: '한화생명', match: '한화생명',  colorHex: '#ef4444' },
   { id: 'kyobo',        name: '교보생명', match: '교보생명',  colorHex: '#10b981' },
   { id: 'samsung-fire', name: '삼성화재', match: '삼성화재',  colorHex: '#e11d48' },
