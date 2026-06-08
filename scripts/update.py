@@ -221,40 +221,29 @@ async def scrape_nh(browser):
 # ══════════════════════════════════════════════════════════
 
 async def scrape_kakao(browser):
-    """카카오뱅크 - '금리정보' 클릭 → '5년 변동 금리 대출' 기준 (예: 4.944 ~ 7.01)"""
+    """
+    카카오뱅크 - '금리정보' 탭 클릭 → '5년 변동 금리 대출' 기준 (예: 4.944 ~ 7.01)
+    ※ 폴백 최소금리 사용 금지 – '5년 변동' 섹션에서만 추출
+    """
     page = await browser.new_page()
     try:
         await page.goto("https://www.kakaobank.com/products/mortgageLoan", timeout=30000)
         await page.wait_for_load_state("networkidle", timeout=20000)
         await page.wait_for_timeout(2000)
 
-        # '금리정보' 버튼/탭 클릭 시도
-        clicked = False
-        for selector in [
-            'button:has-text("금리정보")',
-            'a:has-text("금리정보")',
-            '[class*="tab"]:has-text("금리정보")',
-            'li:has-text("금리정보")',
-            'text=금리정보',
-        ]:
-            try:
-                el = await page.query_selector(selector)
-                if el:
-                    await el.click()
-                    await page.wait_for_timeout(2000)
-                    clicked = True
-                    break
-            except Exception:
-                pass
-
-        # 스크롤 다운 후 재시도
-        if not clicked:
-            await page.evaluate("window.scrollTo(0, document.body.scrollHeight * 0.7)")
-            await page.wait_for_timeout(1500)
-            for selector in ['button:has-text("금리정보")', 'text=금리정보']:
+        # 스크롤하면서 '금리정보' 버튼/탭 찾아 클릭
+        for scroll_pct in [0.5, 0.7, 0.9, 1.0]:
+            await page.evaluate(f"window.scrollTo(0, document.body.scrollHeight * {scroll_pct})")
+            await page.wait_for_timeout(800)
+            for selector in [
+                'button:has-text("금리정보")',
+                'a:has-text("금리정보")',
+                'span:has-text("금리정보")',
+                'li:has-text("금리정보")',
+            ]:
                 try:
                     el = await page.query_selector(selector)
-                    if el:
+                    if el and await el.is_visible():
                         await el.click()
                         await page.wait_for_timeout(2000)
                         break
@@ -265,28 +254,25 @@ async def scrape_kakao(browser):
             const body = document.body.innerText || '';
             const lines = body.split(/[\\n\\r]+/).map(l => l.trim()).filter(Boolean);
 
-            // '5년 변동' 행 근처에서 금리 범위 찾기
+            // ① '5년 변동 금리 대출' 섹션에서 금리 범위 찾기
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
                 if ((line.includes('5년') && line.includes('변동')) ||
                      line.includes('5년 변동 금리')) {
-                    const searchArea = lines.slice(Math.max(0, i - 1), Math.min(lines.length, i + 6)).join(' ');
-                    // X.XXX ~ Y.YY 패턴
-                    const m = searchArea.match(/([3-9]\\.\\d{2,3})\\s*%?\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%?/);
-                    if (m) return { min_rate: m[1], max_rate: m[2] };
+                    const area = lines.slice(i, Math.min(lines.length, i + 8)).join(' ');
+                    // 연 4.944% ~ 7.01% 또는 4.944 ~ 7.01 패턴
+                    const m = area.match(/([3-9]\\.[0-9]{2,3})\\s*%?\\s*[~\\-]\\s*([3-9]\\.[0-9]{2,3})\\s*%?/);
+                    if (m) return { min_rate: m[1], max_rate: m[2], found: '5년변동' };
                 }
             }
 
-            // 폴백: 전체에서 금리 범위 찾기
-            const m = body.match(/([3-9]\\.\\d{2,3})\\s*%?\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
-            if (m) return { min_rate: m[1], max_rate: m[2] };
-
-            // 폴백2: 금리값 목록
-            const nums = [...body.matchAll(/([3-9]\\.\\d{2,3})/g)]
-                .map(m => parseFloat(m[1]))
-                .filter(n => n > 1 && n < 15);
-            if (nums.length >= 2) {
-                return { min_rate: String(Math.min(...nums)), max_rate: String(Math.max(...nums)) };
+            // ② 테이블에서 '5년 변동' 행 찾기
+            for (const row of document.querySelectorAll('table tr, [class*="row"]')) {
+                const txt = row.innerText || '';
+                if (txt.includes('5년') && txt.includes('변동')) {
+                    const m = txt.match(/([3-9]\\.[0-9]{2,3})\\s*[~\\-]\\s*([3-9]\\.[0-9]{2,3})/);
+                    if (m) return { min_rate: m[1], max_rate: m[2], found: '테이블' };
+                }
             }
             return null;
         }""")
@@ -294,7 +280,7 @@ async def scrape_kakao(browser):
         if data and data.get('min_rate'):
             return {'bank': '카카오뱅크', 'product': '카카오뱅크 주담대 5년 변동',
                     'min_rate': data['min_rate'], 'max_rate': data.get('max_rate', '-'), 'status': 'success'}
-        return {'bank': '카카오뱅크', 'status': 'error', 'message': '금리 데이터 없음'}
+        return {'bank': '카카오뱅크', 'status': 'error', 'message': '5년 변동 금리 섹션 없음'}
     except Exception as e:
         return {'bank': '카카오뱅크', 'status': 'error', 'message': str(e)[:100]}
     finally:
@@ -302,7 +288,10 @@ async def scrape_kakao(browser):
 
 
 async def scrape_kbank(browser):
-    """케이뱅크 - '금리안내' 클릭 → '주기형 금리(금융채 5년)' 최저·최고 (예: 4.56 ~ 8.44)"""
+    """
+    케이뱅크 - '금리안내' 클릭 → '주기형 금리(금융채 5년)' 최저·최고 (예: 4.56 ~ 8.44)
+    ※ '주기형' 섹션에서만 추출 – 전체 페이지 최솟값 사용 금지
+    """
     page = await browser.new_page()
     try:
         await page.goto(
@@ -311,68 +300,51 @@ async def scrape_kbank(browser):
         await page.wait_for_load_state("networkidle", timeout=20000)
         await page.wait_for_timeout(2000)
 
-        # '금리안내' 버튼/탭 클릭
-        clicked = False
-        for selector in [
-            'button:has-text("금리안내")',
-            'a:has-text("금리안내")',
-            'li:has-text("금리안내")',
-            '[class*="tab"]:has-text("금리안내")',
-            'text=금리안내',
-        ]:
-            try:
-                el = await page.query_selector(selector)
-                if el:
-                    await el.click()
-                    await page.wait_for_timeout(2500)
-                    clicked = True
-                    break
-            except Exception:
-                pass
-
-        if not clicked:
-            await page.evaluate("window.scrollTo(0, document.body.scrollHeight * 0.8)")
-            await page.wait_for_timeout(1500)
-            for selector in ['button:has-text("금리안내")', 'text=금리안내']:
+        # 스크롤하면서 '금리안내' 버튼/탭 클릭
+        for scroll_pct in [0.5, 0.7, 0.9, 1.0]:
+            await page.evaluate(f"window.scrollTo(0, document.body.scrollHeight * {scroll_pct})")
+            await page.wait_for_timeout(800)
+            for selector in [
+                'button:has-text("금리안내")',
+                'a:has-text("금리안내")',
+                'span:has-text("금리안내")',
+                'li:has-text("금리안내")',
+            ]:
                 try:
                     el = await page.query_selector(selector)
-                    if el:
+                    if el and await el.is_visible():
                         await el.click()
-                        await page.wait_for_timeout(2000)
+                        await page.wait_for_timeout(2500)
                         break
                 except Exception:
                     pass
 
         data = await page.evaluate("""() => {
-            // 테이블에서 '주기형' + '금융채 5년' 행 탐색
-            for (const row of document.querySelectorAll('table tr, [class*="row"]')) {
-                const text = row.innerText || row.textContent || '';
-                if ((text.includes('주기형') && (text.includes('금융채') || text.includes('5년'))) ||
-                     text.includes('주기형 금리')) {
-                    const cells = [...row.querySelectorAll('td, [class*="cell"]')];
+            // ① 테이블에서 '주기형' + '금융채 5년' 행 탐색
+            for (const row of document.querySelectorAll('table tr')) {
+                const txt = row.innerText || row.textContent || '';
+                if ((txt.includes('주기형') && (txt.includes('금융채') || txt.includes('5년'))) ||
+                     txt.includes('주기형 금리')) {
+                    const cells = [...row.querySelectorAll('td')];
+                    // 4.XX 이상의 값만 허용 (전세/기타 저금리 제외)
                     const nums = cells
-                        .map(c => parseFloat((c.innerText || c.textContent || '').trim()))
-                        .filter(n => !isNaN(n) && n > 1 && n < 15);
+                        .map(c => parseFloat((c.innerText || c.textContent || '').replace('%','').trim()))
+                        .filter(n => !isNaN(n) && n >= 4.0 && n < 15);
                     if (nums.length >= 2) {
-                        return {
-                            min_rate: String(Math.min(...nums)),
-                            max_rate: String(Math.max(...nums))
-                        };
+                        return { min_rate: String(Math.min(...nums)), max_rate: String(Math.max(...nums)) };
                     }
                 }
             }
 
-            // 폴백: 전체 텍스트에서 '주기형' 근처 금리 범위 찾기
+            // ② 텍스트에서 '주기형' 줄 근처 금리 범위 찾기
             const body = document.body.innerText || '';
             const lines = body.split(/[\\n\\r]+/).map(l => l.trim()).filter(Boolean);
             for (let i = 0; i < lines.length; i++) {
-                if (lines[i].includes('주기형') || lines[i].includes('금융채 5년')) {
-                    const area = lines.slice(Math.max(0,i), Math.min(lines.length, i+10)).join(' ');
-                    const nums = [...area.matchAll(/([3-9]\\.\\d{2})/g)]
-                        .map(m => parseFloat(m[1])).filter(n => n > 1 && n < 15);
-                    if (nums.length >= 2) {
-                        return { min_rate: String(Math.min(...nums)), max_rate: String(Math.max(...nums)) };
-                    }
+                const line = lines[i];
+                if (line.includes('주기형') && (line.includes('금융채') || line.includes('5년'))) {
+                    const area = lines.slice(i, Math.min(lines.length, i + 10)).join(' ');
+                    const m = area.match(/([4-9]\\.[0-9]{2,3})\\s*[~\\-]\\s*([4-9]\\.[0-9]{2,3})/);
+                    if (m) return { min_rate: m[1], max_rate: m[2] };
                 }
             }
             return null;
@@ -381,7 +353,7 @@ async def scrape_kbank(browser):
         if data and data.get('min_rate'):
             return {'bank': '케이뱅크', 'product': '케이뱅크 아파트담보대출 주기형(금융채 5년)',
                     'min_rate': data['min_rate'], 'max_rate': data.get('max_rate', '-'), 'status': 'success'}
-        return {'bank': '케이뱅크', 'status': 'error', 'message': '금리 데이터 없음'}
+        return {'bank': '케이뱅크', 'status': 'error', 'message': '주기형 금리 섹션 없음'}
     except Exception as e:
         return {'bank': '케이뱅크', 'status': 'error', 'message': str(e)[:100]}
     finally:
