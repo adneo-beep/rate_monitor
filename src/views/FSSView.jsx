@@ -36,8 +36,13 @@ function parseRates(baseList, optionList, config) {
   return config.map((cfg) => {
     let allProds = baseList.filter((p) => p.kor_co_nm.includes(cfg.match))
 
-    // preferProduct 지정 시 해당 상품명 포함 상품 우선 사용 (예: 삼성생명 일반형만)
-    if (cfg.preferProduct) {
+    // productCode 직접 지정 시 해당 상품코드만 사용 — F35605(일반형)만 남겨 F35405(한도형) 제거
+    if (cfg.productCode) {
+      const direct = allProds.filter((p) => p.fin_prdt_cd === cfg.productCode)
+      if (direct.length > 0) allProds = direct
+    }
+    // preferProduct 지정 시 해당 상품명 포함 상품 우선 사용 (productCode 없을 때 폴백)
+    else if (cfg.preferProduct) {
       const preferred = allProds.filter((p) => p.fin_prdt_nm.includes(cfg.preferProduct))
       if (preferred.length > 0) allProds = preferred
     }
