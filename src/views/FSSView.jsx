@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { MOCK_FSS_RATES } from '../data/mockData'
 import SkeletonRows from '../components/SkeletonRows'
-import RateChart from '../components/RateChart'
 import PageHeader from '../components/PageHeader'
 
 const FSS_API_KEY = '736b1d88e7160ca02d43154c35ca6bc6'
@@ -77,45 +76,15 @@ function parseRates(baseList, optionList, config) {
 
     const rateTypes = RATE_TYPE_ORDER
       .filter((t) => byType[t])
-      .map((t) => {
-        const minRate   = byType[t].mins.length ? Math.min(...byType[t].mins) : null
-        const avgRate   = byType[t].avgs.length ? Math.min(...byType[t].avgs) : null
-        // 변동폭: 현재 최저금리 - 전월 평균금리
-        const minChange = minRate != null && avgRate != null
-          ? Math.round((minRate - avgRate) * 100) / 100
-          : null
-        return {
-          type: t,
-          minRate,
-          maxRate:   byType[t].maxs.length ? Math.max(...byType[t].maxs) : null,
-          minChange,
-        }
-      })
+      .map((t) => ({
+        type:    t,
+        minRate: byType[t].mins.length ? Math.min(...byType[t].mins) : null,
+        maxRate: byType[t].maxs.length ? Math.max(...byType[t].maxs) : null,
+      }))
 
     const product = products[0]?.fin_prdt_nm ?? '주택담보대출'
     return { id: cfg.id, name: cfg.name, colorHex: cfg.colorHex, product, rateTypes }
   })
-}
-
-const BANK_SERIES = [
-  { key: 'kb',     name: 'KB국민',  color: '#f59e0b' },
-  { key: 'shinhan',name: '신한',    color: '#3b82f6' },
-  { key: 'hana',   name: '하나',    color: '#10b981' },
-  { key: 'woori',  name: '우리',    color: '#8b5cf6' },
-  { key: 'nh',     name: '농협',    color: '#f97316' },
-]
-const INSURANCE_SERIES = [
-  { key: 'samsungLife', name: '삼성생명', color: '#6366f1' },
-  { key: 'hanwha',      name: '한화생명', color: '#f43f5e' },
-  { key: 'kyobo',       name: '교보생명', color: '#0ea5e9' },
-  { key: 'samsungFire', name: '삼성화재', color: '#14b8a6' },
-]
-
-function ChangeChip({ value }) {
-  if (value == null || value === 0) return null
-  return value > 0
-    ? <span className="text-rose-500 text-[10px] font-semibold">▲ +{value.toFixed(2)}%</span>
-    : <span className="text-blue-500 text-[10px] font-semibold">▼ {value.toFixed(2)}%</span>
 }
 
 function FSSRateCard({ name, colorHex, product, rateTypes }) {
@@ -129,25 +98,17 @@ function FSSRateCard({ name, colorHex, product, rateTypes }) {
           <div className="text-xs text-slate-400">데이터 없음</div>
         ) : (
           <div className="space-y-2">
-            {rateTypes.map(({ type, minRate, maxRate, minChange }) => (
-              <div key={type} className="flex items-start gap-3">
-                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+            {rateTypes.map(({ type, minRate, maxRate }) => (
+              <div key={type} className="flex items-center gap-3">
+                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${type === '고정금리' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
                   {type}
                 </span>
-                <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center gap-2 text-xs tabular-nums">
-                    <span className="text-slate-400">최저</span>
-                    <span className="font-bold text-emerald-600">{minRate != null ? `${minRate.toFixed(2)}%` : '—'}</span>
-                    <span className="text-slate-300">|</span>
-                    <span className="text-slate-400">최고</span>
-                    <span className="font-bold text-rose-500">{maxRate != null ? `${maxRate.toFixed(2)}%` : '—'}</span>
-                  </div>
-                  {minChange != null && minChange !== 0 && (
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px] text-slate-400">전월比</span>
-                      <ChangeChip value={minChange} />
-                    </div>
-                  )}
+                <div className="flex items-center gap-2 text-xs tabular-nums">
+                  <span className="text-slate-400">최저</span>
+                  <span className="font-bold text-emerald-600">{minRate != null ? `${minRate.toFixed(2)}%` : '—'}</span>
+                  <span className="text-slate-300">|</span>
+                  <span className="text-slate-400">최고</span>
+                  <span className="font-bold text-rose-500">{maxRate != null ? `${maxRate.toFixed(2)}%` : '—'}</span>
                 </div>
               </div>
             ))}
@@ -187,7 +148,6 @@ function StatusBanner({ type, message }) {
 
 export default function FSSView({ onBack }) {
   const [data, setData] = useState(null)
-  const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [statusMsg, setStatusMsg] = useState(null)
   const [statusType, setStatusType] = useState('warn')
@@ -198,10 +158,9 @@ export default function FSSView({ onBack }) {
       const params = (grp) =>
         `${FSS_API_BASE}?auth=${FSS_API_KEY}&topFinGrpNo=${grp}&pageNo=1`
 
-      const [banksRes, insRes, fssRes] = await Promise.all([
+      const [banksRes, insRes] = await Promise.all([
         fetch(params('020000'), { signal: AbortSignal.timeout(10000) }),
         fetch(params('050000'), { signal: AbortSignal.timeout(10000) }),
-        fetch('/fss.json', { cache: 'no-store' }),
       ])
       if (!banksRes.ok) throw new Error(`Banks HTTP ${banksRes.status}`)
       if (!insRes.ok) throw new Error(`Insurance HTTP ${insRes.status}`)
@@ -222,16 +181,10 @@ export default function FSSView({ onBack }) {
       const now = new Date()
       const updatedAt = `${now.getFullYear()}년 ${now.getMonth() + 1}월 기준`
       setData({ updatedAt, banks, insurances })
-
-      if (fssRes.ok) {
-        const fssJson = await fssRes.json()
-        setHistory(fssJson.history ?? [])
-      }
       setStatusMsg(null)
     } catch (err) {
       console.warn('FSS API 연결 실패:', err.message)
       setData(MOCK_FSS_RATES)
-      setHistory([])
       setStatusMsg('API 미연결 상태입니다 — Mock 데이터를 표시하고 있습니다.')
       setStatusType('warn')
     } finally {
@@ -270,20 +223,6 @@ export default function FSSView({ onBack }) {
               : data?.insurances.map((ins) => <FSSRateCard key={ins.id} {...ins} />)}
           </SectionPanel>
         </div>
-
-        {history.length >= 2 ? (
-          <RateChart
-            bankData={history}
-            insuranceData={history}
-            bankSeries={BANK_SERIES}
-            insuranceSeries={INSURANCE_SERIES}
-            xKey="month"
-          />
-        ) : (
-          <div className="bg-white rounded-2xl border border-slate-200 px-6 py-8 text-center text-sm text-slate-400">
-            금리 추이 데이터를 수집 중입니다 · 다음 달부터 월별 추이가 표시됩니다
-          </div>
-        )}
 
         <div className="flex flex-wrap items-center gap-4 justify-center text-xs text-slate-500 pb-2">
           <span>금융감독원 금융상품 통합비교공시 기준 · 매월 1회 공시 (FSS API 실시간 조회)</span>
