@@ -225,7 +225,7 @@ export default function FSSView({ onBack }) {
     <div className="min-h-screen bg-slate-50 animate-fade-in">
       <PageHeader
         title="금융감독원 공시 기준"
-        subtitle={`월 단위 업데이트${data ? ` · ${data.updatedAt}` : ''}`}
+        subtitle={`매월 공시 · FSS API 실시간${data ? ` · ${data.updatedAt}` : ''}`}
         onBack={onBack}
         onRefresh={load}
         isRefreshing={loading}
@@ -264,7 +264,7 @@ export default function FSSView({ onBack }) {
         )}
 
         <div className="flex flex-wrap items-center gap-4 justify-center text-xs text-slate-500 pb-2">
-          <span>금융감독원 금융상품 통합비교공시 기준 · 월별 공시 (매일 변경 감지)</span>
+          <span>금융감독원 금융상품 통합비교공시 기준 · 매월 1회 공시 (FSS API 실시간 조회)</span>
         </div>
       </div>
     </div>
