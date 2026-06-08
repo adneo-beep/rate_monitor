@@ -86,7 +86,23 @@
       "id": "hanwha",
       "name": "한화생명",
       "colorHex": "#ef4444",
-      "rates": null
+      "rates": [
+        {
+          "type": "1년",
+          "sell": 5.55,
+          "lease": 5.35
+        },
+        {
+          "type": "5년",
+          "sell": 5.32,
+          "lease": 5.12
+        },
+        {
+          "type": "3년",
+          "sell": 5.55,
+          "lease": 5.35
+        }
+      ]
     },
     {
       "id": "samsung-fire",
