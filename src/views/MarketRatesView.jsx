@@ -80,7 +80,7 @@ export default function MarketRatesView({ onBack }) {
     <div className="min-h-screen bg-slate-50 animate-fade-in">
       <PageHeader
         title="시장금리"
-        subtitle={data?.updatedAt ? `${data.updatedAt} · BOK/KOFIA 기준` : 'BOK/KOFIA 기준'}
+        subtitle={data?.updatedAt ?? 'BOK · KOFIA 기준'}
         onBack={onBack}
         onRefresh={load}
         isRefreshing={loading}

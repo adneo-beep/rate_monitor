@@ -67,9 +67,11 @@
       "id": "samsung-life",
       "name": "삼성생명",
       "colorHex": "#6366f1",
-      "product": "삼성생명주택담보대출",
-      "minRate": 4.54,
-      "maxRate": 6.34
+      "product": "삼성생명 주담대 (5년 주기형)",
+      "minRate": 4.41,
+      "maxRate": 5.57,
+      "minChange": 0,
+      "maxChange": 0
     },
     {
       "id": "hanwha",
@@ -77,7 +79,9 @@
       "colorHex": "#ef4444",
       "product": "홈드림 모기지론",
       "minRate": 4.82,
-      "maxRate": 6.83
+      "maxRate": 6.83,
+      "minChange": 0,
+      "maxChange": 0
     },
     {
       "id": "kyobo",
@@ -85,15 +89,19 @@
       "colorHex": "#10b981",
       "product": "교보e아파트론",
       "minRate": 5.39,
-      "maxRate": 5.81
+      "maxRate": 5.81,
+      "minChange": 0,
+      "maxChange": 0
     },
     {
       "id": "samsung-fire",
       "name": "삼성화재",
       "colorHex": "#e11d48",
       "product": "삼성화재 주택담보대출",
-      "minRate": 4.65,
-      "maxRate": 6.78
+      "minRate": 4.43,
+      "maxRate": 6.78,
+      "minChange": 0,
+      "maxChange": 0
     }
   ],
   "bankHistory": [
