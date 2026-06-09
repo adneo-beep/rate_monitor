@@ -409,16 +409,10 @@ async def scrape_samsung_fire(browser):
 async def fetch_kofia_fin_bonds(browser, prev_day):
     """
     KOFIA 채권정보센터 - 금융채Ⅰ(은행채) 무보증 AAA 시가평가수익률
-    WebSquare 앱(BISBndSrtPrcDay.xml)에서 Playwright로 데이터 추출
+    '평가사 평균(`23.1.9~)' 옵션 선택 → 5개 기관 행을 모두 수집해 평균 계산
+      기관: 나이스피앤아이, 한국자산평가, KIS자산평가, 에프앤자산평가, 이지자산평가
 
-    접근법:
-      1. 일자별 시가평가 WebSquare 페이지로 이동
-      2. 10초 대기 후 WebSquare JS 초기화 확인
-      3. page.evaluate() 내에서 callBack 후킹 → searchData() 호출 → XML 응답 수신
-      4. XML 파싱: 금융채Ⅰ(은행채) 무보증 AAA 행에서 val2/val4/val8/val10 추출
-
-    컬럼 매핑 (respHead 기준):
-      val2 = 6개월(fin6m), val4 = 1년(fin1y), val8 = 3년(fin3y), val10 = 5년(fin5y)
+    컬럼 매핑: val2=6개월(fin6m), val4=1년(fin1y), val8=3년(fin3y), val10=5년(fin5y)
     """
     import xml.etree.ElementTree as ET
 
@@ -435,27 +429,20 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
     try:
         print(f'    KOFIA WebSquare 페이지 로딩 ({date_str})...')
         await page.goto(kofia_url, timeout=60000, wait_until='domcontentloaded')
-        # WebSquare 초기화 완료까지 약 8~10초 필요
         await page.wait_for_timeout(10000)
 
         js_result = await page.evaluate("""(dateStr) => {
             return new Promise((resolve) => {
-                // WebSquare 초기화 확인
                 if (typeof selectComp === 'undefined' || typeof searchData === 'undefined') {
-                    resolve({ error: 'WebSquare not initialized' });
-                    return;
+                    resolve({ error: 'WebSquare not initialized' }); return;
                 }
-
-                // 한국자산평가(A10002) 선택 및 조회 날짜 설정
                 try {
-                    selectComp.setValue('A10002');
+                    selectComp.setValue('평가사 평균(`23.1.9~)');
                     srchDt.setValue(dateStr);
                 } catch(e) {
-                    resolve({ error: 'setValue failed: ' + e.message });
-                    return;
+                    resolve({ error: 'setValue failed: ' + e.message }); return;
                 }
 
-                // window.callBack 후킹 → selectDay 응답에서 XML 추출
                 const origCallBack = window.callBack;
                 window.callBack = function(svcId, fnId, strResp) {
                     origCallBack(svcId, fnId, strResp);
@@ -473,12 +460,7 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
                 };
 
                 searchData();
-
-                // 20초 타임아웃 보호
-                setTimeout(() => {
-                    window.callBack = origCallBack;
-                    resolve({ timeout: true });
-                }, 20000);
+                setTimeout(() => { window.callBack = origCallBack; resolve({ timeout: true }); }, 20000);
             });
         }""", date_str)
 
@@ -494,35 +476,50 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
             print(f'    KOFIA XML 응답 비어있음')
             return {}
 
-        # XML 파싱 - 금융채Ⅰ(은행채) 무보증 AAA 행 탐색
+        # XML 파싱 - 5개 기관 금융채Ⅰ(은행채) 무보증 AAA 행을 모두 수집
         root = ET.fromstring(xml_str)
+        collected = {'fin6m': [], 'fin1y': [], 'fin3y': [], 'fin5y': []}
+
         for dto in root.iter('BISBndSrtPrcDayDTO'):
             cat     = (dto.findtext('largeCategoryMrk') or '').strip()
             type_nm = (dto.findtext('typeNmMrk') or '').strip()
             credit  = (dto.findtext('creditRnkMrk') or '').strip()
 
             if ('금융채' in cat or '은행채' in cat) and '무보증' in type_nm and credit == 'AAA':
-                def _get_val(n):
-                    v = dto.findtext(f'val{n}')
+                def _get_val(n, _dto=dto):
+                    v = _dto.findtext(f'val{n}')
                     if v:
                         try:
-                            f = round(float(v), 3)
+                            f = float(v)
                             return f if f > 0 else None
                         except Exception:
                             pass
                     return None
 
-                result = {
-                    'fin6m': _get_val(2),   # 6개월
-                    'fin1y': _get_val(4),   # 1년
-                    'fin3y': _get_val(8),   # 3년
-                    'fin5y': _get_val(10),  # 5년
-                }
-                print(f'    KOFIA 금융채Ⅰ AAA ({date_str}): {result}')
-                return result
+                v2  = _get_val(2);  v4  = _get_val(4)
+                v8  = _get_val(8);  v10 = _get_val(10)
+                if v2  is not None: collected['fin6m'].append(v2)
+                if v4  is not None: collected['fin1y'].append(v4)
+                if v8  is not None: collected['fin3y'].append(v8)
+                if v10 is not None: collected['fin5y'].append(v10)
 
-        print(f'    KOFIA: 금융채Ⅰ 무보증 AAA 행 없음 (XML 길이={len(xml_str)})')
-        return {}
+        if not any(collected.values()):
+            print(f'    KOFIA: 금융채Ⅰ 무보증 AAA 행 없음 (XML 길이={len(xml_str)})')
+            return {}
+
+        # 5개 기관 평균 계산
+        def _avg(vals):
+            return round(sum(vals) / len(vals), 3) if vals else None
+
+        result = {
+            'fin6m': _avg(collected['fin6m']),
+            'fin1y': _avg(collected['fin1y']),
+            'fin3y': _avg(collected['fin3y']),
+            'fin5y': _avg(collected['fin5y']),
+        }
+        n = max(len(v) for v in collected.values())
+        print(f'    KOFIA 금융채Ⅰ AAA 5기관 평균 ({date_str}, {n}개 기관): {result}')
+        return result
 
     except Exception as e:
         print(f'    KOFIA 실패: {e}')

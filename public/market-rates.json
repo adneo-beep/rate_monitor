@@ -13,22 +13,22 @@
     },
     "fin6m": {
       "label": "금융채 6개월",
-      "value": 3.085,
+      "value": 3.083,
       "change": 0.0
     },
     "fin1y": {
       "label": "금융채 1년",
-      "value": 3.635,
+      "value": 3.620,
       "change": 0.0
     },
     "fin3y": {
       "label": "금융채 3년",
-      "value": 4.22,
+      "value": 4.225,
       "change": 0.0
     },
     "fin5y": {
       "label": "금융채 5년",
-      "value": 4.481,
+      "value": 4.474,
       "change": 0.0
     }
   }
