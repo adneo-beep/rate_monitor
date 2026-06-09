@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.08 기준",
+  "updatedAt": "2026.06.09 기준",
   "banks": [
     {
       "id": "kb",
@@ -25,13 +25,13 @@
       "rates": [
         {
           "type": "5년",
-          "sell": 5.22,
-          "lease": 5.45
+          "sell": 5.29,
+          "lease": 5.52
         },
         {
           "type": "6개월",
-          "sell": 4.48,
-          "lease": 4.56
+          "sell": 4.5,
+          "lease": 4.58
         }
       ]
     },
@@ -42,18 +42,18 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 4.4,
-          "lease": 4.35
+          "sell": 4.42,
+          "lease": 4.37
         },
         {
           "type": "5년주기",
-          "sell": 5.11,
-          "lease": 5.08
+          "sell": 5.19,
+          "lease": 5.14
         },
         {
           "type": "5년혼합",
-          "sell": 5.24,
-          "lease": 5.19
+          "sell": 5.3,
+          "lease": 5.25
         }
       ]
     },
@@ -69,8 +69,8 @@
         },
         {
           "type": "5년변동",
-          "sell": 5.04,
-          "lease": 5.12
+          "sell": 5.11,
+          "lease": 5.19
         }
       ]
     },
@@ -78,7 +78,18 @@
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
-      "rates": null
+      "rates": [
+        {
+          "type": "6개월",
+          "sell": 4.32,
+          "lease": 4.4
+        },
+        {
+          "type": "5년혼합",
+          "sell": 5.62,
+          "lease": 5.7
+        }
+      ]
     }
   ],
   "insurances": [
@@ -86,23 +97,7 @@
       "id": "hanwha",
       "name": "한화생명",
       "colorHex": "#ef4444",
-      "rates": [
-        {
-          "type": "1년",
-          "sell": 5.55,
-          "lease": 5.35
-        },
-        {
-          "type": "5년",
-          "sell": 5.32,
-          "lease": 5.12
-        },
-        {
-          "type": "3년",
-          "sell": 5.55,
-          "lease": 5.35
-        }
-      ]
+      "rates": null
     },
     {
       "id": "samsung-fire",
@@ -111,8 +106,8 @@
       "rates": [
         {
           "type": "5년",
-          "sell": 5.02,
-          "lease": 5.12
+          "sell": 5.08,
+          "lease": 5.18
         }
       ]
     },
