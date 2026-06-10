@@ -641,9 +641,11 @@ async def scrape_counselor_from_lovable(browser, now):
         rate_cols = [COL_NORMALIZE.get(h, h) for h in headers[2:]]
 
         def _parse_rate(s):
+            import math
             s = s.strip().replace('%', '')
             try:
-                return round(float(s), 3)
+                v = round(float(s), 3)
+                return None if math.isnan(v) or math.isinf(v) else v
             except Exception:
                 return None
 
@@ -690,7 +692,7 @@ async def scrape_counselor_from_lovable(browser, now):
                 if ins['id'] not in existing_ids:
                     ins_out.append(ins)
 
-        updated_at = date_str.replace('-', '.') + ' 기준' if date_str else now.strftime('%Y.%m.%d 기준')
+        updated_at = now.strftime('%Y.%m.%d 기준')
         counselor_result = {'updatedAt': updated_at, 'banks': banks_out, 'insurances': ins_out}
         with open(COUNSELOR_FILE, 'w', encoding='utf-8') as f:
             json.dump(counselor_result, f, ensure_ascii=False, indent=2)
