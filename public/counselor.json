@@ -13,7 +13,7 @@
         },
         {
           "type": "5년(수기)",
-          "sell": 5.11,
+          "sell": 5.0,
           "lease": 5.17
         }
       ]
@@ -64,7 +64,7 @@
       "rates": [
         {
           "type": "1년",
-          "sell": null,
+          "sell": 4.78,
           "lease": 4.85
         },
         {
@@ -94,7 +94,7 @@
       "colorHex": "#e11d48",
       "rates": [
         {
-          "type": "5년",
+          "type": "5년(수기)",
           "sell": 5.0,
           "lease": 5.16
         }
