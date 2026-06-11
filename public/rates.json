@@ -108,9 +108,9 @@
       "name": "삼성화재",
       "colorHex": "#e11d48",
       "product": "삼성화재 주택담보대출",
-      "minRate": 4.8,
+      "minRate": 5.0,
       "maxRate": 6.68,
-      "minChange": 0.0,
+      "minChange": 0.2,
       "maxChange": 0.0
     }
   ],

@@ -381,12 +381,12 @@ async def scrape_samsung_fire(browser):
             const idx = body.indexOf('대출금리');
             if (idx > -1) {
                 const section = body.substring(idx, idx + 200);
-                const m = section.match(/([3-9]\\.\\d{1,3})\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
+                const m = section.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
                 if (m) return { min_rate: m[1], max_rate: m[2] };
             }
 
-            // 폴백: 전체 페이지에서 X.X~Y.YY% 패턴
-            const m2 = body.match(/([3-9]\\.\\d{1,3})\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
+            // 폴백: 전체 페이지에서 X~Y.YY% 또는 X.X~Y.YY% 패턴
+            const m2 = body.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
             if (m2) return { min_rate: m2[1], max_rate: m2[2] };
 
             return null;
