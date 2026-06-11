@@ -941,7 +941,7 @@ async def main():
     if not os.environ.get('CI'):
         import subprocess
         repo_dir   = os.path.join(BASE_DIR, '..')
-        commit_msg = f"chore: update rates {result['updatedAt']} [skip ci]"
+        commit_msg = f"chore: update rates {result['updatedAt']}"
         try:
             subprocess.run(['git', 'add',
                             'public/rates.json', 'public/counselor.json',
