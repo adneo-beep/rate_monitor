@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.12 05:29 기준",
+  "updatedAt": "2026.06.13 05:19 기준",
   "banks": [
     {
       "id": "kb",
@@ -26,10 +26,10 @@
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "product": "하나 혼합금리 모기지론 5년물 금융채",
-      "minRate": 5.776,
-      "maxRate": 7.076,
-      "minChange": 0.012,
-      "maxChange": 0.012
+      "minRate": 5.667,
+      "maxRate": 6.967,
+      "minChange": -0.109,
+      "maxChange": -0.109
     },
     {
       "id": "woori",
@@ -46,20 +46,20 @@
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 4.99,
-      "maxRate": 7.49,
-      "minChange": -0.02,
-      "maxChange": -0.02
+      "minRate": 4.96,
+      "maxRate": 7.46,
+      "minChange": -0.03,
+      "maxChange": -0.03
     },
     {
       "id": "kakao",
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 4.942,
-      "maxRate": 7.008,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.953,
+      "maxRate": 7.019,
+      "minChange": 0.011,
+      "maxChange": 0.011
     },
     {
       "id": "kbank",
@@ -332,6 +332,23 @@
       "nh_max": 7.49,
       "kakao_min": 4.942,
       "kakao_max": 7.008,
+      "kbank_min": 4.7,
+      "kbank_max": 8.72
+    },
+    {
+      "date": "6/13",
+      "kb_min": 5.17,
+      "kb_max": 6.57,
+      "shinhan_min": 4.74,
+      "shinhan_max": 6.15,
+      "hana_min": 5.667,
+      "hana_max": 6.967,
+      "woori_min": 4.46,
+      "woori_max": 6.76,
+      "nh_min": 4.96,
+      "nh_max": 7.46,
+      "kakao_min": 4.953,
+      "kakao_max": 7.019,
       "kbank_min": 4.7,
       "kbank_max": 8.72
     }
