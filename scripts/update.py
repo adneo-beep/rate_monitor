@@ -528,15 +528,15 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
         await page.close()
 
 
-def update_market_rates(now, kofia_data: dict):
+def update_market_rates(now, kofia_data: dict, kofia_prev_data: dict):
     """
     BOK(국고채) + KOFIA(금융채 AAA) 데이터로 market-rates.json 업데이트
-    기준: 전일 영업일 마감
+    변동폭: 전 영업일 값 - 전전 영업일 값 (주말·공휴일 무관)
     """
     prev_day = prev_business_day(now)
 
     def fetch_bok_rate(item_code):
-        """BOK ECOS API - 전일 기준 최신값, 최대 2회 재시도"""
+        """BOK ECOS API - (현재값, 전일값) 튜플 반환, 최대 2회 재시도"""
         end_d   = prev_day.strftime('%Y%m%d')
         start_d = (prev_day - timedelta(days=14)).strftime('%Y%m%d')
         url = (f'{BOK_BASE}/StatisticSearch/{BOK_API_KEY}/json/kr/1/10'
@@ -547,46 +547,36 @@ def update_market_rates(now, kofia_data: dict):
                     j = json.loads(r.read().decode('utf-8'))
                 rows = [x for x in (j.get('StatisticSearch', {}).get('row') or [])
                         if x.get('DATA_VALUE') and x['DATA_VALUE'] != '-']
-                if rows:
-                    return round(float(rows[-1]['DATA_VALUE']), 3)
+                if len(rows) >= 2:
+                    return round(float(rows[-1]['DATA_VALUE']), 3), round(float(rows[-2]['DATA_VALUE']), 3)
+                elif rows:
+                    return round(float(rows[-1]['DATA_VALUE']), 3), None
             except Exception as e:
                 print(f'    BOK fetch error ({item_code}) attempt {attempt+1}: {e}')
-        return None
+        return None, None
 
-    # 이전 값 읽기 (변동폭 계산)
-    prev_rates = {}
-    if os.path.exists(MARKET_RATES_FILE):
-        try:
-            with open(MARKET_RATES_FILE, encoding='utf-8') as f:
-                prev_rates = json.load(f).get('rates', {})
-        except Exception:
-            pass
-
-    def make_rate(key, new_val, label):
-        old_val = (prev_rates.get(key) or {}).get('value')
-        # 새 값이 없으면 이전 값 유지 (스크레이핑 실패 시 데이터 보존)
-        val    = new_val if new_val is not None else old_val
-        change = round(new_val - old_val, 3) if new_val is not None and old_val is not None else None
-        return {'label': label, 'value': val, 'change': change}
+    def make_rate(label, new_val, prev_val):
+        """new_val: 전 영업일값, prev_val: 전전 영업일값 → 변동폭 = new - prev"""
+        change = round(new_val - prev_val, 3) if new_val is not None and prev_val is not None else None
+        return {'label': label, 'value': new_val, 'change': change}
 
     print('  BOK 국고채 조회 중...')
-    ktb3y  = fetch_bok_rate('010200000')
-    ktb10y = fetch_bok_rate('010210000')
-    print(f'    국고채 3년: {ktb3y}%  |  10년: {ktb10y}%')
+    ktb3y_cur,  ktb3y_prev  = fetch_bok_rate('010200000')
+    ktb10y_cur, ktb10y_prev = fetch_bok_rate('010210000')
+    print(f'    국고채 3년: {ktb3y_cur}% (전일 {ktb3y_prev}%)  |  10년: {ktb10y_cur}% (전일 {ktb10y_prev}%)')
     print(f'    금융채 (KOFIA): {kofia_data}')
+    print(f'    금융채 전일 (KOFIA): {kofia_prev_data}')
 
     rates_out = {
-        'ktb3y':  make_rate('ktb3y',  ktb3y,               '국고채 3년'),
-        'ktb10y': make_rate('ktb10y', ktb10y,              '국고채 10년'),
-        'fin6m':  make_rate('fin6m',  kofia_data.get('fin6m'), '금융채 6개월'),
-        'fin1y':  make_rate('fin1y',  kofia_data.get('fin1y'), '금융채 1년'),
-        'fin3y':  make_rate('fin3y',  kofia_data.get('fin3y'), '금융채 3년'),
-        'fin5y':  make_rate('fin5y',  kofia_data.get('fin5y'), '금융채 5년'),
+        'ktb3y':  make_rate('국고채 3년',   ktb3y_cur,              ktb3y_prev),
+        'ktb10y': make_rate('국고채 10년',  ktb10y_cur,             ktb10y_prev),
+        'fin6m':  make_rate('금융채 6개월', kofia_data.get('fin6m'), kofia_prev_data.get('fin6m')),
+        'fin1y':  make_rate('금융채 1년',   kofia_data.get('fin1y'), kofia_prev_data.get('fin1y')),
+        'fin3y':  make_rate('금융채 3년',   kofia_data.get('fin3y'), kofia_prev_data.get('fin3y')),
+        'fin5y':  make_rate('금융채 5년',   kofia_data.get('fin5y'), kofia_prev_data.get('fin5y')),
     }
 
-    # 전일 영업일 마감 기준으로 날짜 표시
     updated_at = f"{prev_day.strftime('%Y.%m.%d')} 마감 기준"
-
     result = {'updatedAt': updated_at, 'rates': rates_out}
     with open(MARKET_RATES_FILE, 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
@@ -828,9 +818,12 @@ async def main():
         # ── 상담사 금리 ───────────────────────────────────
         await scrape_counselor_from_lovable(browser, now)
 
-        # ── KOFIA 금융채 AAA ──────────────────────────────
+        # ── KOFIA 금융채 AAA (전 영업일 + 전전 영업일) ────
         print("\n시장금리(KOFIA) 수집 중...")
-        kofia_data = await fetch_kofia_fin_bonds(browser, prev_business_day(now))
+        _prev_day      = prev_business_day(now)
+        _prev_prev_day = prev_business_day(_prev_day)
+        kofia_data      = await fetch_kofia_fin_bonds(browser, _prev_day)
+        kofia_prev_data = await fetch_kofia_fin_bonds(browser, _prev_prev_day)
 
         await browser.close()
 
@@ -938,7 +931,7 @@ async def main():
 
     # ── 시장금리 저장 ──────────────────────────────────────
     print("\n시장금리 저장 중...")
-    update_market_rates(now, kofia_data)
+    update_market_rates(now, kofia_data, kofia_prev_data)
 
     # ── Git commit & push (로컬 실행 시) ─────────────────
     if not os.environ.get('CI'):
