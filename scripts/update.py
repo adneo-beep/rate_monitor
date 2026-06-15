@@ -536,20 +536,21 @@ def update_market_rates(now, kofia_data: dict):
     prev_day = prev_business_day(now)
 
     def fetch_bok_rate(item_code):
-        """BOK ECOS API - 전일 기준 최신값"""
+        """BOK ECOS API - 전일 기준 최신값, 최대 2회 재시도"""
         end_d   = prev_day.strftime('%Y%m%d')
-        start_d = (prev_day - timedelta(days=7)).strftime('%Y%m%d')
+        start_d = (prev_day - timedelta(days=14)).strftime('%Y%m%d')
         url = (f'{BOK_BASE}/StatisticSearch/{BOK_API_KEY}/json/kr/1/10'
                f'/817Y002/D/{start_d}/{end_d}/{item_code}')
-        try:
-            with urllib.request.urlopen(url, timeout=10) as r:
-                j = json.loads(r.read().decode('utf-8'))
-            rows = [x for x in (j.get('StatisticSearch', {}).get('row') or [])
-                    if x.get('DATA_VALUE') and x['DATA_VALUE'] != '-']
-            if rows:
-                return round(float(rows[-1]['DATA_VALUE']), 3)
-        except Exception as e:
-            print(f'    BOK fetch error ({item_code}): {e}')
+        for attempt in range(2):
+            try:
+                with urllib.request.urlopen(url, timeout=30) as r:
+                    j = json.loads(r.read().decode('utf-8'))
+                rows = [x for x in (j.get('StatisticSearch', {}).get('row') or [])
+                        if x.get('DATA_VALUE') and x['DATA_VALUE'] != '-']
+                if rows:
+                    return round(float(rows[-1]['DATA_VALUE']), 3)
+            except Exception as e:
+                print(f'    BOK fetch error ({item_code}) attempt {attempt+1}: {e}')
         return None
 
     # 이전 값 읽기 (변동폭 계산)
@@ -563,8 +564,10 @@ def update_market_rates(now, kofia_data: dict):
 
     def make_rate(key, new_val, label):
         old_val = (prev_rates.get(key) or {}).get('value')
-        change  = round(new_val - old_val, 3) if new_val is not None and old_val is not None else None
-        return {'label': label, 'value': new_val, 'change': change}
+        # 새 값이 없으면 이전 값 유지 (스크레이핑 실패 시 데이터 보존)
+        val    = new_val if new_val is not None else old_val
+        change = round(new_val - old_val, 3) if new_val is not None and old_val is not None else None
+        return {'label': label, 'value': val, 'change': change}
 
     print('  BOK 국고채 조회 중...')
     ktb3y  = fetch_bok_rate('010200000')
