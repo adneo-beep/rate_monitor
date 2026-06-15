@@ -155,17 +155,31 @@ export default function FSSView({ onBack }) {
   const load = useCallback(async () => {
     try {
       setLoading(true)
-      const params = (grp) =>
-        `${FSS_API_BASE}?auth=${FSS_API_KEY}&topFinGrpNo=${grp}&pageNo=1`
 
-      const [banksRes, insRes] = await Promise.all([
-        fetch(params('020000'), { signal: AbortSignal.timeout(10000) }),
-        fetch(params('050000'), { signal: AbortSignal.timeout(10000) }),
-      ])
-      if (!banksRes.ok) throw new Error(`Banks HTTP ${banksRes.status}`)
-      if (!insRes.ok) throw new Error(`Insurance HTTP ${insRes.status}`)
+      // 정적 캐시 파일 우선 사용 (GH Actions 매일 업데이트), 실패 시 라이브 API 폴백
+      let banksJson, insJson, updatedAt
+      const staticRes = await fetch('/fss-rates.json', { cache: 'no-store' }).catch(() => null)
+      if (staticRes?.ok) {
+        const staticData = await staticRes.json()
+        banksJson  = staticData.banks
+        insJson    = staticData.insurances
+        updatedAt  = staticData.updatedAt ? `${staticData.updatedAt} 기준` : null
+      } else {
+        const params = (grp) =>
+          `${FSS_API_BASE}?auth=${FSS_API_KEY}&topFinGrpNo=${grp}&pageNo=1`
+        const [bRes, iRes] = await Promise.all([
+          fetch(params('020000'), { signal: AbortSignal.timeout(10000) }),
+          fetch(params('050000'), { signal: AbortSignal.timeout(10000) }),
+        ])
+        if (!bRes.ok) throw new Error(`Banks HTTP ${bRes.status}`)
+        if (!iRes.ok) throw new Error(`Insurance HTTP ${iRes.status}`)
+        ;[banksJson, insJson] = await Promise.all([bRes.json(), iRes.json()])
+      }
 
-      const [banksJson, insJson] = await Promise.all([banksRes.json(), insRes.json()])
+      if (!updatedAt) {
+        const now = new Date()
+        updatedAt = `${now.getFullYear()}년 ${now.getMonth() + 1}월 기준`
+      }
 
       const banks = parseRates(
         banksJson.result?.baseList ?? [],
@@ -178,12 +192,10 @@ export default function FSSView({ onBack }) {
         INSURANCE_CONFIG,
       )
 
-      const now = new Date()
-      const updatedAt = `${now.getFullYear()}년 ${now.getMonth() + 1}월 기준`
       setData({ updatedAt, banks, insurances })
       setStatusMsg(null)
     } catch (err) {
-      console.warn('FSS API 연결 실패:', err.message)
+      console.warn('FSS 로딩 실패:', err.message)
       setData(MOCK_FSS_RATES)
       setStatusMsg('API 미연결 상태입니다 — Mock 데이터를 표시하고 있습니다.')
       setStatusType('warn')

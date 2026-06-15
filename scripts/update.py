@@ -767,6 +767,32 @@ def update_fss_history(now):
         print(f"  [NG] FSS 수집 실패: {e}")
 
 
+def update_fss_rates(now):
+    """FSS API 전체 응답을 정적 파일로 캐싱 → FSSView에서 라이브 API 대신 사용"""
+    FSS_RATES_FILE = os.path.join(BASE_DIR, '..', 'public', 'fss-rates.json')
+    FSS_API_KEY = '736b1d88e7160ca02d43154c35ca6bc6'
+    FSS_BASE = 'https://finlife.fss.or.kr/finlifeapi/mortgageLoanProductsSearch.json'
+
+    def fetch_fss(grp):
+        url = f'{FSS_BASE}?auth={FSS_API_KEY}&topFinGrpNo={grp}&pageNo=1'
+        with urllib.request.urlopen(url, timeout=15) as r:
+            return json.loads(r.read().decode('utf-8'))
+
+    try:
+        banks_json = fetch_fss('020000')
+        ins_json   = fetch_fss('050000')
+        out = {
+            'updatedAt': now.strftime('%Y.%m.%d'),
+            'banks':     banks_json,
+            'insurances': ins_json,
+        }
+        with open(FSS_RATES_FILE, 'w', encoding='utf-8') as f:
+            json.dump(out, f, ensure_ascii=False, indent=2)
+        print(f"  [OK] fss-rates.json 업데이트 완료: {out['updatedAt']}")
+    except Exception as e:
+        print(f"  [NG] fss-rates.json 수집 실패: {e}")
+
+
 # ══════════════════════════════════════════════════════════
 #  메인
 # ══════════════════════════════════════════════════════════
@@ -925,9 +951,10 @@ async def main():
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\n[OK] public/rates.json 업데이트: {result['updatedAt']}")
 
-    # ── FSS 월별 업데이트 ──────────────────────────────────
-    print("\nFSS 월별 금리 수집 시작...")
+    # ── FSS 업데이트 (월별 히스토리 + 일별 캐시) ──────────
+    print("\nFSS 금리 수집 시작...")
     update_fss_history(now)
+    update_fss_rates(now)
 
     # ── 시장금리 저장 ──────────────────────────────────────
     print("\n시장금리 저장 중...")
@@ -940,8 +967,9 @@ async def main():
         commit_msg = f"chore: update rates {result['updatedAt']}"
         try:
             subprocess.run(['git', 'add',
-                            'public/rates.json', 'public/counselor.json',
-                            'public/fss.json',   'public/market-rates.json'],
+                            'public/rates.json',      'public/counselor.json',
+                            'public/fss.json',         'public/market-rates.json',
+                            'public/fss-rates.json'],
                            cwd=repo_dir, check=True)
             subprocess.run(['git', 'commit', '-m', commit_msg], cwd=repo_dir, check=True)
             subprocess.run(['git', 'push', 'origin', 'master'], cwd=repo_dir, check=True)
