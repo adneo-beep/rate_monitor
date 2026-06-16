@@ -2,7 +2,7 @@ name: Update Rates
 
 on:
   schedule:
-    - cron: "0 20 * * *"
+    - cron: "40 19 * * *"
   workflow_dispatch:
 
 jobs:

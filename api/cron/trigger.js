@@ -24,11 +24,11 @@ export default async function handler(req, res) {
   )
 
   if (response.status === 204) {
-    console.log('GitHub Actions workflow triggered')
+    console.log('✅ GitHub Actions workflow triggered')
     return res.status(200).json({ ok: true, triggered: new Date().toISOString() })
   }
 
   const body = await response.text()
-  console.error('GitHub dispatch failed:', response.status, body)
+  console.error('❌ GitHub dispatch failed:', response.status, body)
   return res.status(500).json({ error: 'GitHub dispatch failed', status: response.status })
 }
