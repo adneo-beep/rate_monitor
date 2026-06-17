@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.16 10:28 기준",
+  "updatedAt": "2026.06.17 14:00 기준",
   "banks": [
     {
       "id": "kb",
@@ -388,6 +388,23 @@
     },
     {
       "date": "6/16",
+      "kb_min": 5.18,
+      "kb_max": 6.58,
+      "shinhan_min": 4.65,
+      "shinhan_max": 6.05,
+      "hana_min": 5.631,
+      "hana_max": 6.931,
+      "woori_min": 4.37,
+      "woori_max": 6.67,
+      "nh_min": 5.12,
+      "nh_max": 7.42,
+      "kakao_min": 4.843,
+      "kakao_max": 6.909,
+      "kbank_min": 4.7,
+      "kbank_max": 8.72
+    },
+    {
+      "date": "6/17",
       "kb_min": 5.18,
       "kb_max": 6.58,
       "shinhan_min": 4.65,
