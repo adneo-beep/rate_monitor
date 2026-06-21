@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.20 20:53 기준",
+  "updatedAt": "2026.06.21 00:41 기준",
   "banks": [
     {
       "id": "kb",
@@ -28,8 +28,8 @@
       "product": "하나 혼합금리 모기지론 5년물 금융채",
       "minRate": 5.726,
       "maxRate": 7.026,
-      "minChange": 0.051,
-      "maxChange": 0.051
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "woori",
@@ -456,6 +456,23 @@
     },
     {
       "date": "6/20",
+      "kb_min": 5.18,
+      "kb_max": 6.58,
+      "shinhan_min": 4.59,
+      "shinhan_max": 6.0,
+      "hana_min": 5.726,
+      "hana_max": 7.026,
+      "woori_min": 4.35,
+      "woori_max": 6.65,
+      "nh_min": 5.01,
+      "nh_max": 7.31,
+      "kakao_min": 4.849,
+      "kakao_max": 6.915,
+      "kbank_min": 4.7,
+      "kbank_max": 8.72
+    },
+    {
+      "date": "6/21",
       "kb_min": 5.18,
       "kb_max": 6.58,
       "shinhan_min": 4.59,
