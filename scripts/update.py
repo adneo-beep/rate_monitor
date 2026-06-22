@@ -12,7 +12,7 @@ import json
 import os
 import re
 import urllib.request
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from playwright.async_api import async_playwright
 
 BASE_DIR          = os.path.dirname(os.path.abspath(__file__))
@@ -814,7 +814,8 @@ async def main():
         except Exception:
             pass
 
-    now = datetime.now()
+    KST = timezone(timedelta(hours=9))
+    now = datetime.now(KST)
     print("금리 수집 시작...")
 
     async with async_playwright() as p:
