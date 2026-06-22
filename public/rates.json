@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.22 01:02 기준",
+  "updatedAt": "2026.06.22 21:58 기준",
   "banks": [
     {
       "id": "kb",
@@ -16,10 +16,10 @@
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.63,
-      "maxRate": 6.03,
-      "minChange": 0.04,
-      "maxChange": 0.03
+      "minRate": 4.68,
+      "maxRate": 6.09,
+      "minChange": 0.05,
+      "maxChange": 0.06
     },
     {
       "id": "hana",
@@ -36,30 +36,30 @@
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 4.35,
-      "maxRate": 6.65,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.4,
+      "maxRate": 6.7,
+      "minChange": 0.05,
+      "maxChange": 0.05
     },
     {
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 5.01,
-      "maxRate": 7.31,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.03,
+      "maxRate": 7.33,
+      "minChange": 0.02,
+      "maxChange": 0.02
     },
     {
       "id": "kakao",
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 4.849,
-      "maxRate": 6.915,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.899,
+      "maxRate": 6.965,
+      "minChange": 0.05,
+      "maxChange": 0.05
     },
     {
       "id": "kbank",
@@ -492,16 +492,16 @@
       "date": "6/22",
       "kb_min": 5.08,
       "kb_max": 6.48,
-      "shinhan_min": 4.63,
-      "shinhan_max": 6.03,
+      "shinhan_min": 4.68,
+      "shinhan_max": 6.09,
       "hana_min": 5.726,
       "hana_max": 7.026,
-      "woori_min": 4.35,
-      "woori_max": 6.65,
-      "nh_min": 5.01,
-      "nh_max": 7.31,
-      "kakao_min": 4.849,
-      "kakao_max": 6.915,
+      "woori_min": 4.4,
+      "woori_max": 6.7,
+      "nh_min": 5.03,
+      "nh_max": 7.33,
+      "kakao_min": 4.899,
+      "kakao_max": 6.965,
       "kbank_min": 4.7,
       "kbank_max": 8.72
     }
