@@ -3,13 +3,13 @@
   "rates": {
     "ktb3y": {
       "label": "국고채 3년",
-      "value": null,
-      "change": null
+      "value": 3.81,
+      "change": 0.026
     },
     "ktb10y": {
       "label": "국고채 10년",
-      "value": null,
-      "change": null
+      "value": 4.195,
+      "change": 0.024
     },
     "fin6m": {
       "label": "금융채 6개월",
