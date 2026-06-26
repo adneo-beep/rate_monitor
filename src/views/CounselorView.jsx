@@ -99,16 +99,19 @@ export default function CounselorView({ onBack }) {
 
       <div className="max-w-screen-xl mx-auto px-5 py-6 space-y-4">
         {/* Source */}
-        <div className="flex items-center gap-2 text-xs text-slate-500">
-          <span>출처:</span>
-          <a
-            href={COUNSELOR_SOURCE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-violet-600 hover:underline font-medium"
-          >
-            {COUNSELOR_SOURCE_URL}
-          </a>
+        <div className="text-xs text-slate-500 space-y-1">
+          <div className="flex items-center gap-2">
+            <span>출처:</span>
+            <a
+              href={COUNSELOR_SOURCE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-violet-600 hover:underline font-medium"
+            >
+              {COUNSELOR_SOURCE_URL}
+            </a>
+          </div>
+          <div className="text-slate-400">크레딧 부족으로 위 주소를 통해 직접확인 필요(매월초는 자동 반영)</div>
         </div>
 
         {loading ? (

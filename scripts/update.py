@@ -267,47 +267,84 @@ async def scrape_kakao(browser):
 
 async def scrape_kbank(browser):
     """
-    케이뱅크 - 아파트담보대출 페이지에서 '금리안내' 아코디언 클릭
-    → 대출금리 테이블의 '주기형 금리(금융채 5년)' 행에서 최저/최고금리 추출
+    케이뱅크 - 아파트담보대출 페이지에서 '금리안내' Radix UI 아코디언 클릭
+    → Shadow DOM에서 주기형금리(금융채 5년) 최저/최고금리 추출
     테이블 컬럼: 기준금리 | 가산금리 | 최저금리 | 최고금리
+    (Radix UI accordion: 콘텐츠가 Shadow DOM에 있어 일반 querySelector로 접근 불가)
     """
     page = await browser.new_page()
     try:
         await page.goto(
-            "https://www.kbanknow.com/ib20/mnu/FPMLON250000?phashid=sAySEh8",
-            timeout=30000, wait_until='domcontentloaded'
+            "https://www.kbanknow.com/web/product/loan/apt-mortgage",
+            timeout=30000, wait_until='networkidle'
         )
-        await page.wait_for_load_state('networkidle', timeout=20000)
+        await page.wait_for_timeout(3000)
+        await page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
         await page.wait_for_timeout(1000)
 
-        # '금리안내' 아코디언 클릭 (a.section-link.ui-accordion-btn)
-        await page.locator('a.section-link.ui-accordion-btn:has-text("금리안내")').click()
-        await page.wait_for_timeout(2000)
+        # Radix UI 아코디언 버튼 클릭 (data-state 속성으로 Radix 버튼 식별)
+        btn = page.locator('button[data-state]:has-text("금리안내")').last
+        if await btn.count() == 0:
+            btn = page.locator('button:has-text("금리안내")').last
+        await btn.scroll_into_view_if_needed()
+        await btn.click()
+        await page.wait_for_timeout(5000)
 
         data = await page.evaluate("""() => {
-            // 대출금리 테이블에서 '주기형 금리(금융채 5년)' 행 탐색
-            // 컬럼 순서: 기준금리 | 가산금리 | 최저금리 | 최고금리
-            for (const tbl of document.querySelectorAll('table')) {
-                const tblTxt = tbl.innerText || '';
-                if (!tblTxt.includes('주기형') || !tblTxt.includes('최저금리')) continue;
-
-                for (const row of tbl.querySelectorAll('tr')) {
-                    const cells = [...row.querySelectorAll('th, td')];
-                    const rowTxt = cells[0]?.innerText || '';
-                    if (rowTxt.includes('주기형') && (rowTxt.includes('금융채') || rowTxt.includes('5년'))) {
-                        const minRate = cells[2]?.innerText.trim().replace('%', '').trim();
-                        const maxRate = cells[3]?.innerText.trim().replace('%', '').trim();
-                        if (minRate && maxRate) return { min_rate: minRate, max_rate: maxRate };
+            // Shadow DOM 탐색 - 케이뱅크는 금리 테이블을 Shadow DOM 안에 렌더링
+            function findShadowWithJuki(el) {
+                if (el.shadowRoot) {
+                    const html = el.shadowRoot.innerHTML;
+                    if (html.includes("\\uC8FC\\uAE30\\uD615") || html.includes("5\\uB144")) {
+                        return el.shadowRoot;
                     }
                 }
+                for (const child of el.children) {
+                    const r = findShadowWithJuki(child);
+                    if (r) return r;
+                }
+                return null;
             }
-            return null;
+
+            const sr = findShadowWithJuki(document.body);
+            if (!sr) return null;
+
+            // TreeWalker로 텍스트 노드 수집
+            const walker = document.createTreeWalker(sr, NodeFilter.SHOW_TEXT);
+            const texts = [];
+            let node;
+            while ((node = walker.nextNode())) {
+                const t = node.textContent.trim();
+                if (t) texts.push(t);
+            }
+
+            // "주기형" 텍스트 이후에서 숫자% 패턴 추출
+            const jukiIdx = texts.findIndex(t => t.includes("\\uC8FC\\uAE30\\uD615"));
+            if (jukiIdx < 0) return { error: "주기형 텍스트 없음" };
+
+            const after = texts.slice(jukiIdx, jukiIdx + 30).join(' ');
+            const nums = [...after.matchAll(/([0-9]+\\.?[0-9]*)\\s*%/g)].map(m => parseFloat(m[1]));
+
+            // 기준금리, 가산금리min, 가산금리max, 최저금리, 최고금리 순서
+            if (nums.length >= 4) {
+                return {
+                    min_rate: String(nums[nums.length - 2]),
+                    max_rate: String(nums[nums.length - 1])
+                };
+            }
+            return { error: "숫자 부족: " + nums.join(','), raw: after.substring(0, 200) };
         }""")
 
         if data and data.get('min_rate'):
-            return {'bank': '케이뱅크', 'product': '케이뱅크 아파트담보대출 주기형(금융채 5년)',
-                    'min_rate': data['min_rate'], 'max_rate': data.get('max_rate', '-'), 'status': 'success'}
-        return {'bank': '케이뱅크', 'status': 'error', 'message': '주기형 금리 테이블 없음'}
+            return {
+                'bank': '케이뱅크',
+                'product': '케이뱅크 아파트담보대출 주기형(금융채 5년)',
+                'min_rate': data['min_rate'],
+                'max_rate': data.get('max_rate', '-'),
+                'status': 'success'
+            }
+        err = data.get('error', '알 수 없음') if data else 'Shadow DOM 없음'
+        return {'bank': '케이뱅크', 'status': 'error', 'message': err}
     except Exception as e:
         return {'bank': '케이뱅크', 'status': 'error', 'message': str(e)[:100]}
     finally:
@@ -478,7 +515,7 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
 
         # XML 파싱 - 5개 기관 금융채Ⅰ(은행채) 무보증 AAA 행을 모두 수집
         root = ET.fromstring(xml_str)
-        collected = {'fin6m': [], 'fin1y': [], 'fin3y': [], 'fin5y': []}
+        collected = {'fin6m': [], 'fin1y': [], 'fin3y': [], 'fin5y': [], 'ktb3y': [], 'ktb10y': []}
 
         for dto in root.iter('BISBndSrtPrcDayDTO'):
             cat     = (dto.findtext('largeCategoryMrk') or '').strip()
@@ -503,8 +540,24 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
                 if v8  is not None: collected['fin3y'].append(v8)
                 if v10 is not None: collected['fin5y'].append(v10)
 
+            # 국고채(KTB): val7=3년, val11=10년
+            if dto.findtext('typeNmMrkEng') == 'KTB':
+                def _get_ktb(n, _dto=dto):
+                    v = _dto.findtext(f'val{n}')
+                    if v:
+                        try:
+                            f = float(v)
+                            return f if f > 0 else None
+                        except Exception:
+                            pass
+                    return None
+                v7  = _get_ktb(7)
+                v11 = _get_ktb(11)
+                if v7  is not None: collected['ktb3y'].append(v7)
+                if v11 is not None: collected['ktb10y'].append(v11)
+
         if not any(collected.values()):
-            print(f'    KOFIA: 금융채Ⅰ 무보증 AAA 행 없음 (XML 길이={len(xml_str)})')
+            print(f'    KOFIA: 금융채Ⅰ 무보증 AAA / 국고채 행 없음 (XML 길이={len(xml_str)})')
             return {}
 
         # 5개 기관 평균 계산
@@ -512,13 +565,15 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
             return round(sum(vals) / len(vals), 3) if vals else None
 
         result = {
-            'fin6m': _avg(collected['fin6m']),
-            'fin1y': _avg(collected['fin1y']),
-            'fin3y': _avg(collected['fin3y']),
-            'fin5y': _avg(collected['fin5y']),
+            'fin6m':  _avg(collected['fin6m']),
+            'fin1y':  _avg(collected['fin1y']),
+            'fin3y':  _avg(collected['fin3y']),
+            'fin5y':  _avg(collected['fin5y']),
+            'ktb3y':  _avg(collected['ktb3y']),
+            'ktb10y': _avg(collected['ktb10y']),
         }
         n = max(len(v) for v in collected.values())
-        print(f'    KOFIA 금융채Ⅰ AAA 5기관 평균 ({date_str}, {n}개 기관): {result}')
+        print(f'    KOFIA ({date_str}, {n}기관): 금융채={{"6m":{result["fin6m"]},"5y":{result["fin5y"]}}} 국고채={{"3y":{result["ktb3y"]},"10y":{result["ktb10y"]}}}')
         return result
 
     except Exception as e:
@@ -535,45 +590,21 @@ def update_market_rates(now, kofia_data: dict, kofia_prev_data: dict):
     """
     prev_day = prev_business_day(now)
 
-    def fetch_bok_rate(item_code):
-        """BOK ECOS API - (현재값, 전일값) 튜플 반환, 최대 2회 재시도"""
-        end_d   = prev_day.strftime('%Y%m%d')
-        start_d = (prev_day - timedelta(days=14)).strftime('%Y%m%d')
-        url = (f'{BOK_BASE}/StatisticSearch/{BOK_API_KEY}/json/kr/1/10'
-               f'/817Y002/D/{start_d}/{end_d}/{item_code}')
-        for attempt in range(2):
-            try:
-                with urllib.request.urlopen(url, timeout=30) as r:
-                    j = json.loads(r.read().decode('utf-8'))
-                rows = [x for x in (j.get('StatisticSearch', {}).get('row') or [])
-                        if x.get('DATA_VALUE') and x['DATA_VALUE'] != '-']
-                if len(rows) >= 2:
-                    return round(float(rows[-1]['DATA_VALUE']), 3), round(float(rows[-2]['DATA_VALUE']), 3)
-                elif rows:
-                    return round(float(rows[-1]['DATA_VALUE']), 3), None
-            except Exception as e:
-                print(f'    BOK fetch error ({item_code}) attempt {attempt+1}: {e}')
-        return None, None
-
     def make_rate(label, new_val, prev_val):
         """new_val: 전 영업일값, prev_val: 전전 영업일값 → 변동폭 = new - prev"""
         change = round(new_val - prev_val, 3) if new_val is not None and prev_val is not None else None
         return {'label': label, 'value': new_val, 'change': change}
 
-    print('  BOK 국고채 조회 중...')
-    ktb3y_cur,  ktb3y_prev  = fetch_bok_rate('010200000')
-    ktb10y_cur, ktb10y_prev = fetch_bok_rate('010210000')
-    print(f'    국고채 3년: {ktb3y_cur}% (전일 {ktb3y_prev}%)  |  10년: {ktb10y_cur}% (전일 {ktb10y_prev}%)')
-    print(f'    금융채 (KOFIA): {kofia_data}')
-    print(f'    금융채 전일 (KOFIA): {kofia_prev_data}')
+    print(f'    국고채 (KOFIA): 3년={kofia_data.get("ktb3y")}% / 10년={kofia_data.get("ktb10y")}%')
+    print(f'    금융채 (KOFIA): 6m={kofia_data.get("fin6m")} 1y={kofia_data.get("fin1y")} 3y={kofia_data.get("fin3y")} 5y={kofia_data.get("fin5y")}')
 
     rates_out = {
-        'ktb3y':  make_rate('국고채 3년',   ktb3y_cur,              ktb3y_prev),
-        'ktb10y': make_rate('국고채 10년',  ktb10y_cur,             ktb10y_prev),
-        'fin6m':  make_rate('금융채 6개월', kofia_data.get('fin6m'), kofia_prev_data.get('fin6m')),
-        'fin1y':  make_rate('금융채 1년',   kofia_data.get('fin1y'), kofia_prev_data.get('fin1y')),
-        'fin3y':  make_rate('금융채 3년',   kofia_data.get('fin3y'), kofia_prev_data.get('fin3y')),
-        'fin5y':  make_rate('금융채 5년',   kofia_data.get('fin5y'), kofia_prev_data.get('fin5y')),
+        'ktb3y':  make_rate('국고채 3년',   kofia_data.get('ktb3y'),  kofia_prev_data.get('ktb3y')),
+        'ktb10y': make_rate('국고채 10년',  kofia_data.get('ktb10y'), kofia_prev_data.get('ktb10y')),
+        'fin6m':  make_rate('금융채 6개월', kofia_data.get('fin6m'),  kofia_prev_data.get('fin6m')),
+        'fin1y':  make_rate('금융채 1년',   kofia_data.get('fin1y'),  kofia_prev_data.get('fin1y')),
+        'fin3y':  make_rate('금융채 3년',   kofia_data.get('fin3y'),  kofia_prev_data.get('fin3y')),
+        'fin5y':  make_rate('금융채 5년',   kofia_data.get('fin5y'),  kofia_prev_data.get('fin5y')),
     }
 
     updated_at = f"{prev_day.strftime('%Y.%m.%d')} 마감 기준"
