@@ -90,7 +90,7 @@ export default function MarketRatesView({ onBack }) {
       <div className="max-w-screen-xl mx-auto px-5 py-6 space-y-6">
         {/* 안내 배너 */}
         <div className="rounded-xl bg-blue-50 border border-blue-200 px-4 py-3 text-xs text-blue-700 space-y-0.5">
-          <p>🏛️ <b>국고채</b>: 한국은행 ECOS API 기준 (일별)</p>
+          <p>🏛️ <b>국고채</b>: 금융투자협회 채권정보센터 최종호가수익률 기준 (전일 마감)</p>
           <p>🏦 <b>금융채</b>: 채권시가평가수익률 기준 무보증 AAA (KOFIA 채권정보센터 기준)</p>
         </div>
 
@@ -124,7 +124,7 @@ export default function MarketRatesView({ onBack }) {
         )}
 
         <p className="text-xs text-slate-400 text-center pb-2">
-          국고채: 한국은행 ECOS | 금융채 무보증 AAA: 금융투자협회 채권정보센터
+          국고채 · 금융채 무보증 AAA: 금융투자협회 채권정보센터 (kofiabond.or.kr)
         </p>
       </div>
     </div>
