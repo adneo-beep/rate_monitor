@@ -828,7 +828,10 @@ def update_fss_rates(now):
 #  메인
 # ══════════════════════════════════════════════════════════
 
-async def main():
+async def main(args=None):
+    counselor_only = getattr(args, 'counselor_only', False)
+    skip_counselor = getattr(args, 'skip_counselor', False)
+
     # ── 기존 데이터 로드 ──────────────────────────────────
     prev_banks = {}
     prev_insurances = {}
@@ -852,38 +855,49 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
 
-        # ── 은행 스크레이핑 ──────────────────────────────
-        bank_scrapers = [scrape_woori, scrape_kb, scrape_hana, scrape_shinhan, scrape_nh,
-                         scrape_kakao, scrape_kbank]
         bank_scraped = []
-        for fn in bank_scrapers:
-            r = await fn(browser)
-            bank_scraped.append(r)
-            ok = r.get('status') == 'success'
-            detail = r.get('message') or f"{r.get('min_rate')} ~ {r.get('max_rate')}"
-            print(f"  [{'OK' if ok else 'NG'}] {r.get('bank')}: {detail}")
-
-        # ── 보험사 스크레이핑 ─────────────────────────────
-        ins_scrapers = [scrape_samsung_life, scrape_samsung_fire]
         ins_scraped  = []
-        for fn in ins_scrapers:
-            r = await fn(browser)
-            ins_scraped.append(r)
-            ok = r.get('status') == 'success'
-            detail = r.get('message') or f"{r.get('min_rate')} ~ {r.get('max_rate')}"
-            print(f"  [{'OK' if ok else 'NG'}] {r.get('bank')}: {detail}")
 
-        # ── 상담사 금리 ───────────────────────────────────
-        await scrape_counselor_from_lovable(browser, now)
+        if not counselor_only:
+            # ── 은행 스크레이핑 ──────────────────────────────
+            bank_scrapers = [scrape_woori, scrape_kb, scrape_hana, scrape_shinhan, scrape_nh,
+                             scrape_kakao, scrape_kbank]
+            for fn in bank_scrapers:
+                r = await fn(browser)
+                bank_scraped.append(r)
+                ok = r.get('status') == 'success'
+                detail = r.get('message') or f"{r.get('min_rate')} ~ {r.get('max_rate')}"
+                print(f"  [{'OK' if ok else 'NG'}] {r.get('bank')}: {detail}")
 
-        # ── KOFIA 금융채 AAA (전 영업일 + 전전 영업일) ────
-        print("\n시장금리(KOFIA) 수집 중...")
-        _prev_day      = prev_business_day(now)
-        _prev_prev_day = prev_business_day(_prev_day)
-        kofia_data      = await fetch_kofia_fin_bonds(browser, _prev_day)
-        kofia_prev_data = await fetch_kofia_fin_bonds(browser, _prev_prev_day)
+            # ── 보험사 스크레이핑 ─────────────────────────────
+            ins_scrapers = [scrape_samsung_life, scrape_samsung_fire]
+            for fn in ins_scrapers:
+                r = await fn(browser)
+                ins_scraped.append(r)
+                ok = r.get('status') == 'success'
+                detail = r.get('message') or f"{r.get('min_rate')} ~ {r.get('max_rate')}"
+                print(f"  [{'OK' if ok else 'NG'}] {r.get('bank')}: {detail}")
+
+        # ── 상담사 금리 (매주 월요일 별도 워크플로우로 실행) ──
+        if not skip_counselor:
+            await scrape_counselor_from_lovable(browser, now)
+        else:
+            print("  상담사 금리 업데이트 생략 (월요일 전용 워크플로우에서 실행)")
+
+        if not counselor_only:
+            # ── KOFIA 금융채 AAA (전 영업일 + 전전 영업일) ────
+            print("\n시장금리(KOFIA) 수집 중...")
+            _prev_day      = prev_business_day(now)
+            _prev_prev_day = prev_business_day(_prev_day)
+            kofia_data      = await fetch_kofia_fin_bonds(browser, _prev_day)
+            kofia_prev_data = await fetch_kofia_fin_bonds(browser, _prev_prev_day)
 
         await browser.close()
+
+    # --counselor-only 모드: counselor.json만 업데이트하고 종료
+    if counselor_only:
+        print("\n[OK] 상담사 금리 업데이트 완료 (--counselor-only)")
+        return
 
     # ── 은행 데이터 빌드 ──────────────────────────────────
     banks = []
@@ -1011,4 +1025,11 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--counselor-only', action='store_true',
+                        help='러버블 상담사 금리만 수집 (counselor.json 업데이트)')
+    parser.add_argument('--skip-counselor', action='store_true',
+                        help='상담사 금리 수집 제외 (매일 기본 실행용)')
+    _args = parser.parse_args()
+    asyncio.run(main(_args))

@@ -1,8 +1,8 @@
-name: Update Rates
+name: Update Counselor Rates
 
 on:
   schedule:
-    - cron: "40 19 * * *"
+    - cron: "0 2 * * 1"   # 매주 월요일 11:00 KST (02:00 UTC)
   workflow_dispatch:
 
 jobs:
@@ -19,11 +19,11 @@ jobs:
         run: |
           pip install playwright
           playwright install chromium --with-deps
-      - name: Run scraper
-        run: python scripts/update.py --skip-counselor
-      - name: Commit updated rates
+      - name: Run counselor scraper
+        run: python scripts/update.py --counselor-only
+      - name: Commit counselor rates
         uses: EndBug/add-and-commit@v9
         with:
-          message: "chore: update rates"
-          add: "public/rates.json public/counselor.json public/fss.json public/market-rates.json public/fss-rates.json"
+          message: "chore: update counselor rates (weekly)"
+          add: "public/counselor.json"
           default_author: github_actions

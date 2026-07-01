@@ -111,7 +111,7 @@ export default function CounselorView({ onBack }) {
               {COUNSELOR_SOURCE_URL}
             </a>
           </div>
-          <div className="text-slate-400">크레딧 부족으로 위 주소를 통해 직접확인 필요(매월초는 자동 반영)</div>
+          <div className="text-slate-400">크레딧 부족으로 위 주소를 통해 직접 확인 필요(매주 월요일만 반영됨)</div>
         </div>
 
         {loading ? (
