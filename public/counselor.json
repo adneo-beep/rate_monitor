@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.06.10 기준",
+  "updatedAt": "2026.07.01 기준",
   "banks": [
     {
       "id": "kb",
@@ -7,14 +7,14 @@
       "colorHex": "#f59e0b",
       "rates": [
         {
-          "type": "6개월",
-          "sell": 4.49,
-          "lease": 4.65
+          "type": "1년",
+          "sell": 4.5,
+          "lease": 4.66
         },
         {
-          "type": "5년(수기)",
-          "sell": 5.0,
-          "lease": 5.17
+          "type": "5년주기",
+          "sell": 5.62,
+          "lease": 5.65
         }
       ]
     },
@@ -24,14 +24,19 @@
       "colorHex": "#f97316",
       "rates": [
         {
-          "type": "6개월",
-          "sell": 4.51,
-          "lease": null
+          "type": "5년주기",
+          "sell": 5.42,
+          "lease": 5.42
         },
         {
-          "type": "5년주기",
-          "sell": 5.29,
-          "lease": 5.52
+          "type": "6개월",
+          "sell": 5.02,
+          "lease": 5.12
+        },
+        {
+          "type": "5년혼합",
+          "sell": 5.42,
+          "lease": 5.42
         }
       ]
     },
@@ -41,19 +46,19 @@
       "colorHex": "#14b8a6",
       "rates": [
         {
-          "type": "6개월",
-          "sell": 4.43,
-          "lease": 4.38
+          "type": "1년",
+          "sell": 4.9,
+          "lease": 4.9
         },
         {
           "type": "5년주기",
-          "sell": 5.11,
-          "lease": 5.06
+          "sell": 5.37,
+          "lease": 5.37
         },
         {
           "type": "5년혼합",
-          "sell": 5.22,
-          "lease": 5.17
+          "sell": 5.52,
+          "lease": 5.52
         }
       ]
     },
@@ -63,14 +68,19 @@
       "colorHex": "#3b82f6",
       "rates": [
         {
-          "type": "1년",
-          "sell": 4.78,
-          "lease": 4.85
+          "type": "5년주기",
+          "sell": 5.9,
+          "lease": 5.9
         },
         {
-          "type": "5년주기",
-          "sell": 5.12,
-          "lease": 5.2
+          "type": "6개월",
+          "sell": 4.78,
+          "lease": 4.78
+        },
+        {
+          "type": "5년혼합",
+          "sell": 5.58,
+          "lease": 5.58
         }
       ]
     },
@@ -92,13 +102,7 @@
       "id": "samsung-fire",
       "name": "삼성화재",
       "colorHex": "#e11d48",
-      "rates": [
-        {
-          "type": "5년(수기)",
-          "sell": 5.0,
-          "lease": 5.16
-        }
-      ]
+      "rates": null
     },
     {
       "id": "samsung-life",
