@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.07.01 기준",
+  "updatedAt": "2026.07.02 기준",
   "banks": [
     {
       "id": "kb",
@@ -8,13 +8,13 @@
       "rates": [
         {
           "type": "1년",
-          "sell": 4.5,
-          "lease": 4.66
+          "sell": 4.46,
+          "lease": 4.6
         },
         {
           "type": "5년주기",
-          "sell": 5.62,
-          "lease": 5.65
+          "sell": 5.58,
+          "lease": 5.61
         }
       ]
     },
@@ -25,18 +25,18 @@
       "rates": [
         {
           "type": "5년주기",
-          "sell": 5.42,
-          "lease": 5.42
+          "sell": 5.48,
+          "lease": 5.48
         },
         {
           "type": "6개월",
-          "sell": 5.02,
-          "lease": 5.12
+          "sell": 4.92,
+          "lease": null
         },
         {
           "type": "5년혼합",
-          "sell": 5.42,
-          "lease": 5.42
+          "sell": 5.63,
+          "lease": 5.63
         }
       ]
     },
@@ -46,19 +46,9 @@
       "colorHex": "#14b8a6",
       "rates": [
         {
-          "type": "1년",
-          "sell": 4.9,
-          "lease": 4.9
-        },
-        {
-          "type": "5년주기",
-          "sell": 5.37,
-          "lease": 5.37
-        },
-        {
-          "type": "5년혼합",
-          "sell": 5.52,
-          "lease": 5.52
+          "type": "6개월",
+          "sell": 4.78,
+          "lease": 4.78
         }
       ]
     },
@@ -69,18 +59,8 @@
       "rates": [
         {
           "type": "5년주기",
-          "sell": 5.9,
-          "lease": 5.9
-        },
-        {
-          "type": "6개월",
-          "sell": 4.78,
-          "lease": 4.78
-        },
-        {
-          "type": "5년혼합",
-          "sell": 5.58,
-          "lease": 5.58
+          "sell": 5.68,
+          "lease": 5.68
         }
       ]
     },
@@ -88,7 +68,18 @@
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
-      "rates": null
+      "rates": [
+        {
+          "type": "1년",
+          "sell": 4.49,
+          "lease": 4.46
+        },
+        {
+          "type": "5년(후기)",
+          "sell": 5.53,
+          "lease": 5.5
+        }
+      ]
     }
   ],
   "insurances": [
