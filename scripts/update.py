@@ -191,6 +191,8 @@ async def scrape_shinhan(browser):
 
 
 async def scrape_nh(browser):
+    # NH농협은행 금융상품몰 > 대출 > 주택/전세 > NH주택담보대출_5년주기형
+    # URL 변경 시: smartmarket.nonghyup.com → 대출 → 주택/전세 탭에서 동일 상품 탐색 (농축협 아님)
     page = await browser.new_page()
     try:
         await page.goto("https://smartmarket.nonghyup.com/servlet/BFLNW0004R.view", timeout=30000)
@@ -199,7 +201,8 @@ async def scrape_nh(browser):
             for (const row of document.querySelectorAll('table tr')) {
                 const c = [...row.querySelectorAll('td')];
                 if (!c.find(td => td.textContent.includes('NH주택담보대출_5년주기형'))) continue;
-                const text = (c[3] || c[c.length - 2])?.textContent || '';
+                // c[3] = '최고 연X.XX%최저 연X.XX%' 금리 텍스트 셀
+                const text = c[3]?.textContent || '';
                 const maxM = text.match(/최고\\s*연\\s*([\\d.]+)/);
                 const minM = text.match(/최저\\s*연\\s*([\\d.]+)/);
                 return { min_rate: minM?.[1] || '-', max_rate: maxM?.[1] || '-' };
