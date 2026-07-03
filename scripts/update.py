@@ -464,7 +464,7 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
 
     page = await browser.new_page()
     try:
-        print(f'    KOFIA WebSquare 페이지 로딩 ({date_str})...')
+        print(f'    KOFIA 금융채 페이지 로딩 ({date_str})...')
         await page.goto(kofia_url, timeout=60000, wait_until='domcontentloaded')
         await page.wait_for_timeout(10000)
 
@@ -502,20 +502,20 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
         }""", date_str)
 
         if js_result.get('error'):
-            print(f'    KOFIA JS 오류: {js_result["error"]}')
+            print(f'    KOFIA 금융채 JS 오류: {js_result["error"]}')
             return {}
         if js_result.get('timeout'):
-            print(f'    KOFIA 타임아웃: 응답 없음')
+            print(f'    KOFIA 금융채 타임아웃: 응답 없음')
             return {}
 
         xml_str = js_result.get('xml', '')
         if not xml_str:
-            print(f'    KOFIA XML 응답 비어있음')
+            print(f'    KOFIA 금융채 XML 응답 비어있음')
             return {}
 
         # XML 파싱 - 5개 기관 금융채Ⅰ(은행채) 무보증 AAA 행을 모두 수집
         root = ET.fromstring(xml_str)
-        collected = {'fin6m': [], 'fin1y': [], 'fin3y': [], 'fin5y': [], 'ktb3y': [], 'ktb10y': []}
+        collected = {'fin6m': [], 'fin1y': [], 'fin3y': [], 'fin5y': []}
 
         for dto in root.iter('BISBndSrtPrcDayDTO'):
             cat     = (dto.findtext('largeCategoryMrk') or '').strip()
@@ -540,27 +540,10 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
                 if v8  is not None: collected['fin3y'].append(v8)
                 if v10 is not None: collected['fin5y'].append(v10)
 
-            # 국고채(KTB): val7=3년, val11=10년
-            if dto.findtext('typeNmMrkEng') == 'KTB':
-                def _get_ktb(n, _dto=dto):
-                    v = _dto.findtext(f'val{n}')
-                    if v:
-                        try:
-                            f = float(v)
-                            return f if f > 0 else None
-                        except Exception:
-                            pass
-                    return None
-                v7  = _get_ktb(7)
-                v11 = _get_ktb(11)
-                if v7  is not None: collected['ktb3y'].append(v7)
-                if v11 is not None: collected['ktb10y'].append(v11)
-
         if not any(collected.values()):
-            print(f'    KOFIA: 금융채Ⅰ 무보증 AAA / 국고채 행 없음 (XML 길이={len(xml_str)})')
+            print(f'    KOFIA 금융채: 무보증 AAA 행 없음 (XML 길이={len(xml_str)})')
             return {}
 
-        # 5개 기관 평균 계산
         def _avg(vals):
             return round(sum(vals) / len(vals), 3) if vals else None
 
@@ -569,15 +552,113 @@ async def fetch_kofia_fin_bonds(browser, prev_day):
             'fin1y':  _avg(collected['fin1y']),
             'fin3y':  _avg(collected['fin3y']),
             'fin5y':  _avg(collected['fin5y']),
-            'ktb3y':  _avg(collected['ktb3y']),
-            'ktb10y': _avg(collected['ktb10y']),
         }
         n = max(len(v) for v in collected.values())
-        print(f'    KOFIA ({date_str}, {n}기관): 금융채={{"6m":{result["fin6m"]},"5y":{result["fin5y"]}}} 국고채={{"3y":{result["ktb3y"]},"10y":{result["ktb10y"]}}}')
+        print(f'    KOFIA 금융채 ({date_str}, {n}기관): 6m={result["fin6m"]} 5y={result["fin5y"]}')
         return result
 
     except Exception as e:
-        print(f'    KOFIA 실패: {e}')
+        print(f'    KOFIA 금융채 실패: {e}')
+        return {}
+    finally:
+        await page.close()
+
+
+async def fetch_kofia_ktb_rates(browser, prev_day):
+    """
+    KOFIA 채권정보센터 - 국고채 최종호가수익률 (BISLastAskPrcDay.xml)
+    채권금리 > 채권금리 메뉴에서 국고채권(3년)/국고채권(10년) val4 값 추출
+
+    val4 = 최종호가수익률 (장 마감 후 확정, 당일 장중에는 빈값)
+    조회일 = 전 영업일 → val4 = 해당일 최종호가수익률
+    """
+    import xml.etree.ElementTree as ET
+
+    date_str = prev_day.strftime('%Y%m%d')
+    kofia_url = (
+        'https://www.kofiabond.or.kr/websquare/websquare.html'
+        '?w2xPath=/xml/bondint/lastrop/BISLastAskPrcDay.xml'
+        '&divisionId=MBIS01010010000000'
+        '&divisionNm=%EC%B1%84%EA%B6%8C%EA%B8%88%EB%A6%AC'
+        '&tabIdx=1&w2xHome=/xml/Com/&w2xDocumentRoot='
+    )
+
+    page = await browser.new_page()
+    try:
+        print(f'    KOFIA 최종호가수익률 페이지 로딩 ({date_str})...')
+        await page.goto(kofia_url, timeout=60000, wait_until='domcontentloaded')
+        await page.wait_for_timeout(10000)
+
+        js_result = await page.evaluate("""(dateStr) => {
+            return new Promise((resolve) => {
+                if (typeof srchDt === 'undefined' || typeof searchData === 'undefined') {
+                    resolve({ error: 'WebSquare not initialized' }); return;
+                }
+                try {
+                    srchDt.setValue(dateStr);
+                } catch(e) {
+                    resolve({ error: 'setValue failed: ' + e.message }); return;
+                }
+
+                const origCallBack = window.callBack;
+                window.callBack = function(svcId, fnId, strResp) {
+                    origCallBack(svcId, fnId, strResp);
+                    if (svcId === 'BISLastAskPrcROPSrchSO' && fnId === 'listDay') {
+                        try {
+                            const node = getInstanceNode('respBondInt/root/message/BISComDspDatListDTO');
+                            const xml  = WebSquare.xml.serialize(node);
+                            window.callBack = origCallBack;
+                            resolve({ xml: xml || '' });
+                        } catch(e) {
+                            window.callBack = origCallBack;
+                            resolve({ error: 'serialize error: ' + e.message });
+                        }
+                    }
+                };
+
+                searchData();
+                setTimeout(() => { window.callBack = origCallBack; resolve({ timeout: true }); }, 20000);
+            });
+        }""", date_str)
+
+        if js_result.get('error'):
+            print(f'    KOFIA 최종호가 JS 오류: {js_result["error"]}')
+            return {}
+        if js_result.get('timeout'):
+            print(f'    KOFIA 최종호가 타임아웃')
+            return {}
+
+        xml_str = js_result.get('xml', '')
+        if not xml_str:
+            print(f'    KOFIA 최종호가 XML 응답 비어있음')
+            return {}
+
+        root = ET.fromstring('<root>' + xml_str + '</root>')
+        result = {}
+        for dto in root.iter('BISComDspDatDTO'):
+            name = (dto.findtext('val1') or '').strip()
+            val4_text = (dto.findtext('val4') or '').strip()
+            if not val4_text:
+                continue
+            try:
+                v = float(val4_text)
+            except Exception:
+                continue
+            if v <= 0:
+                continue
+            if '국고채권(3년)' in name:
+                result['ktb3y'] = round(v, 3)
+            elif '국고채권(10년)' in name:
+                result['ktb10y'] = round(v, 3)
+
+        if result:
+            print(f'    KOFIA 최종호가 ({date_str}): 3년={result.get("ktb3y")} / 10년={result.get("ktb10y")}')
+        else:
+            print(f'    KOFIA 최종호가: 국고채 데이터 없음 (XML 길이={len(xml_str)})')
+        return result
+
+    except Exception as e:
+        print(f'    KOFIA 최종호가 실패: {e}')
         return {}
     finally:
         await page.close()
@@ -885,12 +966,16 @@ async def main(args=None):
             print("  상담사 금리 업데이트 생략 (월요일 전용 워크플로우에서 실행)")
 
         if not counselor_only:
-            # ── KOFIA 금융채 AAA (전 영업일 + 전전 영업일) ────
+            # ── KOFIA 금융채 AAA + 국고채 최종호가수익률 ────
             print("\n시장금리(KOFIA) 수집 중...")
             _prev_day      = prev_business_day(now)
             _prev_prev_day = prev_business_day(_prev_day)
-            kofia_data      = await fetch_kofia_fin_bonds(browser, _prev_day)
-            kofia_prev_data = await fetch_kofia_fin_bonds(browser, _prev_prev_day)
+            fin_data       = await fetch_kofia_fin_bonds(browser, _prev_day)
+            fin_prev_data  = await fetch_kofia_fin_bonds(browser, _prev_prev_day)
+            ktb_data       = await fetch_kofia_ktb_rates(browser, _prev_day)
+            ktb_prev_data  = await fetch_kofia_ktb_rates(browser, _prev_prev_day)
+            kofia_data      = {**fin_data, **ktb_data}
+            kofia_prev_data = {**fin_prev_data, **ktb_prev_data}
 
         await browser.close()
 
