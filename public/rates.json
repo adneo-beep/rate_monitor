@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.07.06 12:56 기준",
+  "updatedAt": "2026.07.07 18:03 기준",
   "banks": [
     {
       "id": "kb",
@@ -36,8 +36,8 @@
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 5.41,
-      "maxRate": 6.61,
+      "minRate": 5.42,
+      "maxRate": 6.62,
       "minChange": 0.01,
       "maxChange": 0.01
     },
@@ -532,6 +532,23 @@
       "hana_max": 6.997,
       "woori_min": 5.41,
       "woori_max": 6.61,
+      "nh_min": 5.05,
+      "nh_max": 7.35,
+      "kakao_min": 4.865,
+      "kakao_max": 6.688,
+      "kbank_min": 4.58,
+      "kbank_max": 8.36
+    },
+    {
+      "date": "7/7",
+      "kb_min": 5.09,
+      "kb_max": 6.49,
+      "shinhan_min": 4.64,
+      "shinhan_max": 6.05,
+      "hana_min": 5.697,
+      "hana_max": 6.997,
+      "woori_min": 5.42,
+      "woori_max": 6.62,
       "nh_min": 5.05,
       "nh_max": 7.35,
       "kakao_min": 4.865,
