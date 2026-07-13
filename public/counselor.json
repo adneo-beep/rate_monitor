@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.07.03 기준",
+  "updatedAt": "2026.07.13 기준",
   "banks": [
     {
       "id": "kb",
@@ -7,19 +7,19 @@
       "colorHex": "#f59e0b",
       "rates": [
         {
-          "type": "3개월",
-          "sell": 4.46,
-          "lease": 4.6
+          "type": "6개월",
+          "sell": null,
+          "lease": 4.55
         },
         {
           "type": "1년",
-          "sell": 4.6,
-          "lease": 4.6
+          "sell": 4.45,
+          "lease": null
         },
         {
           "type": "5년주기",
-          "sell": 5.6,
-          "lease": 5.63
+          "sell": 5.61,
+          "lease": 5.61
         }
       ]
     },
@@ -29,14 +29,14 @@
       "colorHex": "#f97316",
       "rates": [
         {
-          "type": "3개월",
-          "sell": 5.05,
-          "lease": 5.05
+          "type": "6개월",
+          "sell": 4.93,
+          "lease": 5.03
         },
         {
           "type": "5년주기",
-          "sell": 5.45,
-          "lease": 5.45
+          "sell": 5.49,
+          "lease": 5.49
         }
       ]
     },
@@ -46,19 +46,19 @@
       "colorHex": "#14b8a6",
       "rates": [
         {
-          "type": "3개월",
-          "sell": 4.92,
-          "lease": 4.92
+          "type": "1년",
+          "sell": 4.88,
+          "lease": 4.0
         },
         {
           "type": "5년주기",
-          "sell": 5.43,
-          "lease": 5.43
+          "sell": 5.46,
+          "lease": null
         },
         {
-          "type": "5년혼합",
-          "sell": 5.58,
-          "lease": 5.5
+          "type": "5년 혼합",
+          "sell": 5.61,
+          "lease": 5.61
         }
       ]
     },
@@ -68,14 +68,14 @@
       "colorHex": "#3b82f6",
       "rates": [
         {
-          "type": "3개월",
-          "sell": 4.78,
-          "lease": 4.78
+          "type": "5년주기",
+          "sell": 5.74,
+          "lease": null
         },
         {
-          "type": "5년주기",
-          "sell": 6.01,
-          "lease": 6.01
+          "type": "3개월",
+          "sell": 4.72,
+          "lease": 4.72
         }
       ]
     },
@@ -83,7 +83,18 @@
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
-      "rates": null
+      "rates": [
+        {
+          "type": "5년주기",
+          "sell": 5.52,
+          "lease": 5.49
+        },
+        {
+          "type": "3개월",
+          "sell": 4.49,
+          "lease": 4.46
+        }
+      ]
     }
   ],
   "insurances": [
