@@ -20,7 +20,7 @@ jobs:
           pip install playwright
           playwright install chromium --with-deps
       - name: Run scraper
-        run: python scripts/update.py --skip-counselor
+        run: python scripts/update.py
       - name: Commit updated rates
         uses: EndBug/add-and-commit@v9
         with:

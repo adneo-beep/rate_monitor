@@ -699,115 +699,140 @@ def update_market_rates(now, kofia_data: dict, kofia_prev_data: dict):
 
 
 # ══════════════════════════════════════════════════════════
-#  상담사 금리 (Lovable)
+#  상담사 금리 (findsr.kr)
 # ══════════════════════════════════════════════════════════
 
-async def scrape_counselor_from_lovable(browser, now):
-    """loan-rate-scoop.lovable.app에서 금리표 파싱 → counselor.json"""
+async def scrape_counselor_from_findsr(browser, now):
+    """findsr.kr 아파트담보대출 금리표에서 상담사 금리 수집 → counselor.json
+    URL 변경 시: findsr.kr → 아파트담보대출 금리표 링크 탐색
+    """
     COUNSELOR_FILE = os.path.join(BASE_DIR, '..', 'public', 'counselor.json')
-    LOVABLE_URL    = 'https://loan-rate-scoop.lovable.app/'
+    FINDSR_URL     = 'https://findsr.kr/new1/board_ver3_view_test9.html'
 
-    _BANK_META = {
-        '국민':     {'id': 'kb',      'name': 'KB국민은행', 'colorHex': '#f59e0b'},
-        '신한':     {'id': 'shinhan', 'name': '신한은행',   'colorHex': '#f97316'},
-        '하나':     {'id': 'hana',    'name': '하나은행',   'colorHex': '#14b8a6'},
-        '우리':     {'id': 'woori',   'name': '우리은행',   'colorHex': '#3b82f6'},
-        '농협은행': {'id': 'nh',      'name': 'NH농협은행', 'colorHex': '#22c55e'},
+    # rv[id] 마지막 2자리 숫자 → 금리 유형
+    # 매매: 03~24, 가계: 27~48 (offset +24)
+    SUFFIX_MAP = {
+        '03': '3개월', '06': '6개월', '09': '1년',    '15': '3년',
+        '18': '5년주기', '21': '5년혼합', '24': '만기고정',
+        '27': '3개월', '30': '6개월', '33': '1년',    '39': '3년',
+        '42': '5년주기', '45': '5년혼합', '48': '만기고정',
     }
-    _INS_META = {
+    SELL_SUFFIXES = {'03', '06', '09', '15', '18', '21', '24'}
+
+    BANK_META = {
+        '국민은행': {'id': 'kb',      'name': 'KB국민은행',  'colorHex': '#f59e0b'},
+        '신한은행': {'id': 'shinhan', 'name': '신한은행',    'colorHex': '#f97316'},
+        '하나은행': {'id': 'hana',    'name': '하나은행',    'colorHex': '#14b8a6'},
+        '우리은행': {'id': 'woori',   'name': '우리은행',    'colorHex': '#3b82f6'},
+        '농협은행': {'id': 'nh',      'name': 'NH농협은행',  'colorHex': '#22c55e'},
+        '기업은행': {'id': 'ibk',     'name': 'IBK기업은행', 'colorHex': '#6366f1'},
+        'IM뱅크':   {'id': 'im',      'name': 'IM뱅크',      'colorHex': '#8b5cf6'},
+        '부산은행': {'id': 'bs',      'name': '부산은행',    'colorHex': '#06b6d4'},
+        '경남은행': {'id': 'kn',      'name': '경남은행',    'colorHex': '#0ea5e9'},
+        '제일은행': {'id': 'sc',      'name': 'SC제일은행',  'colorHex': '#64748b'},
+        '수협은행': {'id': 'sh2',     'name': '수협은행',    'colorHex': '#0284c7'},
+        '전북은행': {'id': 'jb',      'name': '전북은행',    'colorHex': '#7c3aed'},
+        '광주은행': {'id': 'gj',      'name': '광주은행',    'colorHex': '#db2777'},
+    }
+    INS_META = {
+        '삼성생명': {'id': 'samsung-life', 'name': '삼성생명', 'colorHex': '#3b82f6'},
         '한화생명': {'id': 'hanwha',       'name': '한화생명', 'colorHex': '#ef4444'},
+        '교보생명': {'id': 'kyobo',        'name': '교보생명', 'colorHex': '#22c55e'},
         '삼성화재': {'id': 'samsung-fire', 'name': '삼성화재', 'colorHex': '#e11d48'},
+        '농협손보': {'id': 'nh-ins',       'name': '농협손보', 'colorHex': '#86efac'},
+        'KB손보':   {'id': 'kb-ins',       'name': 'KB손보',   'colorHex': '#fde047'},
+        '푸본생명': {'id': 'fubon',        'name': '푸본생명', 'colorHex': '#a78bfa'},
+        '현대해상': {'id': 'hyundai',      'name': '현대해상', 'colorHex': '#fb923c'},
+        '동양생명': {'id': 'dongyang',     'name': '동양생명', 'colorHex': '#2dd4bf'},
+        'ABL생명':  {'id': 'abl',          'name': 'ABL생명',  'colorHex': '#94a3b8'},
+        '흥국화재': {'id': 'heungkuk',     'name': '흥국화재', 'colorHex': '#ec4899'},
+        '하나생명': {'id': 'hana-life',    'name': '하나생명', 'colorHex': '#0891b2'},
     }
-    COL_NORMALIZE = {'5년년': '5년변동', '5년(혼합)': '5년혼합', '5년(주기)': '5년주기'}
-    _BANK_ORDER = ['kb', 'shinhan', 'hana', 'woori', 'nh']
 
-    print("\n상담사 금리 수집 시작 (loan-rate-scoop.lovable.app)...")
+    print("\n상담사 금리 수집 시작 (findsr.kr)...")
+    page = await browser.new_page()
     try:
-        page = await browser.new_page()
-        await page.goto(LOVABLE_URL, timeout=30000)
-        try:
-            await page.wait_for_selector('table tbody tr', timeout=40000)
-        except Exception:
-            print("  [NG] 테이블 로드 타임아웃")
-            await page.close()
-            return
+        await page.goto(FINDSR_URL, timeout=30000)
+        await page.wait_for_load_state('networkidle', timeout=20000)
 
-        raw = await page.evaluate("""() => {
-            const headers = [...document.querySelectorAll('table thead th')]
-                .map(h => h.innerText.trim());
-            const rows = [...document.querySelectorAll('table tbody tr')].map(r =>
-                [...r.querySelectorAll('td, th')].map(c => c.innerText.trim())
-            );
-            const dateMatch = document.body.innerText.match(/기준일\\s*([\\d-]+)/);
-            return { headers, rows, date: dateMatch ? dateMatch[1] : '' };
+        items = await page.evaluate("""() => {
+            const SUFFIX_MAP = {
+                '03': '3개월', '06': '6개월', '09': '1년',    '15': '3년',
+                '18': '5년주기', '21': '5년혼합', '24': '만기고정',
+                '27': '3개월', '30': '6개월', '33': '1년',    '39': '3년',
+                '42': '5년주기', '45': '5년혼합', '48': '만기고정',
+            };
+            const TYPE_ORDER = ['3개월','6개월','1년','3년','5년주기','5년혼합','만기고정'];
+            const results = [];
+
+            for (const bankEl of document.querySelectorAll('.bank')) {
+                const nameEl = bankEl.querySelector('.bk-side');
+                if (!nameEl) continue;
+                const name = nameEl.textContent.trim();
+
+                const sellRates = {}, leaseRates = {};
+
+                for (const dr of bankEl.querySelectorAll('.dr')) {
+                    const lbl = dr.querySelector('.dr-lbl');
+                    if (!lbl) continue;
+                    const lblText = lbl.textContent.trim();
+                    const isSell  = lblText.includes('매매');
+                    const isLease = lblText.includes('가계');
+                    if (!isSell && !isLease) continue;
+
+                    for (const rv of dr.querySelectorAll('.rv[id]')) {
+                        const val = rv.textContent.trim();
+                        if (!val) continue;
+                        const suffix = rv.id.slice(-2);
+                        const type = SUFFIX_MAP[suffix];
+                        if (!type) continue;
+                        const num = parseFloat(val);
+                        if (isNaN(num)) continue;
+                        if (isSell) sellRates[type] = num;
+                        else         leaseRates[type] = num;
+                    }
+                }
+
+                const rates = [];
+                for (const type of TYPE_ORDER) {
+                    if (sellRates[type] != null || leaseRates[type] != null) {
+                        rates.push({
+                            type,
+                            sell:  sellRates[type]  ?? null,
+                            lease: leaseRates[type] ?? null,
+                        });
+                    }
+                }
+                results.push({ name, rates: rates.length > 0 ? rates : null });
+            }
+            return results;
         }""")
-        await page.close()
-
-        headers = raw['headers']
-        rows    = raw['rows']
-        date_str = raw['date']
-        rate_cols = [COL_NORMALIZE.get(h, h) for h in headers[2:]]
-
-        def _parse_rate(s):
-            import math
-            s = s.strip().replace('%', '')
-            try:
-                v = round(float(s), 3)
-                return None if math.isnan(v) or math.isinf(v) else v
-            except Exception:
-                return None
-
-        institution_data = {}
-        current_bank = None
-        for row in rows:
-            if not row:
-                continue
-            if row[0] not in ('생활안정',) and len(row) > 1 and row[1] == '매매':
-                current_bank = row[0]
-                institution_data[current_bank] = {'sell': row[2:], 'lease': []}
-            elif row[0] == '생활안정' and current_bank:
-                institution_data[current_bank]['lease'] = row[1:]
-
-        def build_rates(sell_vals, lease_vals):
-            rates = []
-            for i, col_name in enumerate(rate_cols):
-                s = _parse_rate(sell_vals[i]) if i < len(sell_vals) else None
-                l = _parse_rate(lease_vals[i]) if i < len(lease_vals) else None
-                if s is not None or l is not None:
-                    rates.append({'type': col_name, 'sell': s, 'lease': l})
-            return rates or None
 
         banks_out = []
-        for key, meta in _BANK_META.items():
-            d = institution_data.get(key, {})
-            rates = build_rates(d.get('sell', []), d.get('lease', []))
-            banks_out.append({'id': meta['id'], 'name': meta['name'],
-                              'colorHex': meta['colorHex'], 'rates': rates})
-        banks_out.sort(key=lambda b: _BANK_ORDER.index(b['id']) if b['id'] in _BANK_ORDER else 99)
-
-        ins_out = []
-        for key, meta in _INS_META.items():
-            d = institution_data.get(key, {})
-            rates = build_rates(d.get('sell', []), d.get('lease', []))
-            ins_out.append({'id': meta['id'], 'name': meta['name'],
-                            'colorHex': meta['colorHex'], 'rates': rates})
-
-        if os.path.exists(COUNSELOR_FILE):
-            with open(COUNSELOR_FILE, encoding='utf-8') as f:
-                prev = json.load(f)
-            existing_ids = {i['id'] for i in ins_out}
-            for ins in prev.get('insurances', []):
-                if ins['id'] not in existing_ids:
-                    ins_out.append(ins)
+        ins_out   = []
+        for item in items:
+            name  = item['name']
+            rates = item['rates']
+            if name in BANK_META:
+                m = BANK_META[name]
+                banks_out.append({'id': m['id'], 'name': m['name'],
+                                  'colorHex': m['colorHex'], 'rates': rates})
+            elif name in INS_META:
+                m = INS_META[name]
+                ins_out.append({'id': m['id'], 'name': m['name'],
+                                'colorHex': m['colorHex'], 'rates': rates})
 
         updated_at = now.strftime('%Y.%m.%d 기준')
-        counselor_result = {'updatedAt': updated_at, 'banks': banks_out, 'insurances': ins_out}
+        result = {'updatedAt': updated_at, 'banks': banks_out, 'insurances': ins_out}
         with open(COUNSELOR_FILE, 'w', encoding='utf-8') as f:
-            json.dump(counselor_result, f, ensure_ascii=False, indent=2)
-        print(f"  [OK] counselor.json 업데이트 완료: {updated_at}")
+            json.dump(result, f, ensure_ascii=False, indent=2)
+        print(f"  [OK] counselor.json 업데이트 완료 ({updated_at}): "
+              f"{len(banks_out)}개 은행, {len(ins_out)}개 보험사")
 
     except Exception as e:
         print(f"  [NG] 상담사 금리 업데이트 실패: {e}")
+    finally:
+        await page.close()
 
 
 # ══════════════════════════════════════════════════════════
@@ -962,11 +987,11 @@ async def main(args=None):
                 detail = r.get('message') or f"{r.get('min_rate')} ~ {r.get('max_rate')}"
                 print(f"  [{'OK' if ok else 'NG'}] {r.get('bank')}: {detail}")
 
-        # ── 상담사 금리 (매주 월요일 별도 워크플로우로 실행) ──
+        # ── 상담사 금리 (findsr.kr, 매일 업데이트) ──
         if not skip_counselor:
-            await scrape_counselor_from_lovable(browser, now)
+            await scrape_counselor_from_findsr(browser, now)
         else:
-            print("  상담사 금리 업데이트 생략 (월요일 전용 워크플로우에서 실행)")
+            print("  상담사 금리 업데이트 생략 (--skip-counselor 플래그)")
 
         if not counselor_only:
             # ── KOFIA 금융채 AAA + 국고채 최종호가수익률 ────
@@ -1116,7 +1141,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--counselor-only', action='store_true',
-                        help='러버블 상담사 금리만 수집 (counselor.json 업데이트)')
+                        help='findsr.kr 상담사 금리만 수집 (counselor.json 업데이트)')
     parser.add_argument('--skip-counselor', action='store_true',
                         help='상담사 금리 수집 제외 (매일 기본 실행용)')
     _args = parser.parse_args()

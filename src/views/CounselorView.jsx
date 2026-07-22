@@ -111,7 +111,7 @@ export default function CounselorView({ onBack }) {
               {COUNSELOR_SOURCE_URL}
             </a>
           </div>
-          <div className="text-slate-400">크레딧 부족으로 위 주소를 통해 직접 확인 필요(매주 월요일만 반영됨)</div>
+          <div className="text-slate-400">아파트담보대출 금리표 기준 · 매일 업데이트</div>
         </div>
 
         {loading ? (
@@ -125,7 +125,7 @@ export default function CounselorView({ onBack }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left: Banks */}
             <div>
-              <PanelHeader title="🏦 은행권" subtitle="국민 · 신한 · 하나 · 우리 · 농협" />
+              <PanelHeader title="🏦 은행권" subtitle="국민 · 신한 · 하나 · 우리 · 농협 · 기업 외" />
               <div className="space-y-3">
                 {data.banks.map((b) => (
                   <InstitutionCard key={b.id} institution={b} />
@@ -135,7 +135,7 @@ export default function CounselorView({ onBack }) {
 
             {/* Right: Insurance */}
             <div>
-              <PanelHeader title="🛡️ 보험사" subtitle="삼성생명 · 한화생명 · 교보생명 · 삼성화재" />
+              <PanelHeader title="🛡️ 보험사" subtitle="삼성생명 · 한화생명 · 한화손보 · 농협손보 외" />
               <div className="space-y-3">
                 {data.insurances.map((ins) => (
                   <InstitutionCard key={ins.id} institution={ins} />
