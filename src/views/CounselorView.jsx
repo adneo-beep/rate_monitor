@@ -99,7 +99,7 @@ export default function CounselorView({ onBack }) {
 
       <div className="max-w-screen-xl mx-auto px-5 py-6 space-y-4">
         {/* Source */}
-        <div className="text-xs text-slate-500 space-y-1">
+        <div className="text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <span>출처:</span>
             <a
@@ -111,7 +111,6 @@ export default function CounselorView({ onBack }) {
               {COUNSELOR_SOURCE_URL}
             </a>
           </div>
-          <div className="text-slate-400">아파트담보대출 금리표 기준 · 매일 업데이트</div>
         </div>
 
         {loading ? (
