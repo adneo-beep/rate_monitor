@@ -1,25 +1,25 @@
 {
-  "updatedAt": "2026.07.26 09:57 기준",
+  "updatedAt": "2026.07.27 05:34 기준",
   "banks": [
     {
       "id": "kb",
       "name": "KB국민은행",
       "colorHex": "#f59e0b",
       "product": "KB주택담보대출 금융채5년",
-      "minRate": 5.2,
-      "maxRate": 6.6,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.25,
+      "maxRate": 6.65,
+      "minChange": 0.05,
+      "maxChange": 0.05
     },
     {
       "id": "shinhan",
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.83,
-      "maxRate": 6.23,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.86,
+      "maxRate": 6.26,
+      "minChange": 0.03,
+      "maxChange": 0.03
     },
     {
       "id": "hana",
@@ -66,10 +66,10 @@
       "name": "케이뱅크",
       "colorHex": "#a78bfa",
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
-      "minRate": 4.76,
-      "maxRate": 8.54,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.79,
+      "maxRate": 8.57,
+      "minChange": 0.03,
+      "maxChange": 0.03
     }
   ],
   "insurances": [
@@ -691,6 +691,23 @@
       "kakao_max": 7.021,
       "kbank_min": 4.76,
       "kbank_max": 8.54
+    },
+    {
+      "date": "7/27",
+      "kb_min": 5.25,
+      "kb_max": 6.65,
+      "shinhan_min": 4.86,
+      "shinhan_max": 6.26,
+      "hana_min": 5.932,
+      "hana_max": 7.232,
+      "woori_min": 5.61,
+      "woori_max": 6.81,
+      "nh_min": 5.27,
+      "nh_max": 7.57,
+      "kakao_min": 5.198,
+      "kakao_max": 7.021,
+      "kbank_min": 4.79,
+      "kbank_max": 8.57
     }
   ]
 }
