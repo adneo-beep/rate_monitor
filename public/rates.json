@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.07.27 05:34 기준",
+  "updatedAt": "2026.07.27 09:22 기준",
   "banks": [
     {
       "id": "kb",
@@ -68,8 +68,8 @@
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
       "minRate": 4.79,
       "maxRate": 8.57,
-      "minChange": 0.03,
-      "maxChange": 0.03
+      "minChange": 0.0,
+      "maxChange": 0.0
     }
   ],
   "insurances": [
