@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.07.27 기준",
+  "updatedAt": "2026.07.28 기준",
   "banks": [
     {
       "id": "kb",
@@ -278,11 +278,6 @@
       "name": "푸본생명",
       "colorHex": "#a78bfa",
       "rates": [
-        {
-          "type": "3개월",
-          "sell": 5.32,
-          "lease": 5.32
-        },
         {
           "type": "5년주기",
           "sell": 5.35,
