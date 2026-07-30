@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.07.30",
+  "updatedAt": "2026.07.31",
   "banks": {
     "result": {
       "prdt_div": "M",
@@ -497,12 +497,12 @@
           "fin_prdt_nm": "SH으뜸모기지론",
           "join_way": "영업점,모집인",
           "loan_inci_expn": "1. 인지세 : 해당세액의 50%\n\n2. 국민주택채권 매입비용 : 대출금액 X  120% X 1% X 채권할인율\n\n3. 화재보험료 (아파트외 물건지에 한함)",
-          "erly_rpay_fee": "중도상환금액 X 수수료율* X (대출잔여일수 / 대출기간)\n\n* 취급 후 3년 이내 0.66%",
+          "erly_rpay_fee": "중도상환금액 X 수수료율* X (대출잔여일수 / 대출기간)\n\n* 취급 후 3년 이내 0.62%",
           "dly_rate": "대출금리+연3%",
           "loan_lmt": "담보인정비율(LTV) 최대 70%",
           "dcls_strt_day": "20260720",
           "dcls_end_day": null,
-          "fin_co_subm_day": "202607161441"
+          "fin_co_subm_day": "202607291730"
         },
         {
           "dcls_month": "202607",
@@ -1933,7 +1933,7 @@
           "lend_rate_type_nm": "변동금리",
           "lend_rate_min": 4.89,
           "lend_rate_max": 6.1,
-          "lend_rate_avg": 4.6
+          "lend_rate_avg": 4.59
         },
         {
           "dcls_month": "202607",
@@ -1947,7 +1947,7 @@
           "lend_rate_type_nm": "고정금리",
           "lend_rate_min": 5.39,
           "lend_rate_max": 7.59,
-          "lend_rate_avg": 4.79
+          "lend_rate_avg": 4.78
         },
         {
           "dcls_month": "202607",
@@ -1961,7 +1961,7 @@
           "lend_rate_type_nm": "변동금리",
           "lend_rate_min": 4.89,
           "lend_rate_max": 6.11,
-          "lend_rate_avg": 4.84
+          "lend_rate_avg": 4.83
         },
         {
           "dcls_month": "202607",
