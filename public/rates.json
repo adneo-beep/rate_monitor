@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.03 09:58 기준",
+  "updatedAt": "2026.08.04 05:46 기준",
   "banks": [
     {
       "id": "kb",
@@ -8,8 +8,8 @@
       "product": "KB주택담보대출 금융채5년",
       "minRate": 5.16,
       "maxRate": 6.56,
-      "minChange": -0.09,
-      "maxChange": -0.09
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "shinhan",
@@ -56,20 +56,20 @@
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 5.11,
-      "maxRate": 6.934,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.058,
+      "maxRate": 6.882,
+      "minChange": -0.052,
+      "maxChange": -0.052
     },
     {
       "id": "kbank",
       "name": "케이뱅크",
       "colorHex": "#a78bfa",
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
-      "minRate": 4.65,
-      "maxRate": 8.44,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.64,
+      "maxRate": 8.43,
+      "minChange": -0.01,
+      "maxChange": -0.01
     }
   ],
   "insurances": [
@@ -78,10 +78,10 @@
       "name": "삼성생명",
       "colorHex": "#6366f1",
       "product": "삼성생명 주담대 (5년 주기형)",
-      "minRate": 5.38,
-      "maxRate": 6.78,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.64,
+      "maxRate": 7.04,
+      "minChange": 0.26,
+      "maxChange": 0.26
     },
     {
       "id": "hanwha",
@@ -827,6 +827,23 @@
       "kakao_max": 6.934,
       "kbank_min": 4.65,
       "kbank_max": 8.44
+    },
+    {
+      "date": "8/4",
+      "kb_min": 5.16,
+      "kb_max": 6.56,
+      "shinhan_min": 4.74,
+      "shinhan_max": 6.14,
+      "hana_min": 5.744,
+      "hana_max": 7.044,
+      "woori_min": 5.36,
+      "woori_max": 6.56,
+      "nh_min": 5.18,
+      "nh_max": 7.48,
+      "kakao_min": 5.058,
+      "kakao_max": 6.882,
+      "kbank_min": 4.64,
+      "kbank_max": 8.43
     }
   ]
 }
