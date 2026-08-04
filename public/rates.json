@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.04 05:46 기준",
+  "updatedAt": "2026.08.04 09:31 기준",
   "banks": [
     {
       "id": "kb",
@@ -16,40 +16,40 @@
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.74,
-      "maxRate": 6.14,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.71,
+      "maxRate": 6.12,
+      "minChange": -0.03,
+      "maxChange": -0.02
     },
     {
       "id": "hana",
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "product": "하나 혼합금리 모기지론 5년물 금융채",
-      "minRate": 5.744,
-      "maxRate": 7.044,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.736,
+      "maxRate": 7.036,
+      "minChange": -0.008,
+      "maxChange": -0.008
     },
     {
       "id": "woori",
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 5.36,
-      "maxRate": 6.56,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.35,
+      "maxRate": 6.55,
+      "minChange": -0.01,
+      "maxChange": -0.01
     },
     {
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 5.18,
-      "maxRate": 7.48,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.17,
+      "maxRate": 7.47,
+      "minChange": -0.01,
+      "maxChange": -0.01
     },
     {
       "id": "kakao",
@@ -58,8 +58,8 @@
       "product": "카카오뱅크 주담대 5년 변동",
       "minRate": 5.058,
       "maxRate": 6.882,
-      "minChange": -0.052,
-      "maxChange": -0.052
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kbank",
@@ -68,8 +68,8 @@
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
       "minRate": 4.64,
       "maxRate": 8.43,
-      "minChange": -0.01,
-      "maxChange": -0.01
+      "minChange": 0.0,
+      "maxChange": 0.0
     }
   ],
   "insurances": [
@@ -80,8 +80,8 @@
       "product": "삼성생명 주담대 (5년 주기형)",
       "minRate": 5.64,
       "maxRate": 7.04,
-      "minChange": 0.26,
-      "maxChange": 0.26
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "hanwha",
@@ -832,14 +832,14 @@
       "date": "8/4",
       "kb_min": 5.16,
       "kb_max": 6.56,
-      "shinhan_min": 4.74,
-      "shinhan_max": 6.14,
-      "hana_min": 5.744,
-      "hana_max": 7.044,
-      "woori_min": 5.36,
-      "woori_max": 6.56,
-      "nh_min": 5.18,
-      "nh_max": 7.48,
+      "shinhan_min": 4.71,
+      "shinhan_max": 6.12,
+      "hana_min": 5.736,
+      "hana_max": 7.036,
+      "woori_min": 5.35,
+      "woori_max": 6.55,
+      "nh_min": 5.17,
+      "nh_max": 7.47,
       "kakao_min": 5.058,
       "kakao_max": 6.882,
       "kbank_min": 4.64,
