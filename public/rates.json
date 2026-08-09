@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.09 04:59 기준",
+  "updatedAt": "2026.08.09 09:20 기준",
   "banks": [
     {
       "id": "kb",
@@ -26,10 +26,10 @@
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "product": "하나 혼합금리 모기지론 5년물 금융채",
-      "minRate": 5.681,
-      "maxRate": 6.981,
-      "minChange": 0.037,
-      "maxChange": 0.037
+      "minRate": 5.689,
+      "maxRate": 6.989,
+      "minChange": 0.008,
+      "maxChange": 0.008
     },
     {
       "id": "woori",
@@ -48,8 +48,8 @@
       "product": "NH주택담보대출_5년주기형",
       "minRate": 5.08,
       "maxRate": 7.38,
-      "minChange": -0.06,
-      "maxChange": -0.06
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kakao",
@@ -919,8 +919,8 @@
       "kb_max": 6.56,
       "shinhan_min": 4.64,
       "shinhan_max": 6.04,
-      "hana_min": 5.681,
-      "hana_max": 6.981,
+      "hana_min": 5.689,
+      "hana_max": 6.989,
       "woori_min": 5.25,
       "woori_max": 6.45,
       "nh_min": 5.08,
