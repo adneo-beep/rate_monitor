@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.15 09:59 기준",
+  "updatedAt": "2026.08.16 04:52 기준",
   "banks": [
     {
       "id": "kb",
@@ -48,8 +48,8 @@
       "product": "NH주택담보대출_5년주기형",
       "minRate": 5.15,
       "maxRate": 7.45,
-      "minChange": 0.01,
-      "maxChange": 0.01
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kakao",
@@ -1017,6 +1017,23 @@
     },
     {
       "date": "8/15",
+      "kb_min": 5.05,
+      "kb_max": 6.45,
+      "shinhan_min": 4.7,
+      "shinhan_max": 6.11,
+      "hana_min": 5.767,
+      "hana_max": 7.067,
+      "woori_min": 5.33,
+      "woori_max": 6.53,
+      "nh_min": 5.15,
+      "nh_max": 7.45,
+      "kakao_min": 5.056,
+      "kakao_max": 6.88,
+      "kbank_min": 4.63,
+      "kbank_max": 8.42
+    },
+    {
+      "date": "8/16",
       "kb_min": 5.05,
       "kb_max": 6.45,
       "shinhan_min": 4.7,
