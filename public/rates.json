@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.18 09:54 기준",
+  "updatedAt": "2026.08.19 04:53 기준",
   "banks": [
     {
       "id": "kb",
@@ -16,10 +16,10 @@
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.7,
-      "maxRate": 6.11,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.73,
+      "maxRate": 6.14,
+      "minChange": 0.03,
+      "maxChange": 0.03
     },
     {
       "id": "hana",
@@ -36,40 +36,40 @@
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 5.33,
-      "maxRate": 6.53,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.36,
+      "maxRate": 6.56,
+      "minChange": 0.03,
+      "maxChange": 0.03
     },
     {
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 5.15,
-      "maxRate": 7.45,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.23,
+      "maxRate": 7.53,
+      "minChange": 0.08,
+      "maxChange": 0.08
     },
     {
       "id": "kakao",
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 5.056,
-      "maxRate": 6.88,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.081,
+      "maxRate": 6.905,
+      "minChange": 0.025,
+      "maxChange": 0.025
     },
     {
       "id": "kbank",
       "name": "케이뱅크",
       "colorHex": "#a78bfa",
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
-      "minRate": 4.63,
-      "maxRate": 8.42,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.67,
+      "maxRate": 8.46,
+      "minChange": 0.04,
+      "maxChange": 0.04
     }
   ],
   "insurances": [
@@ -1082,6 +1082,23 @@
       "kakao_max": 6.88,
       "kbank_min": 4.63,
       "kbank_max": 8.42
+    },
+    {
+      "date": "8/19",
+      "kb_min": 5.11,
+      "kb_max": 6.51,
+      "shinhan_min": 4.73,
+      "shinhan_max": 6.14,
+      "hana_min": 5.767,
+      "hana_max": 7.067,
+      "woori_min": 5.36,
+      "woori_max": 6.56,
+      "nh_min": 5.23,
+      "nh_max": 7.53,
+      "kakao_min": 5.081,
+      "kakao_max": 6.905,
+      "kbank_min": 4.67,
+      "kbank_max": 8.46
     }
   ]
 }
