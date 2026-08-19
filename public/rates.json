@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.19 04:53 기준",
+  "updatedAt": "2026.08.19 10:07 기준",
   "banks": [
     {
       "id": "kb",
@@ -18,18 +18,18 @@
       "product": "신한주택대출(아파트) 금융채(5년)",
       "minRate": 4.73,
       "maxRate": 6.14,
-      "minChange": 0.03,
-      "maxChange": 0.03
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "hana",
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "product": "하나 혼합금리 모기지론 5년물 금융채",
-      "minRate": 5.767,
-      "maxRate": 7.067,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.831,
+      "maxRate": 7.131,
+      "minChange": 0.064,
+      "maxChange": 0.064
     },
     {
       "id": "woori",
@@ -38,8 +38,8 @@
       "product": "우리아파트론 변동금리(5년)",
       "minRate": 5.36,
       "maxRate": 6.56,
-      "minChange": 0.03,
-      "maxChange": 0.03
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "nh",
@@ -48,8 +48,8 @@
       "product": "NH주택담보대출_5년주기형",
       "minRate": 5.23,
       "maxRate": 7.53,
-      "minChange": 0.08,
-      "maxChange": 0.08
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kakao",
@@ -58,8 +58,8 @@
       "product": "카카오뱅크 주담대 5년 변동",
       "minRate": 5.081,
       "maxRate": 6.905,
-      "minChange": 0.025,
-      "maxChange": 0.025
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kbank",
@@ -68,8 +68,8 @@
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
       "minRate": 4.67,
       "maxRate": 8.46,
-      "minChange": 0.04,
-      "maxChange": 0.04
+      "minChange": 0.0,
+      "maxChange": 0.0
     }
   ],
   "insurances": [
@@ -1089,8 +1089,8 @@
       "kb_max": 6.51,
       "shinhan_min": 4.73,
       "shinhan_max": 6.14,
-      "hana_min": 5.767,
-      "hana_max": 7.067,
+      "hana_min": 5.831,
+      "hana_max": 7.131,
       "woori_min": 5.36,
       "woori_max": 6.56,
       "nh_min": 5.23,
