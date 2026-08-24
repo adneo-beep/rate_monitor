@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.24 09:42 기준",
+  "updatedAt": "2026.08.25 04:59 기준",
   "banks": [
     {
       "id": "kb",
@@ -56,10 +56,10 @@
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 5.113,
-      "maxRate": 6.937,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.149,
+      "maxRate": 6.973,
+      "minChange": 0.036,
+      "maxChange": 0.036
     },
     {
       "id": "kbank",
@@ -1182,6 +1182,23 @@
       "nh_max": 7.19,
       "kakao_min": 5.113,
       "kakao_max": 6.937,
+      "kbank_min": 4.69,
+      "kbank_max": 8.47
+    },
+    {
+      "date": "8/25",
+      "kb_min": 5.16,
+      "kb_max": 6.56,
+      "shinhan_min": 4.75,
+      "shinhan_max": 6.16,
+      "hana_min": 5.836,
+      "hana_max": 7.136,
+      "woori_min": 5.39,
+      "woori_max": 6.59,
+      "nh_min": 5.29,
+      "nh_max": 7.19,
+      "kakao_min": 5.149,
+      "kakao_max": 6.973,
       "kbank_min": 4.69,
       "kbank_max": 8.47
     }
