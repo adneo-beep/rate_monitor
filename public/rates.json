@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.30 06:56 기준",
+  "updatedAt": "2026.08.30 10:03 기준",
   "banks": [
     {
       "id": "kb",
@@ -28,8 +28,8 @@
       "product": "하나 혼합금리 모기지론 5년물 금융채",
       "minRate": 5.753,
       "maxRate": 7.053,
-      "minChange": 0.054,
-      "maxChange": 0.054
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "woori",
@@ -46,10 +46,10 @@
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 5.27,
-      "maxRate": 7.17,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.22,
+      "maxRate": 7.12,
+      "minChange": -0.05,
+      "maxChange": -0.05
     },
     {
       "id": "kakao",
@@ -1280,8 +1280,8 @@
       "hana_max": 7.053,
       "woori_min": 5.32,
       "woori_max": 6.52,
-      "nh_min": 5.27,
-      "nh_max": 7.17,
+      "nh_min": 5.22,
+      "nh_max": 7.12,
       "kakao_min": 5.012,
       "kakao_max": 6.837,
       "kbank_min": 4.62,
