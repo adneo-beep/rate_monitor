@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.08.31 07:02 기준",
+  "updatedAt": "2026.08.31 09:43 기준",
   "banks": [
     {
       "id": "kb",
@@ -8,8 +8,8 @@
       "product": "KB주택담보대출 금융채5년",
       "minRate": 5.06,
       "maxRate": 6.46,
-      "minChange": -0.1,
-      "maxChange": -0.1
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "shinhan",
