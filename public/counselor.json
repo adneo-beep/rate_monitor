@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.09.02 기준",
+  "updatedAt": "2026.09.03 기준",
   "banks": [
     {
       "id": "kb",
@@ -147,6 +147,11 @@
       "name": "부산은행",
       "colorHex": "#06b6d4",
       "rates": [
+        {
+          "type": "1년",
+          "sell": 4.85,
+          "lease": 4.85
+        },
         {
           "type": "3년",
           "sell": 5.31,
