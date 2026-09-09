@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.09.09 07:00 기준",
+  "updatedAt": "2026.09.09 09:30 기준",
   "banks": [
     {
       "id": "kb",
@@ -18,7 +18,7 @@
       "product": "신한주택대출(아파트) 금융채(5년)",
       "minRate": 4.79,
       "maxRate": 6.19,
-      "minChange": 0.01,
+      "minChange": 0.0,
       "maxChange": 0.0
     },
     {
@@ -26,10 +26,10 @@
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "product": "하나 혼합금리 모기지론 5년물 금융채",
-      "minRate": 5.855,
-      "maxRate": 7.155,
-      "minChange": 0.03,
-      "maxChange": 0.03
+      "minRate": 5.857,
+      "maxRate": 7.157,
+      "minChange": 0.002,
+      "maxChange": 0.002
     },
     {
       "id": "woori",
@@ -58,8 +58,8 @@
       "product": "카카오뱅크 주담대 5년 변동",
       "minRate": 5.172,
       "maxRate": 6.998,
-      "minChange": 0.03,
-      "maxChange": 0.03
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kbank",
@@ -1446,8 +1446,8 @@
       "kb_max": 6.6,
       "shinhan_min": 4.79,
       "shinhan_max": 6.19,
-      "hana_min": 5.855,
-      "hana_max": 7.155,
+      "hana_min": 5.857,
+      "hana_max": 7.157,
       "woori_min": 5.55,
       "woori_max": 6.75,
       "nh_min": 5.32,
