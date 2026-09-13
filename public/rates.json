@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.09.13 06:36 기준",
+  "updatedAt": "2026.09.13 09:30 기준",
   "banks": [
     {
       "id": "kb",
@@ -28,8 +28,8 @@
       "product": "하나 혼합금리 모기지론 5년물 금융채",
       "minRate": 5.976,
       "maxRate": 7.276,
-      "minChange": 0.077,
-      "maxChange": 0.077
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "woori",
@@ -48,8 +48,8 @@
       "product": "NH주택담보대출_5년주기형",
       "minRate": 5.35,
       "maxRate": 7.25,
-      "minChange": 0.01,
-      "maxChange": 0.01
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kakao",
