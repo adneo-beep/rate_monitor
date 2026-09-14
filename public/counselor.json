@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.09.14 기준",
+  "updatedAt": "2026.09.15 기준",
   "banks": [
     {
       "id": "kb",
@@ -149,23 +149,23 @@
       "rates": [
         {
           "type": "1년",
-          "sell": 4.85,
-          "lease": 4.85
+          "sell": 4.75,
+          "lease": 4.75
         },
         {
           "type": "3년",
-          "sell": 5.46,
-          "lease": 5.46
+          "sell": 5.36,
+          "lease": 5.36
         },
         {
           "type": "5년주기",
-          "sell": 5.67,
-          "lease": 5.67
+          "sell": 5.57,
+          "lease": 5.57
         },
         {
           "type": "5년혼합",
-          "sell": 5.67,
-          "lease": 5.67
+          "sell": 5.57,
+          "lease": 5.57
         }
       ]
     },
