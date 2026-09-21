@@ -1,11 +1,16 @@
 {
-  "updatedAt": "2026.09.21 기준",
+  "updatedAt": "2026.09.22 기준",
   "banks": [
     {
       "id": "kb",
       "name": "KB국민은행",
       "colorHex": "#f59e0b",
       "rates": [
+        {
+          "type": "6개월",
+          "sell": 4.85,
+          "lease": 4.85
+        },
         {
           "type": "1년",
           "sell": 4.96,
@@ -25,13 +30,13 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 5.15,
-          "lease": 5.25
+          "sell": 5.16,
+          "lease": 5.26
         },
         {
           "type": "5년주기",
-          "sell": 5.72,
-          "lease": 5.72
+          "sell": 5.71,
+          "lease": 5.71
         }
       ]
     },
