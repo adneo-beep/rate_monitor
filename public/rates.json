@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.09.22 09:30 기준",
+  "updatedAt": "2026.09.23 07:24 기준",
   "banks": [
     {
       "id": "kb",
@@ -16,9 +16,9 @@
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.89,
+      "minRate": 4.9,
       "maxRate": 6.3,
-      "minChange": 0.0,
+      "minChange": 0.01,
       "maxChange": 0.0
     },
     {
@@ -38,8 +38,8 @@
       "product": "우리아파트론 변동금리(5년)",
       "minRate": 5.69,
       "maxRate": 6.89,
-      "minChange": 0.02,
-      "maxChange": 0.02
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "nh",
@@ -48,28 +48,28 @@
       "product": "NH주택담보대출_5년주기형",
       "minRate": 5.28,
       "maxRate": 6.88,
-      "minChange": -0.04,
-      "maxChange": -0.04
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kakao",
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 5.257,
-      "maxRate": 7.083,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.302,
+      "maxRate": 7.128,
+      "minChange": 0.045,
+      "maxChange": 0.045
     },
     {
       "id": "kbank",
       "name": "케이뱅크",
       "colorHex": "#a78bfa",
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
-      "minRate": 4.94,
-      "maxRate": 8.8,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.95,
+      "maxRate": 8.81,
+      "minChange": 0.01,
+      "maxChange": 0.01
     }
   ],
   "insurances": [
@@ -1677,6 +1677,23 @@
       "kakao_max": 7.083,
       "kbank_min": 4.94,
       "kbank_max": 8.8
+    },
+    {
+      "date": "9/23",
+      "kb_min": 5.32,
+      "kb_max": 6.72,
+      "shinhan_min": 4.9,
+      "shinhan_max": 6.3,
+      "hana_min": 5.984,
+      "hana_max": 7.284,
+      "woori_min": 5.69,
+      "woori_max": 6.89,
+      "nh_min": 5.28,
+      "nh_max": 6.88,
+      "kakao_min": 5.302,
+      "kakao_max": 7.128,
+      "kbank_min": 4.95,
+      "kbank_max": 8.81
     }
   ]
 }
