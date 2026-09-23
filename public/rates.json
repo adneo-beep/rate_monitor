@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.09.23 09:30 기준",
+  "updatedAt": "2026.09.24 07:26 기준",
   "banks": [
     {
       "id": "kb",
@@ -36,10 +36,10 @@
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 5.69,
-      "maxRate": 6.89,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.68,
+      "maxRate": 6.88,
+      "minChange": -0.01,
+      "maxChange": -0.01
     },
     {
       "id": "nh",
@@ -56,10 +56,10 @@
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 5.302,
-      "maxRate": 7.128,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.287,
+      "maxRate": 7.113,
+      "minChange": -0.015,
+      "maxChange": -0.015
     },
     {
       "id": "kbank",
@@ -1692,6 +1692,23 @@
       "nh_max": 6.88,
       "kakao_min": 5.302,
       "kakao_max": 7.128,
+      "kbank_min": 4.95,
+      "kbank_max": 8.81
+    },
+    {
+      "date": "9/24",
+      "kb_min": 5.32,
+      "kb_max": 6.72,
+      "shinhan_min": 4.9,
+      "shinhan_max": 6.3,
+      "hana_min": 5.969,
+      "hana_max": 7.269,
+      "woori_min": 5.68,
+      "woori_max": 6.88,
+      "nh_min": 5.28,
+      "nh_max": 6.88,
+      "kakao_min": 5.287,
+      "kakao_max": 7.113,
       "kbank_min": 4.95,
       "kbank_max": 8.81
     }
