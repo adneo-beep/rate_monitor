@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.10.01 기준",
+  "updatedAt": "2026.10.02 기준",
   "banks": [
     {
       "id": "kb",
@@ -110,23 +110,23 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 5.38,
-          "lease": 5.38
+          "sell": 5.28,
+          "lease": 5.28
         },
         {
           "type": "1년",
-          "sell": 5.72,
-          "lease": 5.72
+          "sell": 5.62,
+          "lease": 5.62
         },
         {
           "type": "3년",
-          "sell": 6.05,
-          "lease": 6.05
+          "sell": 5.95,
+          "lease": 5.95
         },
         {
           "type": "5년주기",
-          "sell": 6.02,
-          "lease": 6.02
+          "sell": 6.12,
+          "lease": 6.12
         },
         {
           "type": "만기고정",
@@ -251,18 +251,18 @@
       "rates": [
         {
           "type": "1년",
-          "sell": 6.45,
-          "lease": 6.25
+          "sell": 6.26,
+          "lease": 6.06
         },
         {
           "type": "3년",
-          "sell": 6.45,
-          "lease": 6.25
+          "sell": 6.56,
+          "lease": 6.36
         },
         {
           "type": "5년주기",
-          "sell": 6.35,
-          "lease": 6.15
+          "sell": 6.64,
+          "lease": 6.44
         }
       ]
     },
