@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.10.16 07:39 기준",
+  "updatedAt": "2026.10.16 09:30 기준",
   "banks": [
     {
       "id": "kb",
@@ -38,8 +38,8 @@
       "product": "우리아파트론 변동금리(5년)",
       "minRate": 5.39,
       "maxRate": 6.59,
-      "minChange": -0.03,
-      "maxChange": -0.03
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "nh",
@@ -48,8 +48,8 @@
       "product": "NH주택담보대출_5년주기형",
       "minRate": 5.13,
       "maxRate": 6.73,
-      "minChange": -0.01,
-      "maxChange": -0.01
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kakao",
@@ -58,8 +58,8 @@
       "product": "카카오뱅크 주담대 5년 변동",
       "minRate": 5.087,
       "maxRate": 6.916,
-      "minChange": 0.026,
-      "maxChange": 0.026
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kbank",
@@ -68,8 +68,8 @@
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
       "minRate": 4.73,
       "maxRate": 8.69,
-      "minChange": -0.03,
-      "maxChange": -0.03
+      "minChange": 0.0,
+      "maxChange": 0.0
     }
   ],
   "insurances": [
