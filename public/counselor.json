@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.10.01 기준",
+  "updatedAt": "2026.10.22 기준",
   "banks": [
     {
       "id": "kb",
@@ -7,19 +7,14 @@
       "colorHex": "#f59e0b",
       "rates": [
         {
-          "type": "6개월",
-          "sell": 4.65,
-          "lease": 4.85
-        },
-        {
           "type": "1년",
-          "sell": 4.76,
-          "lease": 4.96
+          "sell": 4.88,
+          "lease": 5.08
         },
         {
           "type": "5년주기",
-          "sell": 5.62,
-          "lease": 5.82
+          "sell": 5.39,
+          "lease": 5.59
         }
       ]
     },
@@ -30,13 +25,13 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 4.95,
-          "lease": 5.34
+          "sell": 4.92,
+          "lease": 5.31
         },
         {
           "type": "5년주기",
-          "sell": 5.42,
-          "lease": 5.72
+          "sell": 5.14,
+          "lease": 5.44
         }
       ]
     },
@@ -47,8 +42,8 @@
       "rates": [
         {
           "type": "5년혼합",
-          "sell": 5.6,
-          "lease": 5.8
+          "sell": 5.36,
+          "lease": 5.56
         }
       ]
     },
@@ -59,13 +54,13 @@
       "rates": [
         {
           "type": "1년",
-          "sell": 4.74,
-          "lease": 4.94
+          "sell": 4.82,
+          "lease": 5.02
         },
         {
           "type": "5년주기",
-          "sell": 6.02,
-          "lease": 6.22
+          "sell": 5.75,
+          "lease": 5.95
         }
       ]
     },
@@ -76,13 +71,13 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 4.94,
-          "lease": 5.04
+          "sell": 5.03,
+          "lease": 5.13
         },
         {
           "type": "5년주기",
-          "sell": 5.65,
-          "lease": 5.75
+          "sell": 5.41,
+          "lease": 5.51
         }
       ]
     },
@@ -93,13 +88,13 @@
       "rates": [
         {
           "type": "3개월",
-          "sell": 4.66,
-          "lease": 4.83
+          "sell": 4.77,
+          "lease": 4.94
         },
         {
           "type": "5년주기",
-          "sell": 5.61,
-          "lease": 5.78
+          "sell": 5.37,
+          "lease": 5.54
         }
       ]
     },
@@ -110,28 +105,23 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 5.38,
-          "lease": 5.38
+          "sell": 5,
+          "lease": 5
         },
         {
           "type": "1년",
-          "sell": 5.72,
-          "lease": 5.72
+          "sell": 5.27,
+          "lease": 5.27
         },
         {
           "type": "3년",
-          "sell": 6.05,
-          "lease": 6.05
+          "sell": 5.51,
+          "lease": 5.51
         },
         {
           "type": "5년주기",
-          "sell": 6.02,
-          "lease": 6.02
-        },
-        {
-          "type": "만기고정",
-          "sell": 5.4,
-          "lease": null
+          "sell": 5.41,
+          "lease": 5.41
         }
       ]
     },
@@ -142,13 +132,13 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 4.6,
-          "lease": 4.6
+          "sell": 4.85,
+          "lease": 4.85
         },
         {
           "type": "5년주기",
-          "sell": 5.48,
-          "lease": 5.48
+          "sell": 5.23,
+          "lease": 5.23
         }
       ]
     },
@@ -159,28 +149,28 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 4.81,
-          "lease": 4.81
+          "sell": 4.89,
+          "lease": 4.89
         },
         {
           "type": "1년",
-          "sell": 4.91,
-          "lease": 4.91
+          "sell": 4.99,
+          "lease": 4.99
         },
         {
           "type": "3년",
-          "sell": 5.38,
-          "lease": 5.38
+          "sell": 5.21,
+          "lease": 5.21
         },
         {
           "type": "5년주기",
-          "sell": 5.52,
-          "lease": 5.52
+          "sell": 5.28,
+          "lease": 5.28
         },
         {
           "type": "5년혼합",
-          "sell": 5.52,
-          "lease": 5.52
+          "sell": 5.28,
+          "lease": 5.28
         }
       ]
     },
@@ -191,18 +181,18 @@
       "rates": [
         {
           "type": "6개월",
-          "sell": 4.7,
-          "lease": 4.7
+          "sell": 4.95,
+          "lease": 4.95
         },
         {
           "type": "1년",
-          "sell": 4.7,
-          "lease": 4.7
+          "sell": 4.95,
+          "lease": 4.95
         },
         {
           "type": "5년주기",
-          "sell": 5.32,
-          "lease": 5.32
+          "sell": 5.08,
+          "lease": 5.08
         }
       ]
     },
@@ -239,8 +229,8 @@
       "rates": [
         {
           "type": "5년주기",
-          "sell": 5.97,
-          "lease": 6.07
+          "sell": 5.87,
+          "lease": 5.97
         }
       ]
     },
@@ -251,18 +241,18 @@
       "rates": [
         {
           "type": "1년",
-          "sell": 6.45,
-          "lease": 6.25
+          "sell": 6.26,
+          "lease": 6.06
         },
         {
           "type": "3년",
-          "sell": 6.45,
-          "lease": 6.25
+          "sell": 6.56,
+          "lease": 6.36
         },
         {
           "type": "5년주기",
-          "sell": 6.35,
-          "lease": 6.15
+          "sell": 6.64,
+          "lease": 6.44
         }
       ]
     },
@@ -331,8 +321,8 @@
       "rates": [
         {
           "type": "5년주기",
-          "sell": 4.87,
-          "lease": 4.87
+          "sell": 5.05,
+          "lease": 5.05
         }
       ]
     },
@@ -361,8 +351,8 @@
       "rates": [
         {
           "type": "5년주기",
-          "sell": 6.06,
-          "lease": 5.96
+          "sell": 5.76,
+          "lease": 5.66
         }
       ]
     }
