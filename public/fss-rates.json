@@ -557,6 +557,23 @@
           "fin_prdt_cd": "1054",
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+<<<<<<< HEAD
+=======
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.27,
+          "lend_rate_max": 5.37,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010001",
+          "fin_prdt_cd": "1054",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "C",
@@ -582,16 +599,26 @@
         {
           "dcls_month": "202610",
           "fin_co_no": "0010001",
+<<<<<<< HEAD
           "fin_prdt_cd": "1054",
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+=======
+          "fin_prdt_cd": "1055",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
           "lend_rate_min": 4.27,
           "lend_rate_max": 5.37,
+<<<<<<< HEAD
           "lend_rate_avg": null
+=======
+          "lend_rate_avg": 4.84
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -623,6 +650,7 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
           "fin_co_no": "0010001",
           "fin_prdt_cd": "1055",
           "mrtg_type": "E",
@@ -637,6 +665,8 @@
         },
         {
           "dcls_month": "202610",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0010002",
           "fin_prdt_cd": "SC002111SC002015",
           "mrtg_type": "A",
@@ -693,6 +723,7 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
           "fin_co_no": "0010016",
           "fin_prdt_cd": "20283701001162000",
           "mrtg_type": "A",
@@ -707,17 +738,25 @@
         },
         {
           "dcls_month": "202610",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0010016",
-          "fin_prdt_cd": "2028377B000001001",
-          "mrtg_type": "E",
-          "mrtg_type_nm": "아파트외",
+          "fin_prdt_cd": "20283701001162000",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 4.88,
           "lend_rate_max": 5.98,
           "lend_rate_avg": 5.65
+=======
+          "lend_rate_min": 5.35,
+          "lend_rate_max": 6.25,
+          "lend_rate_avg": 5.88
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -735,6 +774,23 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
+=======
+          "fin_co_no": "0010016",
+          "fin_prdt_cd": "2028377B000001001",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.88,
+          "lend_rate_max": 5.98,
+          "lend_rate_avg": 5.65
+        },
+        {
+          "dcls_month": "202610",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0010016",
           "fin_prdt_cd": "2028377B001162002",
           "mrtg_type": "A",
@@ -777,6 +833,7 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
           "fin_co_no": "0010016",
           "fin_prdt_cd": "20461501001162000",
           "mrtg_type": "A",
@@ -791,17 +848,25 @@
         },
         {
           "dcls_month": "202610",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0010016",
-          "fin_prdt_cd": "2046157B000001001",
+          "fin_prdt_cd": "20461501001162000",
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 4.88,
           "lend_rate_max": 5.98,
           "lend_rate_avg": 5.58
+=======
+          "lend_rate_min": 5.35,
+          "lend_rate_max": 6.25,
+          "lend_rate_avg": 5.93
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -819,6 +884,23 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
+=======
+          "fin_co_no": "0010016",
+          "fin_prdt_cd": "2046157B000001001",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.88,
+          "lend_rate_max": 5.98,
+          "lend_rate_avg": 5.58
+        },
+        {
+          "dcls_month": "202610",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0010016",
           "fin_prdt_cd": "2046157B001162002",
           "mrtg_type": "A",
@@ -891,8 +973,27 @@
           "dcls_month": "202610",
           "fin_co_no": "0010017",
           "fin_prdt_cd": "0599",
+<<<<<<< HEAD
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
+=======
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.6,
+          "lend_rate_max": 6.5,
+          "lend_rate_avg": 5.28
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010017",
+          "fin_prdt_cd": "0599",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "F",
@@ -919,8 +1020,13 @@
           "dcls_month": "202610",
           "fin_co_no": "0010017",
           "fin_prdt_cd": "0599",
+<<<<<<< HEAD
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+=======
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "F",
@@ -932,16 +1038,26 @@
         {
           "dcls_month": "202610",
           "fin_co_no": "0010017",
+<<<<<<< HEAD
           "fin_prdt_cd": "0599",
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+=======
+          "fin_prdt_cd": "1744",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "F",
           "lend_rate_type_nm": "고정금리",
           "lend_rate_min": 5.6,
           "lend_rate_max": 6.5,
+<<<<<<< HEAD
           "lend_rate_avg": 5.28
+=======
+          "lend_rate_avg": 5.56
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -977,6 +1093,7 @@
           "fin_prdt_cd": "1744",
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
+<<<<<<< HEAD
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "F",
@@ -991,6 +1108,8 @@
           "fin_prdt_cd": "1744",
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "F",
@@ -1057,6 +1176,7 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
           "fin_co_no": "0010020",
           "fin_prdt_cd": "12106723",
           "mrtg_type": "E",
@@ -1099,6 +1219,8 @@
         },
         {
           "dcls_month": "202610",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0010020",
           "fin_prdt_cd": "12106723",
           "mrtg_type": "A",
@@ -1114,6 +1236,51 @@
         {
           "dcls_month": "202610",
           "fin_co_no": "0010020",
+<<<<<<< HEAD
+=======
+          "fin_prdt_cd": "12106723",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.95,
+          "lend_rate_max": 6.95,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010020",
+          "fin_prdt_cd": "12106723",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.95,
+          "lend_rate_max": 6.95,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010020",
+          "fin_prdt_cd": "12106723",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.95,
+          "lend_rate_max": 6.95,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010020",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_prdt_cd": "12107084",
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
@@ -1283,29 +1450,41 @@
           "dcls_month": "202610",
           "fin_co_no": "0010024",
           "fin_prdt_cd": "30002130",
-          "mrtg_type": "E",
-          "mrtg_type_nm": "아파트외",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "F",
           "lend_rate_type_nm": "고정금리",
+<<<<<<< HEAD
           "lend_rate_min": 5.35,
           "lend_rate_max": 7.11,
           "lend_rate_avg": 5.78
+=======
+          "lend_rate_min": 5.13,
+          "lend_rate_max": 7.11,
+          "lend_rate_avg": 5.44
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
           "fin_co_no": "0010024",
           "fin_prdt_cd": "30002130",
-          "mrtg_type": "E",
-          "mrtg_type_nm": "아파트외",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 5.15,
           "lend_rate_max": 6.78,
           "lend_rate_avg": 5.38
+=======
+          "lend_rate_min": 4.95,
+          "lend_rate_max": 6.78,
+          "lend_rate_avg": 4.84
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -1325,26 +1504,43 @@
           "dcls_month": "202610",
           "fin_co_no": "0010024",
           "fin_prdt_cd": "30002130",
+<<<<<<< HEAD
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+=======
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "F",
           "lend_rate_type_nm": "고정금리",
+<<<<<<< HEAD
           "lend_rate_min": 5.13,
           "lend_rate_max": 7.11,
           "lend_rate_avg": 5.44
+=======
+          "lend_rate_min": 5.35,
+          "lend_rate_max": 7.11,
+          "lend_rate_avg": 5.78
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
           "fin_co_no": "0010024",
           "fin_prdt_cd": "30002130",
+<<<<<<< HEAD
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+=======
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 4.95,
           "lend_rate_max": 6.78,
           "lend_rate_avg": 4.84
@@ -1362,6 +1558,11 @@
           "lend_rate_min": 4.76,
           "lend_rate_max": 7.14,
           "lend_rate_avg": 4.55
+=======
+          "lend_rate_min": 5.15,
+          "lend_rate_max": 6.78,
+          "lend_rate_avg": 5.38
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -1381,15 +1582,26 @@
           "dcls_month": "202610",
           "fin_co_no": "0010024",
           "fin_prdt_cd": "30002497",
+<<<<<<< HEAD
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
+=======
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 4.96,
           "lend_rate_max": 7.14,
           "lend_rate_avg": null
+=======
+          "lend_rate_min": 4.76,
+          "lend_rate_max": 7.14,
+          "lend_rate_avg": 4.55
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -1407,6 +1619,7 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
           "fin_co_no": "0010026",
           "fin_prdt_cd": "212010144",
           "mrtg_type": "E",
@@ -1417,20 +1630,70 @@
           "lend_rate_type_nm": "고정금리",
           "lend_rate_min": 6.08,
           "lend_rate_max": 6.28,
+=======
+          "fin_co_no": "0010024",
+          "fin_prdt_cd": "30002497",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.96,
+          "lend_rate_max": 7.14,
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "lend_rate_avg": null
         },
         {
           "dcls_month": "202610",
           "fin_co_no": "0010026",
           "fin_prdt_cd": "212010144",
+<<<<<<< HEAD
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
+=======
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 6.07,
+          "lend_rate_max": 6.27,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010026",
+          "fin_prdt_cd": "212010144",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.96,
+          "lend_rate_max": 5.16,
+          "lend_rate_avg": 4.57
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010026",
+          "fin_prdt_cd": "212010144",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 4.8,
           "lend_rate_max": 5,
+=======
+          "lend_rate_min": 4.79,
+          "lend_rate_max": 4.99,
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "lend_rate_avg": null
         },
         {
@@ -1449,6 +1712,23 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
+=======
+          "fin_co_no": "0010026",
+          "fin_prdt_cd": "212010144",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 6.08,
+          "lend_rate_max": 6.28,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0010026",
           "fin_prdt_cd": "212010144",
           "mrtg_type": "E",
@@ -1465,6 +1745,7 @@
           "dcls_month": "202610",
           "fin_co_no": "0010026",
           "fin_prdt_cd": "212010144",
+<<<<<<< HEAD
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
           "rpay_type": "S",
@@ -1481,12 +1762,21 @@
           "fin_prdt_cd": "212010144",
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+=======
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 4.79,
           "lend_rate_max": 4.99,
+=======
+          "lend_rate_min": 4.8,
+          "lend_rate_max": 5,
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "lend_rate_avg": null
         },
         {
@@ -1505,17 +1795,112 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
           "fin_co_no": "0010026",
           "fin_prdt_cd": "212010144",
+=======
+          "fin_co_no": "0010030",
+          "fin_prdt_cd": "1",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.73,
+          "lend_rate_max": 5.53,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010030",
+          "fin_prdt_cd": "1",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 5.59,
+          "lend_rate_max": 6.49,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010030",
+          "fin_prdt_cd": "1",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.55,
+          "lend_rate_max": 6.45,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010030",
+          "fin_prdt_cd": "1",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.73,
+          "lend_rate_max": 5.53,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010030",
+          "fin_prdt_cd": "1",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 4.96,
           "lend_rate_max": 5.16,
           "lend_rate_avg": 4.57
+=======
+          "lend_rate_min": 5.59,
+          "lend_rate_max": 6.49,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010030",
+          "fin_prdt_cd": "1",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.32,
+          "lend_rate_max": 6.12,
+          "lend_rate_avg": null
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0010030",
+          "fin_prdt_cd": "1",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.55,
+          "lend_rate_max": 6.45,
+          "lend_rate_avg": null
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -1533,6 +1918,7 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
           "fin_co_no": "0010030",
           "fin_prdt_cd": "1",
           "mrtg_type": "E",
@@ -1631,6 +2017,8 @@
         },
         {
           "dcls_month": "202610",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0010927",
           "fin_prdt_cd": "KB200300000002",
           "mrtg_type": "A",
@@ -1729,6 +2117,23 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
+=======
+          "fin_co_no": "0011625",
+          "fin_prdt_cd": "WR0001C",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 4.9,
+          "lend_rate_max": 6.3,
+          "lend_rate_avg": 5.78
+        },
+        {
+          "dcls_month": "202610",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0011625",
           "fin_prdt_cd": "WR0001C",
           "mrtg_type": "E",
@@ -1743,6 +2148,7 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
           "fin_co_no": "0011625",
           "fin_prdt_cd": "WR0001C",
           "mrtg_type": "E",
@@ -1754,6 +2160,19 @@
           "lend_rate_min": 4.9,
           "lend_rate_max": 6.3,
           "lend_rate_avg": 5.78
+=======
+          "fin_co_no": "0013175",
+          "fin_prdt_cd": "2001104780001",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.13,
+          "lend_rate_max": 6.73,
+          "lend_rate_avg": null
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -1775,6 +2194,7 @@
           "fin_prdt_cd": "2001104780001",
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+<<<<<<< HEAD
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "F",
@@ -1789,6 +2209,8 @@
           "fin_prdt_cd": "2001104780001",
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "C",
@@ -1801,8 +2223,27 @@
           "dcls_month": "202610",
           "fin_co_no": "0013175",
           "fin_prdt_cd": "2001104780001",
+<<<<<<< HEAD
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
+=======
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.13,
+          "lend_rate_max": 6.73,
+          "lend_rate_avg": 5.9
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0013175",
+          "fin_prdt_cd": "2001104780001",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "F",
@@ -1831,6 +2272,7 @@
           "fin_prdt_cd": "2001104780001",
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
+<<<<<<< HEAD
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "F",
@@ -1845,6 +2287,8 @@
           "fin_prdt_cd": "2001104780001",
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
           "lend_rate_type": "C",
@@ -1857,15 +2301,26 @@
           "dcls_month": "202610",
           "fin_co_no": "0013175",
           "fin_prdt_cd": "2001104780001",
+<<<<<<< HEAD
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
           "rpay_type": "S",
           "rpay_type_nm": "만기일시상환방식",
+=======
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "lend_rate_type": "F",
           "lend_rate_type_nm": "고정금리",
           "lend_rate_min": 5.13,
           "lend_rate_max": 6.73,
+<<<<<<< HEAD
           "lend_rate_avg": null
+=======
+          "lend_rate_avg": 5.89
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         },
         {
           "dcls_month": "202610",
@@ -1959,6 +2414,7 @@
           "mrtg_type_nm": "아파트",
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
+<<<<<<< HEAD
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
           "lend_rate_min": 5.23,
@@ -1973,6 +2429,8 @@
           "mrtg_type_nm": "아파트",
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "lend_rate_type": "F",
           "lend_rate_type_nm": "고정금리",
           "lend_rate_min": 5.71,
@@ -1981,6 +2439,23 @@
         },
         {
           "dcls_month": "202610",
+<<<<<<< HEAD
+=======
+          "fin_co_no": "0014674",
+          "fin_prdt_cd": "01021000300000000013",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 5.23,
+          "lend_rate_max": 5.23,
+          "lend_rate_avg": 4.69
+        },
+        {
+          "dcls_month": "202610",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0014807",
           "fin_prdt_cd": "1167",
           "mrtg_type": "A",
@@ -1997,6 +2472,7 @@
           "dcls_month": "202610",
           "fin_co_no": "0014807",
           "fin_prdt_cd": "1167",
+<<<<<<< HEAD
           "mrtg_type": "A",
           "mrtg_type_nm": "아파트",
           "rpay_type": "D",
@@ -2025,6 +2501,8 @@
           "dcls_month": "202610",
           "fin_co_no": "0014807",
           "fin_prdt_cd": "1167",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
           "rpay_type": "D",
@@ -2039,6 +2517,7 @@
           "dcls_month": "202610",
           "fin_co_no": "0014807",
           "fin_prdt_cd": "1167",
+<<<<<<< HEAD
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
           "rpay_type": "S",
@@ -2081,18 +2560,85 @@
           "dcls_month": "202610",
           "fin_co_no": "0015130",
           "fin_prdt_cd": "03005",
+=======
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "mrtg_type": "E",
           "mrtg_type_nm": "아파트외",
           "rpay_type": "D",
           "rpay_type_nm": "분할상환방식",
           "lend_rate_type": "C",
           "lend_rate_type_nm": "변동금리",
+<<<<<<< HEAD
           "lend_rate_min": 4.94,
           "lend_rate_max": 5.59,
           "lend_rate_avg": 4.93
         },
         {
           "dcls_month": "202610",
+=======
+          "lend_rate_min": 5.64,
+          "lend_rate_max": 6.84,
+          "lend_rate_avg": 5.46
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0014807",
+          "fin_prdt_cd": "1167",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "S",
+          "rpay_type_nm": "만기일시상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 5.27,
+          "lend_rate_max": 6.47,
+          "lend_rate_avg": 5.38
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0014807",
+          "fin_prdt_cd": "1167",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.69,
+          "lend_rate_max": 7.6,
+          "lend_rate_avg": 5.44
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0015130",
+          "fin_prdt_cd": "03005",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "F",
+          "lend_rate_type_nm": "고정금리",
+          "lend_rate_min": 5.1,
+          "lend_rate_max": 5.75,
+          "lend_rate_avg": 5.47
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0015130",
+          "fin_prdt_cd": "03005",
+          "mrtg_type": "A",
+          "mrtg_type_nm": "아파트",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.77,
+          "lend_rate_max": 5.42,
+          "lend_rate_avg": 4.69
+        },
+        {
+          "dcls_month": "202610",
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
           "fin_co_no": "0015130",
           "fin_prdt_cd": "03005",
           "mrtg_type": "E",
@@ -2104,6 +2650,23 @@
           "lend_rate_min": 5.27,
           "lend_rate_max": 5.92,
           "lend_rate_avg": 5.64
+<<<<<<< HEAD
+=======
+        },
+        {
+          "dcls_month": "202610",
+          "fin_co_no": "0015130",
+          "fin_prdt_cd": "03005",
+          "mrtg_type": "E",
+          "mrtg_type_nm": "아파트외",
+          "rpay_type": "D",
+          "rpay_type_nm": "분할상환방식",
+          "lend_rate_type": "C",
+          "lend_rate_type_nm": "변동금리",
+          "lend_rate_min": 4.94,
+          "lend_rate_max": 5.59,
+          "lend_rate_avg": 4.93
+>>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
         }
       ]
     }
