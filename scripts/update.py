@@ -36,14 +36,10 @@ BANK_ORDER = ['kb', 'shinhan', 'hana', 'woori', 'nh', 'kakao', 'kbank']
 INS_META = {
     '삼성생명': {'id': 'samsung-life', 'colorHex': '#6366f1', 'name': '삼성생명'},
     '삼성화재': {'id': 'samsung-fire', 'colorHex': '#e11d48', 'name': '삼성화재'},
+    '한화생명': {'id': 'hanwha',       'colorHex': '#ef4444', 'name': '한화생명'},
+    '교보생명': {'id': 'kyobo',        'colorHex': '#10b981', 'name': '교보생명'},
 }
-# 한화·교보 – 스크레이퍼 미구현, 이전값 또는 아래 기본값 유지
-INS_STATIC_FALLBACK = {
-    'hanwha': {'id': 'hanwha', 'name': '한화생명', 'colorHex': '#ef4444',
-               'product': '홈드림 모기지론',   'minRate': 4.82, 'maxRate': 6.83, 'minChange': 0, 'maxChange': 0},
-    'kyobo':  {'id': 'kyobo',  'name': '교보생명', 'colorHex': '#10b981',
-               'product': '교보e아파트론',     'minRate': 5.39, 'maxRate': 5.81, 'minChange': 0, 'maxChange': 0},
-}
+INS_STATIC_FALLBACK = {}  # 모든 보험사 스크레이퍼 구현됨
 INS_ORDER = ['samsung-life', 'hanwha', 'kyobo', 'samsung-fire']
 
 BOK_API_KEY = 'Y2VMNWAZOAZNS0806QB9'
@@ -400,14 +396,14 @@ async def scrape_samsung_life(browser):
 
 
 async def scrape_samsung_fire(browser):
-    """삼성화재 주택담보대출 금리 - 공시 페이지에서 직접 추출
-    URL이 /vh/page/VH.HPLN0023.do 로 리다이렉트됨
-    '대출금리' 근처에 'X.X~Y.YY%' 형태로 금리 노출 (버튼 클릭 불필요)
+    """삼성화재 주택담보대출 금리
+    URL: /vh/page/VH.HPLN0023.do?_ic=direct
+    '대출금리' 근처에 'X.XX~X.X%' 형태로 금리 노출 (소수점 1~3자리 모두 허용)
     """
     page = await browser.new_page()
     try:
         await page.goto(
-            "https://www.samsungfire.com/loan/P_P04_04_01_066.html",
+            "https://www.samsungfire.com/vh/page/VH.HPLN0023.do?_ic=direct",
             timeout=30000, wait_until='domcontentloaded'
         )
         await page.wait_for_load_state('networkidle', timeout=20000)
@@ -416,17 +412,16 @@ async def scrape_samsung_fire(browser):
         data = await page.evaluate("""() => {
             const body = document.body.innerText || '';
 
-            // '대출금리' 섹션 근처에서 'X.X~Y.YY%' 패턴 추출
-            // ※ 소수점 1자리도 허용 (예: 4.7~6.62%)
+            // '대출금리' 섹션 근처에서 'X.XX~X.X%' 패턴 추출 (소수점 1~3자리 허용)
             const idx = body.indexOf('대출금리');
             if (idx > -1) {
                 const section = body.substring(idx, idx + 200);
-                const m = section.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
+                const m = section.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9](?:\\.\\d{1,3})?)\\s*%/);
                 if (m) return { min_rate: m[1], max_rate: m[2] };
             }
 
-            // 폴백: 전체 페이지에서 X~Y.YY% 또는 X.X~Y.YY% 패턴
-            const m2 = body.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9]\\.\\d{2,3})\\s*%/);
+            // 폴백: 전체 페이지
+            const m2 = body.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9](?:\\.\\d{1,3})?)\\s*%/);
             if (m2) return { min_rate: m2[1], max_rate: m2[2] };
 
             return null;
@@ -438,6 +433,90 @@ async def scrape_samsung_fire(browser):
         return {'bank': '삼성화재', 'status': 'error', 'message': '금리 패턴 없음'}
     except Exception as e:
         return {'bank': '삼성화재', 'status': 'error', 'message': str(e)[:100]}
+    finally:
+        await page.close()
+
+
+async def scrape_hanwha(browser):
+    """한화생명 홈드림 모기지론 금리
+    URL: m.hanwhalife.com/mobile/finance/loan/FN_LNTGD000_P20000.do?catecode=LD020100
+    '대출금리' 근처에 '연 X.XX% ~ Y.YY%' 형태로 금리 노출
+    """
+    page = await browser.new_page()
+    try:
+        await page.goto(
+            "https://m.hanwhalife.com/mobile/finance/loan/FN_LNTGD000_P20000.do?catecode=LD020100",
+            timeout=30000, wait_until='domcontentloaded'
+        )
+        await page.wait_for_load_state('networkidle', timeout=20000)
+        await page.wait_for_timeout(2000)
+
+        data = await page.evaluate("""() => {
+            const body = document.body.innerText || '';
+
+            // '대출금리' 근처에서 '연 X.XX% ~ Y.YY%' 패턴 추출
+            const idx = body.indexOf('대출금리');
+            if (idx > -1) {
+                const section = body.substring(idx, idx + 200);
+                const m = section.match(/연\\s*([\\d]+\\.[\\d]{2,3})\\s*%?\\s*~\\s*([\\d]+\\.[\\d]{2,3})\\s*%/);
+                if (m) return { min_rate: m[1], max_rate: m[2] };
+            }
+
+            // 폴백: 전체 페이지
+            const m2 = body.match(/연\\s*([\\d]+\\.[\\d]{2,3})\\s*%?\\s*~\\s*([\\d]+\\.[\\d]{2,3})\\s*%/);
+            if (m2) return { min_rate: m2[1], max_rate: m2[2] };
+
+            return null;
+        }""")
+
+        if data and data.get('min_rate'):
+            return {'bank': '한화생명', 'product': '홈드림 모기지론',
+                    'min_rate': data['min_rate'], 'max_rate': data.get('max_rate'), 'status': 'success'}
+        return {'bank': '한화생명', 'status': 'error', 'message': '금리 패턴 없음'}
+    except Exception as e:
+        return {'bank': '한화생명', 'status': 'error', 'message': str(e)[:100]}
+    finally:
+        await page.close()
+
+
+async def scrape_kyobo(browser):
+    """교보생명 교보e아파트론 금리
+    URL: kyobo.com/dgt/web/loan/product/house/security/apartment-security-text-detail
+    '대출금리' 근처에 '연 X.XX% ~ Y.YY%' 형태로 금리 노출
+    """
+    page = await browser.new_page()
+    try:
+        await page.goto(
+            "https://www.kyobo.com/dgt/web/loan/product/house/security/apartment-security-text-detail",
+            timeout=30000, wait_until='domcontentloaded'
+        )
+        await page.wait_for_load_state('networkidle', timeout=20000)
+        await page.wait_for_timeout(2000)
+
+        data = await page.evaluate("""() => {
+            const body = document.body.innerText || '';
+
+            // '대출금리' 근처에서 '연 X.XX% ~ Y.YY%' 패턴 추출
+            const idx = body.indexOf('대출금리');
+            if (idx > -1) {
+                const section = body.substring(idx, idx + 200);
+                const m = section.match(/연\\s*([\\d]+\\.[\\d]{2,3})\\s*%?\\s*~\\s*([\\d]+\\.[\\d]{2,3})\\s*%/);
+                if (m) return { min_rate: m[1], max_rate: m[2] };
+            }
+
+            // 폴백: 전체 페이지
+            const m2 = body.match(/연\\s*([\\d]+\\.[\\d]{2,3})\\s*%?\\s*~\\s*([\\d]+\\.[\\d]{2,3})\\s*%/);
+            if (m2) return { min_rate: m2[1], max_rate: m2[2] };
+
+            return null;
+        }""")
+
+        if data and data.get('min_rate'):
+            return {'bank': '교보생명', 'product': '교보e아파트론',
+                    'min_rate': data['min_rate'], 'max_rate': data.get('max_rate'), 'status': 'success'}
+        return {'bank': '교보생명', 'status': 'error', 'message': '금리 패턴 없음'}
+    except Exception as e:
+        return {'bank': '교보생명', 'status': 'error', 'message': str(e)[:100]}
     finally:
         await page.close()
 
@@ -979,7 +1058,7 @@ async def main(args=None):
                 print(f"  [{'OK' if ok else 'NG'}] {r.get('bank')}: {detail}")
 
             # ── 보험사 스크레이핑 ─────────────────────────────
-            ins_scrapers = [scrape_samsung_life, scrape_samsung_fire]
+            ins_scrapers = [scrape_samsung_life, scrape_samsung_fire, scrape_hanwha, scrape_kyobo]
             for fn in ins_scrapers:
                 r = await fn(browser)
                 ins_scraped.append(r)
