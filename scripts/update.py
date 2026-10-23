@@ -397,44 +397,65 @@ async def scrape_samsung_life(browser):
 
 async def scrape_samsung_fire(browser):
     """삼성화재 주택담보대출 금리
-    URL: loan/P_P04_04_01_066.html → /vh/page/VH.HPLN0023.do 로 리다이렉트 (SPA)
-    금리 텍스트: span.txt.fc-primary 에 'X.XX~X.X%' 형태로 렌더링됨 (소수점 1~3자리)
+    URL: /vh/page/VH.HPLN0023.do?_ic=direct (SPA, Vue)
+    금리는 JS가 VH.HDLN0032.do API 응답으로 #rate 요소를 채움.
+    wait_for_selector('.txt.fc-primary')는 요소가 항상 DOM에 존재(빈 채로)해서 즉시 성공 → 의미 없음.
+    wait_for_function으로 내용이 채워질 때까지 대기해야 함.
+    URL 변경 시: samsungfire.com > 대출 > 담보대출 > 주택담보대출
     """
     page = await browser.new_page()
     try:
+        # API 응답 캡처: VH.HDLN0032.do에서 aplcRate 직접 추출
+        captured = {}
+
+        async def on_response(response):
+            if 'VH.HDLN0032.do' in response.url:
+                try:
+                    body = await response.json()
+                    hdr = body.get('responseMessage', {}).get('header', {})
+                    data = body.get('responseMessage', {}).get('body', {}) or {}
+                    if hdr.get('resultCode') == '0000' and data.get('aplcRate'):
+                        captured['aplcRate'] = data['aplcRate']
+                except Exception:
+                    pass
+
+        page.on('response', on_response)
+
         await page.goto(
-            "https://www.samsungfire.com/loan/P_P04_04_01_066.html",
-            timeout=30000, wait_until='domcontentloaded'
+            "https://www.samsungfire.com/vh/page/VH.HPLN0023.do?_ic=direct",
+            timeout=40000, wait_until='domcontentloaded'
         )
-        # SPA 렌더링 완료를 위해 금리 요소(.txt.fc-primary) 대기
+        # JS가 API 호출 후 #rate 를 채울 때까지 대기 (최대 30초)
         try:
-            await page.wait_for_selector('.txt.fc-primary', timeout=15000)
+            await page.wait_for_function(
+                "() => { const el = document.getElementById('rate'); return el && el.textContent.trim().length > 0; }",
+                timeout=30000
+            )
         except Exception:
-            await page.wait_for_load_state('networkidle', timeout=15000)
             await page.wait_for_timeout(3000)
 
-        data = await page.evaluate("""() => {
-            const body = document.body.innerText || '';
+        # API 응답에서 직접 추출된 값 우선 사용
+        if captured.get('aplcRate'):
+            rate_text = captured['aplcRate'].replace(' ', '')
+            m = re.search(r'([3-9](?:\.\d{1,3})?)\s*~\s*([3-9](?:\.\d{1,3})?)', rate_text)
+            if m:
+                return {'bank': '삼성화재', 'product': '삼성화재 주택담보대출',
+                        'min_rate': m.group(1), 'max_rate': m.group(2), 'status': 'success'}
 
-            // '대출금리' 섹션 근처에서 'X.XX~X.X%' 패턴 추출 (소수점 1~3자리 허용)
+        # DOM에서 추출
+        data = await page.evaluate("""() => {
+            const el = document.getElementById('rate');
+            if (el && el.textContent.trim()) {
+                const m = el.textContent.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9](?:\\.\\d{1,3})?)\\s*%/);
+                if (m) return { min_rate: m[1], max_rate: m[2] };
+            }
+            const body = document.body.innerText || '';
             const idx = body.indexOf('대출금리');
             if (idx > -1) {
                 const section = body.substring(idx, idx + 200);
                 const m = section.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9](?:\\.\\d{1,3})?)\\s*%/);
                 if (m) return { min_rate: m[1], max_rate: m[2] };
             }
-
-            // DOM 직접: span.txt.fc-primary
-            const span = document.querySelector('.txt.fc-primary');
-            if (span) {
-                const m = span.textContent.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9](?:\\.\\d{1,3})?)\\s*%/);
-                if (m) return { min_rate: m[1], max_rate: m[2] };
-            }
-
-            // 폴백: 전체 페이지
-            const m2 = body.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9](?:\\.\\d{1,3})?)\\s*%/);
-            if (m2) return { min_rate: m2[1], max_rate: m2[2] };
-
             return null;
         }""")
 
