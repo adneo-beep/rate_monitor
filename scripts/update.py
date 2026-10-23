@@ -397,17 +397,21 @@ async def scrape_samsung_life(browser):
 
 async def scrape_samsung_fire(browser):
     """삼성화재 주택담보대출 금리
-    URL: /vh/page/VH.HPLN0023.do?_ic=direct
-    '대출금리' 근처에 'X.XX~X.X%' 형태로 금리 노출 (소수점 1~3자리 모두 허용)
+    URL: loan/P_P04_04_01_066.html → /vh/page/VH.HPLN0023.do 로 리다이렉트 (SPA)
+    금리 텍스트: span.txt.fc-primary 에 'X.XX~X.X%' 형태로 렌더링됨 (소수점 1~3자리)
     """
     page = await browser.new_page()
     try:
         await page.goto(
-            "https://www.samsungfire.com/vh/page/VH.HPLN0023.do?_ic=direct",
+            "https://www.samsungfire.com/loan/P_P04_04_01_066.html",
             timeout=30000, wait_until='domcontentloaded'
         )
-        await page.wait_for_load_state('networkidle', timeout=20000)
-        await page.wait_for_timeout(2000)
+        # SPA 렌더링 완료를 위해 금리 요소(.txt.fc-primary) 대기
+        try:
+            await page.wait_for_selector('.txt.fc-primary', timeout=15000)
+        except Exception:
+            await page.wait_for_load_state('networkidle', timeout=15000)
+            await page.wait_for_timeout(3000)
 
         data = await page.evaluate("""() => {
             const body = document.body.innerText || '';
@@ -417,6 +421,13 @@ async def scrape_samsung_fire(browser):
             if (idx > -1) {
                 const section = body.substring(idx, idx + 200);
                 const m = section.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9](?:\\.\\d{1,3})?)\\s*%/);
+                if (m) return { min_rate: m[1], max_rate: m[2] };
+            }
+
+            // DOM 직접: span.txt.fc-primary
+            const span = document.querySelector('.txt.fc-primary');
+            if (span) {
+                const m = span.textContent.match(/([3-9](?:\\.\\d{1,3})?)\\s*~\\s*([3-9](?:\\.\\d{1,3})?)\\s*%/);
                 if (m) return { min_rate: m[1], max_rate: m[2] };
             }
 
