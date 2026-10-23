@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "updatedAt": "2026.10.23 10:02 기준",
-=======
   "updatedAt": "2026.10.23 09:30 기준",
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
   "banks": [
     {
       "id": "kb",
@@ -12,13 +8,8 @@
       "product": "KB주택담보대출 금융채5년",
       "minRate": 5.1,
       "maxRate": 6.5,
-<<<<<<< HEAD
-      "minChange": -0.23,
-      "maxChange": -0.23
-=======
       "minChange": 0.0,
       "maxChange": 0.0
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
     },
     {
       "id": "shinhan",
@@ -27,13 +18,8 @@
       "product": "신한주택대출(아파트) 금융채(5년)",
       "minRate": 4.63,
       "maxRate": 6.04,
-<<<<<<< HEAD
-      "minChange": -0.28,
-      "maxChange": -0.28
-=======
       "minChange": 0.0,
       "maxChange": 0.0
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
     },
     {
       "id": "hana",
@@ -72,13 +58,8 @@
       "product": "카카오뱅크 주담대 5년 변동",
       "minRate": 5.001,
       "maxRate": 6.83,
-<<<<<<< HEAD
-      "minChange": -0.026,
-      "maxChange": -0.026
-=======
       "minChange": 0.0,
       "maxChange": 0.0
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
     },
     {
       "id": "kbank",
@@ -87,13 +68,8 @@
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
       "minRate": 4.68,
       "maxRate": 8.64,
-<<<<<<< HEAD
-      "minChange": -0.01,
-      "maxChange": -0.01
-=======
       "minChange": 0.0,
       "maxChange": 0.0
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
     }
   ],
   "insurances": [
@@ -102,13 +78,8 @@
       "name": "삼성생명",
       "colorHex": "#6366f1",
       "product": "삼성생명 주담대 (5년 주기형)",
-<<<<<<< HEAD
-      "minRate": 5.5,
-      "maxRate": 7.0,
-=======
       "minRate": 5.7,
       "maxRate": 7.2,
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
       "minChange": 0.0,
       "maxChange": 0.0
     },
@@ -139,13 +110,8 @@
       "product": "삼성화재 주택담보대출",
       "minRate": 5.64,
       "maxRate": 6.83,
-<<<<<<< HEAD
-      "minChange": -0.03,
-      "maxChange": 0.26
-=======
       "minChange": 0.0,
       "maxChange": 0.0
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
     }
   ],
   "bankHistory": [
@@ -676,8 +642,6 @@
       "kbank_max": 8.53
     },
     {
-<<<<<<< HEAD
-=======
       "date": "7/24",
       "kb_min": 5.2,
       "kb_max": 6.6,
@@ -729,7 +693,6 @@
       "kbank_max": 8.54
     },
     {
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
       "date": "7/27",
       "kb_min": 5.25,
       "kb_max": 6.65,
@@ -747,125 +710,6 @@
       "kbank_max": 8.57
     },
     {
-<<<<<<< HEAD
-      "date": "7/31",
-      "kb_min": 5.25,
-      "kb_max": 6.65,
-      "shinhan_min": 4.86,
-      "shinhan_max": 6.26,
-      "hana_min": 5.932,
-      "hana_max": 7.232,
-      "woori_min": 5.61,
-      "woori_max": 6.81,
-      "nh_min": 5.27,
-      "nh_max": 7.57,
-      "kakao_min": 5.198,
-      "kakao_max": 7.021,
-      "kbank_min": 4.79,
-      "kbank_max": 8.57
-    },
-    {
-      "date": "8/3",
-      "kb_min": 5.25,
-      "kb_max": 6.65,
-      "shinhan_min": 4.86,
-      "shinhan_max": 6.26,
-      "hana_min": 5.932,
-      "hana_max": 7.232,
-      "woori_min": 5.61,
-      "woori_max": 6.81,
-      "nh_min": 5.27,
-      "nh_max": 7.57,
-      "kakao_min": 5.198,
-      "kakao_max": 7.021,
-      "kbank_min": 4.79,
-      "kbank_max": 8.57
-    },
-    {
-      "date": "8/4",
-      "kb_min": 5.25,
-      "kb_max": 6.65,
-      "shinhan_min": 4.86,
-      "shinhan_max": 6.26,
-      "hana_min": 5.932,
-      "hana_max": 7.232,
-      "woori_min": 5.61,
-      "woori_max": 6.81,
-      "nh_min": 5.27,
-      "nh_max": 7.57,
-      "kakao_min": 5.198,
-      "kakao_max": 7.021,
-      "kbank_min": 4.79,
-      "kbank_max": 8.57
-    },
-    {
-      "date": "8/6",
-      "kb_min": 5.25,
-      "kb_max": 6.65,
-      "shinhan_min": 4.86,
-      "shinhan_max": 6.26,
-      "hana_min": 5.932,
-      "hana_max": 7.232,
-      "woori_min": 5.61,
-      "woori_max": 6.81,
-      "nh_min": 5.27,
-      "nh_max": 7.57,
-      "kakao_min": 5.198,
-      "kakao_max": 7.021,
-      "kbank_min": 4.79,
-      "kbank_max": 8.57
-    },
-    {
-      "date": "8/7",
-      "kb_min": 5.25,
-      "kb_max": 6.65,
-      "shinhan_min": 4.86,
-      "shinhan_max": 6.26,
-      "hana_min": 5.932,
-      "hana_max": 7.232,
-      "woori_min": 5.61,
-      "woori_max": 6.81,
-      "nh_min": 5.27,
-      "nh_max": 7.57,
-      "kakao_min": 5.198,
-      "kakao_max": 7.021,
-      "kbank_min": 4.79,
-      "kbank_max": 8.57
-    },
-    {
-      "date": "8/12",
-      "kb_min": 5.25,
-      "kb_max": 6.65,
-      "shinhan_min": 4.86,
-      "shinhan_max": 6.26,
-      "hana_min": 5.932,
-      "hana_max": 7.232,
-      "woori_min": 5.61,
-      "woori_max": 6.81,
-      "nh_min": 5.27,
-      "nh_max": 7.57,
-      "kakao_min": 5.198,
-      "kakao_max": 7.021,
-      "kbank_min": 4.79,
-      "kbank_max": 8.57
-    },
-    {
-      "date": "8/18",
-      "kb_min": 5.25,
-      "kb_max": 6.65,
-      "shinhan_min": 4.86,
-      "shinhan_max": 6.26,
-      "hana_min": 5.932,
-      "hana_max": 7.232,
-      "woori_min": 5.61,
-      "woori_max": 6.81,
-      "nh_min": 5.27,
-      "nh_max": 7.57,
-      "kakao_min": 5.198,
-      "kakao_max": 7.021,
-      "kbank_min": 4.79,
-      "kbank_max": 8.57
-=======
       "date": "7/28",
       "kb_min": 5.25,
       "kb_max": 6.65,
@@ -1357,19 +1201,13 @@
       "kakao_max": 6.973,
       "kbank_min": 4.69,
       "kbank_max": 8.47
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
     },
     {
       "date": "8/26",
       "kb_min": 5.16,
       "kb_max": 6.56,
-<<<<<<< HEAD
-      "shinhan_min": 4.74,
-      "shinhan_max": 6.15,
-=======
       "shinhan_min": 4.75,
       "shinhan_max": 6.16,
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
       "hana_min": 5.764,
       "hana_max": 7.064,
       "woori_min": 5.37,
@@ -1382,38 +1220,6 @@
       "kbank_max": 8.46
     },
     {
-<<<<<<< HEAD
-      "date": "8/31",
-      "kb_min": 5.16,
-      "kb_max": 6.56,
-      "shinhan_min": 4.74,
-      "shinhan_max": 6.15,
-      "hana_min": 5.764,
-      "hana_max": 7.064,
-      "woori_min": 5.37,
-      "woori_max": 6.57,
-      "nh_min": 5.29,
-      "nh_max": 7.19,
-      "kakao_min": 5.104,
-      "kakao_max": 6.928,
-      "kbank_min": 4.68,
-      "kbank_max": 8.46
-    },
-    {
-      "date": "9/1",
-      "kb_min": 5.16,
-      "kb_max": 6.56,
-      "shinhan_min": 4.74,
-      "shinhan_max": 6.15,
-      "hana_min": 5.764,
-      "hana_max": 7.064,
-      "woori_min": 5.37,
-      "woori_max": 6.57,
-      "nh_min": 5.29,
-      "nh_max": 7.19,
-      "kakao_min": 5.104,
-      "kakao_max": 6.928,
-=======
       "date": "8/27",
       "kb_min": 5.16,
       "kb_max": 6.56,
@@ -1529,62 +1335,10 @@
       "nh_max": 7.12,
       "kakao_min": 5.1,
       "kakao_max": 6.926,
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
       "kbank_min": 4.68,
       "kbank_max": 8.46
     },
     {
-<<<<<<< HEAD
-      "date": "9/10",
-      "kb_min": 5.16,
-      "kb_max": 6.56,
-      "shinhan_min": 4.74,
-      "shinhan_max": 6.15,
-      "hana_min": 5.764,
-      "hana_max": 7.064,
-      "woori_min": 5.37,
-      "woori_max": 6.57,
-      "nh_min": 5.29,
-      "nh_max": 7.19,
-      "kakao_min": 5.104,
-      "kakao_max": 6.928,
-      "kbank_min": 4.68,
-      "kbank_max": 8.46
-    },
-    {
-      "date": "9/14",
-      "kb_min": 5.16,
-      "kb_max": 6.56,
-      "shinhan_min": 4.74,
-      "shinhan_max": 6.15,
-      "hana_min": 5.764,
-      "hana_max": 7.064,
-      "woori_min": 5.37,
-      "woori_max": 6.57,
-      "nh_min": 5.29,
-      "nh_max": 7.19,
-      "kakao_min": 5.104,
-      "kakao_max": 6.928,
-      "kbank_min": 4.68,
-      "kbank_max": 8.46
-    },
-    {
-      "date": "9/22",
-      "kb_min": 5.16,
-      "kb_max": 6.56,
-      "shinhan_min": 4.74,
-      "shinhan_max": 6.15,
-      "hana_min": 5.764,
-      "hana_max": 7.064,
-      "woori_min": 5.37,
-      "woori_max": 6.57,
-      "nh_min": 5.29,
-      "nh_max": 7.19,
-      "kakao_min": 5.104,
-      "kakao_max": 6.928,
-      "kbank_min": 4.68,
-      "kbank_max": 8.46
-=======
       "date": "9/3",
       "kb_min": 5.06,
       "kb_max": 6.46,
@@ -2042,7 +1796,6 @@
       "kakao_max": 7.058,
       "kbank_min": 4.96,
       "kbank_max": 8.91
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
     },
     {
       "date": "9/30",
@@ -2079,28 +1832,6 @@
       "kbank_max": 8.92
     },
     {
-<<<<<<< HEAD
-      "date": "10/21",
-      "kb_min": 5.33,
-      "kb_max": 6.73,
-      "shinhan_min": 4.91,
-      "shinhan_max": 6.32,
-      "hana_min": 5.926,
-      "hana_max": 7.226,
-      "woori_min": 5.62,
-      "woori_max": 6.82,
-      "nh_min": 5.3,
-      "nh_max": 6.9,
-      "kakao_min": 5.299,
-      "kakao_max": 7.128,
-      "kbank_min": 4.97,
-      "kbank_max": 8.92
-    },
-    {
-      "date": "10/22",
-      "kb_min": 5.33,
-      "kb_max": 6.73,
-=======
       "date": "10/2",
       "kb_min": 5.33,
       "kb_max": 6.73,
@@ -2444,7 +2175,6 @@
       "date": "10/22",
       "kb_min": 5.1,
       "kb_max": 6.5,
->>>>>>> 4c01279e1ed388da094c1199b83a81de210fd136
       "shinhan_min": 4.63,
       "shinhan_max": 6.04,
       "hana_min": 5.673,
