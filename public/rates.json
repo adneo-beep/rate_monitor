@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.10.24 07:36 기준",
+  "updatedAt": "2026.10.24 09:30 기준",
   "banks": [
     {
       "id": "kb",
@@ -58,8 +58,8 @@
       "product": "카카오뱅크 주담대 5년 변동",
       "minRate": 5.021,
       "maxRate": 6.851,
-      "minChange": 0.02,
-      "maxChange": 0.021
+      "minChange": 0.0,
+      "maxChange": 0.0
     },
     {
       "id": "kbank",
