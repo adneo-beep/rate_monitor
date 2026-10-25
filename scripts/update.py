@@ -397,13 +397,25 @@ async def scrape_samsung_life(browser):
 
 async def scrape_samsung_fire(browser):
     """삼성화재 주택담보대출 금리
-    URL: /vh/page/VH.HPLN0023.do (SPA, Vue) - ?_ic=direct 파라미터 없이
+    URL: /vh/page/VH.HPLN0023.do (SPA, Vue)
     금리는 JS가 VH.HDLN0032.do API 응답(aplcRate)으로 #rate 요소를 채움.
+    headless 환경에서 API 차단 우회: new_context + init_script로 자동화 식별자 제거
     URL 변경 시: samsungfire.com > 대출 > 담보대출 > 주택담보대출
     """
-    page = await browser.new_page()
+    context = await browser.new_context(
+        user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        viewport={'width': 1280, 'height': 720},
+        locale='ko-KR',
+        timezone_id='Asia/Seoul',
+    )
+    await context.add_init_script("""
+        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+        Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+        Object.defineProperty(navigator, 'languages', {get: () => ['ko-KR', 'ko', 'en-US']});
+        window.chrome = {runtime: {}, loadTimes: function(){}, csi: function(){}, app: {}};
+    """)
+    page = await context.new_page()
     try:
-        # API 응답 캡처: VH.HDLN0032.do에서 aplcRate 직접 추출
         captured = {}
 
         async def on_response(response):
@@ -411,9 +423,9 @@ async def scrape_samsung_fire(browser):
                 try:
                     body = await response.json()
                     hdr = body.get('responseMessage', {}).get('header', {})
-                    data = body.get('responseMessage', {}).get('body', {}) or {}
-                    if hdr.get('resultCode') == '0000' and data.get('aplcRate'):
-                        captured['aplcRate'] = data['aplcRate']
+                    data_body = body.get('responseMessage', {}).get('body', {}) or {}
+                    if hdr.get('resultCode') == '0000' and data_body.get('aplcRate'):
+                        captured['aplcRate'] = data_body['aplcRate']
                 except Exception:
                     pass
 
@@ -423,7 +435,6 @@ async def scrape_samsung_fire(browser):
             "https://www.samsungfire.com/vh/page/VH.HPLN0023.do",
             timeout=40000, wait_until='domcontentloaded'
         )
-        # JS가 API 호출 후 #rate 를 채울 때까지 대기 (최대 30초)
         try:
             await page.wait_for_function(
                 "() => { const el = document.getElementById('rate'); return el && el.textContent.trim().length > 0; }",
@@ -432,7 +443,6 @@ async def scrape_samsung_fire(browser):
         except Exception:
             await page.wait_for_timeout(3000)
 
-        # API 응답에서 직접 추출된 값 우선 사용
         if captured.get('aplcRate'):
             rate_text = captured['aplcRate'].replace(' ', '')
             m = re.search(r'([3-9](?:\.\d{1,3})?)\s*~\s*([3-9](?:\.\d{1,3})?)', rate_text)
@@ -440,7 +450,6 @@ async def scrape_samsung_fire(browser):
                 return {'bank': '삼성화재', 'product': '삼성화재 주택담보대출',
                         'min_rate': m.group(1), 'max_rate': m.group(2), 'status': 'success'}
 
-        # DOM에서 추출
         data = await page.evaluate("""() => {
             const el = document.getElementById('rate');
             if (el && el.textContent.trim()) {
@@ -465,6 +474,7 @@ async def scrape_samsung_fire(browser):
         return {'bank': '삼성화재', 'status': 'error', 'message': str(e)[:100]}
     finally:
         await page.close()
+        await context.close()
 
 
 async def scrape_hanwha(browser):
