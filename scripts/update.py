@@ -397,10 +397,8 @@ async def scrape_samsung_life(browser):
 
 async def scrape_samsung_fire(browser):
     """삼성화재 주택담보대출 금리
-    URL: /vh/page/VH.HPLN0023.do?_ic=direct (SPA, Vue)
-    금리는 JS가 VH.HDLN0032.do API 응답으로 #rate 요소를 채움.
-    wait_for_selector('.txt.fc-primary')는 요소가 항상 DOM에 존재(빈 채로)해서 즉시 성공 → 의미 없음.
-    wait_for_function으로 내용이 채워질 때까지 대기해야 함.
+    URL: /vh/page/VH.HPLN0023.do (SPA, Vue) - ?_ic=direct 파라미터 없이
+    금리는 JS가 VH.HDLN0032.do API 응답(aplcRate)으로 #rate 요소를 채움.
     URL 변경 시: samsungfire.com > 대출 > 담보대출 > 주택담보대출
     """
     page = await browser.new_page()
@@ -422,7 +420,7 @@ async def scrape_samsung_fire(browser):
         page.on('response', on_response)
 
         await page.goto(
-            "https://www.samsungfire.com/vh/page/VH.HPLN0023.do?_ic=direct",
+            "https://www.samsungfire.com/vh/page/VH.HPLN0023.do",
             timeout=40000, wait_until='domcontentloaded'
         )
         # JS가 API 호출 후 #rate 를 채울 때까지 대기 (최대 30초)
