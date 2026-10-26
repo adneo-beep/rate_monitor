@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.10.26 11:03 기준",
+  "updatedAt": "2026.10.26 09:30 기준",
   "banks": [
     {
       "id": "kb",
@@ -108,8 +108,8 @@
       "name": "삼성화재",
       "colorHex": "#e11d48",
       "product": "삼성화재 주택담보대출",
-      "minRate": 5.64,
-      "maxRate": 6.83,
+      "minRate": 5.57,
+      "maxRate": 6.7,
       "minChange": 0.0,
       "maxChange": 0.0
     }
