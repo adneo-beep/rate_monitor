@@ -85,6 +85,7 @@ export default function MarketRatesView({ onBack }) {
         onRefresh={load}
         isRefreshing={loading}
         accent="blue"
+        sourceUrl="https://www.kofiabond.or.kr/"
       />
 
       <div className="max-w-screen-xl mx-auto px-5 py-6 space-y-6">
