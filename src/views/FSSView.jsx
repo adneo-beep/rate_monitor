@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { MOCK_FSS_RATES } from '../data/mockData'
 import SkeletonRows from '../components/SkeletonRows'
 import PageHeader from '../components/PageHeader'
 
@@ -149,12 +148,14 @@ function StatusBanner({ type, message }) {
 export default function FSSView({ onBack }) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [statusMsg, setStatusMsg] = useState(null)
   const [statusType, setStatusType] = useState('warn')
 
   const load = useCallback(async () => {
     try {
       setLoading(true)
+      setError(null)
 
       // 정적 캐시 파일 우선 사용 (GH Actions 매일 업데이트), 실패 시 라이브 API 폴백
       let banksJson, insJson, updatedAt
@@ -196,9 +197,7 @@ export default function FSSView({ onBack }) {
       setStatusMsg(null)
     } catch (err) {
       console.warn('FSS 로딩 실패:', err.message)
-      setData(MOCK_FSS_RATES)
-      setStatusMsg('API 미연결 상태입니다 — Mock 데이터를 표시하고 있습니다.')
-      setStatusType('warn')
+      setError(err.message || '알 수 없는 오류')
     } finally {
       setLoading(false)
     }
@@ -207,6 +206,20 @@ export default function FSSView({ onBack }) {
   useEffect(() => {
     load()
   }, [load])
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <PageHeader title="금융감독원 공시 기준" subtitle="매월 공시 · FSS API 실시간" onBack={onBack} onRefresh={load} isRefreshing={loading} accent="emerald" sourceUrl="https://finlife.fss.or.kr/finlife/ldng/houseMrtg/list.do?menuNo=700007" />
+        <div className="max-w-screen-xl mx-auto px-5 py-12 flex flex-col items-center gap-4 text-center">
+          <div className="text-4xl">⚠️</div>
+          <p className="text-slate-700 font-semibold">데이터를 불러오지 못했습니다</p>
+          <p className="text-slate-400 text-sm font-mono bg-slate-100 px-3 py-2 rounded">{error}</p>
+          <button onClick={load} className="mt-2 px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700">다시 시도</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 animate-fade-in">
@@ -217,6 +230,7 @@ export default function FSSView({ onBack }) {
         onRefresh={load}
         isRefreshing={loading}
         accent="emerald"
+        sourceUrl="https://finlife.fss.or.kr/finlife/ldng/houseMrtg/list.do?menuNo=700007"
       />
 
       <div className="max-w-screen-xl mx-auto px-5 py-6 space-y-5">

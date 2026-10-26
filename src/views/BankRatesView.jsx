@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { MOCK_BANK_RATES } from '../data/mockData'
 import RateRow from '../components/RateRow'
 import PageHeader from '../components/PageHeader'
 
@@ -47,13 +46,15 @@ function SectionPanel({ title, subtitle, children }) {
 export default function BankRatesView({ onBack }) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const load = useCallback(() => {
     setLoading(true)
+    setError(null)
     fetch('/rates.json', { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((r) => (r.ok ? r.json() : Promise.reject(`HTTP ${r.status}`)))
       .then(setData)
-      .catch(() => setData(MOCK_BANK_RATES))
+      .catch((e) => setError(String(e)))
       .finally(() => setLoading(false))
   }, [])
 
@@ -61,12 +62,26 @@ export default function BankRatesView({ onBack }) {
     load()
   }, [load])
 
-  if (loading || !data) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex items-center gap-3 text-slate-400 text-sm animate-pulse">
           <div className="w-4 h-4 border-2 border-slate-300 border-t-blue-500 rounded-full animate-spin" />
           데이터를 불러오는 중...
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !data) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <PageHeader title="금융사 홈페이지 공시 기준" subtitle="일 단위 업데이트" onBack={onBack} onRefresh={load} isRefreshing={loading} accent="blue" />
+        <div className="max-w-screen-xl mx-auto px-5 py-12 flex flex-col items-center gap-4 text-center">
+          <div className="text-4xl">⚠️</div>
+          <p className="text-slate-700 font-semibold">데이터를 불러오지 못했습니다</p>
+          <p className="text-slate-400 text-sm font-mono bg-slate-100 px-3 py-2 rounded">{error || '알 수 없는 오류'}</p>
+          <button onClick={load} className="mt-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">다시 시도</button>
         </div>
       </div>
     )

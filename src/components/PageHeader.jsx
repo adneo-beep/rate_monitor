@@ -27,13 +27,22 @@ function RefreshIcon({ spinning }) {
   )
 }
 
-export default function PageHeader({ title, subtitle, onBack, onRefresh, isRefreshing = false, accent = 'blue' }) {
+export default function PageHeader({ title, subtitle, onBack, onRefresh, isRefreshing = false, accent = 'blue', sourceUrl }) {
   return (
     <div className={`bg-gradient-to-r ${GRADIENTS[accent]} text-white px-6 py-5 shadow-md`}>
       <div className="max-w-screen-xl mx-auto flex items-center gap-4">
         <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-bold leading-tight truncate">{title}</h1>
-          <p className="text-white/65 text-xs mt-0.5">{subtitle}</p>
+          {sourceUrl ? (
+            <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="group inline-block">
+              <h1 className="text-lg font-bold leading-tight truncate group-hover:underline">{title}</h1>
+              <p className="text-white/65 text-xs mt-0.5 group-hover:text-white/85 transition-colors">{subtitle} ↗</p>
+            </a>
+          ) : (
+            <>
+              <h1 className="text-lg font-bold leading-tight truncate">{title}</h1>
+              <p className="text-white/65 text-xs mt-0.5">{subtitle}</p>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {onRefresh && (

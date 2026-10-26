@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { COUNSELOR_TABLE_DATA, COUNSELOR_SOURCE_URL } from '../data/mockData'
+import { COUNSELOR_SOURCE_URL } from '../data/mockData'
 import PageHeader from '../components/PageHeader'
 
 function RateTypeBadge({ type }) {
@@ -72,19 +72,35 @@ function PanelHeader({ title, subtitle }) {
 export default function CounselorView({ onBack }) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const load = useCallback(() => {
     setLoading(true)
+    setError(null)
     fetch('/counselor.json', { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((r) => (r.ok ? r.json() : Promise.reject(`HTTP ${r.status}`)))
       .then(setData)
-      .catch(() => setData(COUNSELOR_TABLE_DATA))
+      .catch((e) => setError(String(e)))
       .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {
     load()
   }, [load])
+
+  if (!loading && error) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <PageHeader title="우리동네 대출상담사 기준" subtitle="일 단위 업데이트" onBack={onBack} onRefresh={load} isRefreshing={loading} accent="violet" />
+        <div className="max-w-screen-xl mx-auto px-5 py-12 flex flex-col items-center gap-4 text-center">
+          <div className="text-4xl">⚠️</div>
+          <p className="text-slate-700 font-semibold">데이터를 불러오지 못했습니다</p>
+          <p className="text-slate-400 text-sm font-mono bg-slate-100 px-3 py-2 rounded">{error}</p>
+          <button onClick={load} className="mt-2 px-4 py-2 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700">다시 시도</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 animate-fade-in">
