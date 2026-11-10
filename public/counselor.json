@@ -41,9 +41,14 @@
       "colorHex": "#14b8a6",
       "rates": [
         {
-          "type": "5년혼합",
-          "sell": 5.13,
-          "lease": 5.33
+          "type": "6개월",
+          "sell": 5.36,
+          "lease": 5.56
+        },
+        {
+          "type": "5년주기",
+          "sell": 4.97,
+          "lease": 5.17
         }
       ]
     },
