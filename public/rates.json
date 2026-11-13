@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.11.12 10:40 기준",
+  "updatedAt": "2026.11.13 09:30 기준",
   "banks": [
     {
       "id": "kb",
@@ -16,60 +16,60 @@
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.4,
-      "maxRate": 5.81,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.42,
+      "maxRate": 5.83,
+      "minChange": 0.02,
+      "maxChange": 0.02
     },
     {
       "id": "hana",
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "product": "하나 혼합금리 모기지론 5년물 금융채",
-      "minRate": 5.53,
-      "maxRate": 6.83,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.52,
+      "maxRate": 6.82,
+      "minChange": -0.01,
+      "maxChange": -0.01
     },
     {
       "id": "woori",
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 4.89,
-      "maxRate": 6.09,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.91,
+      "maxRate": 6.11,
+      "minChange": 0.02,
+      "maxChange": 0.02
     },
     {
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 4.5,
-      "maxRate": 6.3,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.53,
+      "maxRate": 6.33,
+      "minChange": 0.03,
+      "maxChange": 0.03
     },
     {
       "id": "kakao",
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 4.765,
-      "maxRate": 6.596,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.861,
+      "maxRate": 6.692,
+      "minChange": 0.096,
+      "maxChange": 0.096
     },
     {
       "id": "kbank",
       "name": "케이뱅크",
       "colorHex": "#a78bfa",
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
-      "minRate": 4.46,
-      "maxRate": 8.42,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.5,
+      "maxRate": 8.45,
+      "minChange": 0.04,
+      "maxChange": 0.03
     }
   ],
   "insurances": [
@@ -88,10 +88,10 @@
       "name": "한화생명",
       "colorHex": "#ef4444",
       "product": "홈드림 모기지론",
-      "minRate": 5.83,
-      "maxRate": 7.69,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.63,
+      "maxRate": 7.39,
+      "minChange": -0.2,
+      "maxChange": -0.3
     },
     {
       "id": "kyobo",
@@ -2544,6 +2544,23 @@
       "kakao_max": 6.596,
       "kbank_min": 4.46,
       "kbank_max": 8.42
+    },
+    {
+      "date": "11/13",
+      "kb_min": 4.85,
+      "kb_max": 6.25,
+      "shinhan_min": 4.42,
+      "shinhan_max": 5.83,
+      "hana_min": 5.52,
+      "hana_max": 6.82,
+      "woori_min": 4.91,
+      "woori_max": 6.11,
+      "nh_min": 4.53,
+      "nh_max": 6.33,
+      "kakao_min": 4.861,
+      "kakao_max": 6.692,
+      "kbank_min": 4.5,
+      "kbank_max": 8.45
     }
   ]
 }
