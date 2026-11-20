@@ -1,35 +1,35 @@
 {
-  "updatedAt": "2026.11.18 마감 기준",
+  "updatedAt": "2026.11.19 마감 기준",
   "rates": {
     "ktb3y": {
       "label": "국고채 3년",
-      "value": 3.736,
-      "change": 0.011
+      "value": 3.716,
+      "change": -0.02
     },
     "ktb10y": {
       "label": "국고채 10년",
-      "value": 3.975,
-      "change": 0.009
+      "value": 3.942,
+      "change": -0.033
     },
     "fin6m": {
       "label": "금융채 6개월",
-      "value": 3.899,
-      "change": 0.028
+      "value": 3.911,
+      "change": 0.012
     },
     "fin1y": {
       "label": "금융채 1년",
-      "value": 3.963,
-      "change": 0.005
+      "value": 3.959,
+      "change": -0.004
     },
     "fin3y": {
       "label": "금융채 3년",
-      "value": 4.094,
-      "change": 0.006
+      "value": 4.069,
+      "change": -0.025
     },
     "fin5y": {
       "label": "금융채 5년",
-      "value": 4.171,
-      "change": 0.022
+      "value": 4.136,
+      "change": -0.035
     }
   }
 }
