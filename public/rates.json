@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.11.22 09:30 기준",
+  "updatedAt": "2026.11.23 09:27 기준",
   "banks": [
     {
       "id": "kb",
@@ -66,10 +66,10 @@
       "name": "케이뱅크",
       "colorHex": "#a78bfa",
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
-      "minRate": 4.55,
-      "maxRate": 8.51,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.52,
+      "maxRate": 8.48,
+      "minChange": -0.03,
+      "maxChange": -0.03
     }
   ],
   "insurances": [
@@ -2714,6 +2714,23 @@
       "kakao_max": 6.693,
       "kbank_min": 4.55,
       "kbank_max": 8.51
+    },
+    {
+      "date": "11/23",
+      "kb_min": 4.9,
+      "kb_max": 6.3,
+      "shinhan_min": 4.47,
+      "shinhan_max": 5.88,
+      "hana_min": 5.448,
+      "hana_max": 6.748,
+      "woori_min": 4.92,
+      "woori_max": 6.12,
+      "nh_min": 4.61,
+      "nh_max": 6.41,
+      "kakao_min": 4.862,
+      "kakao_max": 6.693,
+      "kbank_min": 4.52,
+      "kbank_max": 8.48
     }
   ]
 }
