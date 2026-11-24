@@ -74,15 +74,15 @@
     },
     {
       "month": "26/11",
-      "kb": 5.08,
-      "shinhan": 4.38,
-      "hana": 4.64,
-      "woori": 4.42,
-      "nh": 4.68,
-      "samsungLife": 5.7,
-      "hanwha": 6.26,
-      "kyobo": 6.06,
-      "samsungFire": 5.83
+      "kb": 4.79,
+      "shinhan": 4.45,
+      "hana": 4.77,
+      "woori": 4.32,
+      "nh": 4.48,
+      "samsungLife": 5.22,
+      "hanwha": 5.83,
+      "kyobo": 5.8,
+      "samsungFire": null
     }
   ]
 }
