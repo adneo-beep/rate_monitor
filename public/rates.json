@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026.11.26 11:25 기준",
+  "updatedAt": "2026.11.27 09:30 기준",
   "banks": [
     {
       "id": "kb",
@@ -16,60 +16,60 @@
       "name": "신한은행",
       "colorHex": "#f97316",
       "product": "신한주택대출(아파트) 금융채(5년)",
-      "minRate": 4.33,
-      "maxRate": 5.74,
-      "minChange": -0.07,
-      "maxChange": -0.06
+      "minRate": 4.32,
+      "maxRate": 5.73,
+      "minChange": -0.01,
+      "maxChange": -0.01
     },
     {
       "id": "hana",
       "name": "하나은행",
       "colorHex": "#14b8a6",
       "product": "하나 혼합금리 모기지론 5년물 금융채",
-      "minRate": 5.358,
-      "maxRate": 6.658,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 5.393,
+      "maxRate": 6.693,
+      "minChange": 0.035,
+      "maxChange": 0.035
     },
     {
       "id": "woori",
       "name": "우리은행",
       "colorHex": "#3b82f6",
       "product": "우리아파트론 변동금리(5년)",
-      "minRate": 4.82,
-      "maxRate": 6.02,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.8,
+      "maxRate": 6.0,
+      "minChange": -0.02,
+      "maxChange": -0.02
     },
     {
       "id": "nh",
       "name": "NH농협은행",
       "colorHex": "#22c55e",
       "product": "NH주택담보대출_5년주기형",
-      "minRate": 4.5,
-      "maxRate": 6.3,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.47,
+      "maxRate": 6.27,
+      "minChange": -0.03,
+      "maxChange": -0.03
     },
     {
       "id": "kakao",
       "name": "카카오뱅크",
       "colorHex": "#fde047",
       "product": "카카오뱅크 주담대 5년 변동",
-      "minRate": 4.761,
-      "maxRate": 6.592,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.694,
+      "maxRate": 6.525,
+      "minChange": -0.067,
+      "maxChange": -0.067
     },
     {
       "id": "kbank",
       "name": "케이뱅크",
       "colorHex": "#a78bfa",
       "product": "케이뱅크 아파트담보대출 주기형(금융채 5년)",
-      "minRate": 4.61,
-      "maxRate": 8.27,
-      "minChange": 0.0,
-      "maxChange": 0.0
+      "minRate": 4.6,
+      "maxRate": 8.26,
+      "minChange": -0.01,
+      "maxChange": -0.01
     }
   ],
   "insurances": [
@@ -2782,6 +2782,23 @@
       "kakao_max": 6.592,
       "kbank_min": 4.61,
       "kbank_max": 8.27
+    },
+    {
+      "date": "11/27",
+      "kb_min": 4.9,
+      "kb_max": 6.3,
+      "shinhan_min": 4.32,
+      "shinhan_max": 5.73,
+      "hana_min": 5.393,
+      "hana_max": 6.693,
+      "woori_min": 4.8,
+      "woori_max": 6.0,
+      "nh_min": 4.47,
+      "nh_max": 6.27,
+      "kakao_min": 4.694,
+      "kakao_max": 6.525,
+      "kbank_min": 4.6,
+      "kbank_max": 8.26
     }
   ]
 }
